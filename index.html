@@ -17,7 +17,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css?v=130"
+    href="style.css?v=140"
   />
 
   <link
@@ -49,7 +49,6 @@
 
     </div>
 
-
     <button
       id="newQuoteBtn"
       class="secondary small"
@@ -62,7 +61,7 @@
 
 
   <!-- ======================================================
-       STICKY CUSTOMER NAME
+       STICKY CUSTOMER
   ======================================================= -->
 
   <div class="customer-sticky">
@@ -165,51 +164,7 @@
 
 
     <!-- ======================================================
-         GATE TYPE
-    ======================================================= -->
-
-    <section class="card">
-
-      <h2>
-        Gate Type
-      </h2>
-
-
-      <div class="tabs">
-
-        <button
-          class="tab active"
-          data-type="single"
-          type="button"
-        >
-          Single
-        </button>
-
-
-        <button
-          class="tab"
-          data-type="double"
-          type="button"
-        >
-          Double
-        </button>
-
-
-        <button
-          class="tab"
-          data-type="slider"
-          type="button"
-        >
-          Slider
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- ======================================================
-         GATE DETAILS / INSTALLATION
+         GATE DETAILS & INSTALLATION
     ======================================================= -->
 
     <details
@@ -225,137 +180,146 @@
       <div class="section-content">
 
 
+        <!-- GATE TYPE -->
+
         <h3>
-          Steel
+          Gate Type
         </h3>
 
 
-        <div class="grid two">
+        <div class="tabs">
+
+          <button
+            class="tab active"
+            data-type="single"
+            type="button"
+          >
+            Single
+          </button>
+
+
+          <button
+            class="tab"
+            data-type="double"
+            type="button"
+          >
+            Double
+          </button>
+
+
+          <button
+            class="tab"
+            data-type="slider"
+            type="button"
+          >
+            Slider
+          </button>
+
+        </div>
+
+
+        <!-- INCLUDE OPTIONS -->
+
+        <h3>
+          Include
+        </h3>
+
+
+        <div class="include-grid">
+
+          <label class="toggle-card">
+
+            <input
+              id="includeFrame"
+              type="checkbox"
+              checked
+            />
+
+            <span>
+              Frame
+            </span>
+
+          </label>
+
+
+          <label class="toggle-card">
+
+            <input
+              id="includePosts"
+              type="checkbox"
+              checked
+            />
+
+            <span>
+              Posts
+            </span>
+
+          </label>
+
+
+          <label class="toggle-card">
+
+            <input
+              id="includeCladding"
+              type="checkbox"
+              checked
+            />
+
+            <span>
+              Cladding
+            </span>
+
+          </label>
+
+        </div>
+
+
+        <!-- FRAME -->
+
+        <div id="frameSection">
+
+          <h3>
+            Frame
+          </h3>
+
 
           <label>
-            Frame
+            Frame steel
 
             <select id="frameSize">
             </select>
           </label>
 
 
-          <label>
-            Post size
-
-            <select id="postSize">
-            </select>
-          </label>
-
-        </div>
-
-
-        <label>
-          Total number of posts
-
-          <select id="postCount">
-
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2" selected>2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-
-          </select>
-        </label>
-
-
-        <h3>
-          Post Fixing
-        </h3>
-
-
-        <div class="grid two">
-
-          <label>
-            Left post
-
-            <select id="leftPostFixing">
-
-              <option value="concreted">
-                Concreted
-              </option>
-
-              <option value="brick">
-                Bolted to brickwork
-              </option>
-
-              <option value="existing">
-                Existing post / structure
-              </option>
-
-              <option value="none">
-                No post
-              </option>
-
-            </select>
-          </label>
-
-
-          <label>
-            Right post
-
-            <select id="rightPostFixing">
-
-              <option value="concreted">
-                Concreted
-              </option>
-
-              <option value="brick">
-                Bolted to brickwork
-              </option>
-
-              <option value="existing">
-                Existing post / structure
-              </option>
-
-              <option value="none">
-                No post
-              </option>
-
-            </select>
-          </label>
-
-        </div>
-
-
-        <div
-          id="dynaboltOptions"
-          class="sub-card"
-        >
-
-          <h4>
-            Dynabolts
-          </h4>
-
-
           <div class="grid two">
 
             <label>
-              Dynabolt length
+              Horizontal mid rails
 
-              <select id="dynaboltLength">
+              <select id="horizontalMidRails">
 
-                <option value="50">
-                  50 x 10mm
+                <option value="0">
+                  0
                 </option>
 
-                <option value="75" selected>
-                  75 x 10mm
+                <option value="1">
+                  1
                 </option>
 
-                <option value="90">
-                  90 x 10mm
+                <option value="2">
+                  2
+                </option>
+
+                <option value="3">
+                  3
+                </option>
+
+                <option value="4">
+                  4
+                </option>
+
+                <option value="5">
+                  5
                 </option>
 
               </select>
@@ -363,15 +327,35 @@
 
 
             <label>
-              Number of dynabolts
+              Vertical mid rails
 
-              <input
-                id="dynaboltCount"
-                type="number"
-                min="0"
-                step="1"
-                value="2"
-              />
+              <select id="verticalMidRails">
+
+                <option value="0">
+                  0
+                </option>
+
+                <option value="1">
+                  1
+                </option>
+
+                <option value="2">
+                  2
+                </option>
+
+                <option value="3">
+                  3
+                </option>
+
+                <option value="4">
+                  4
+                </option>
+
+                <option value="5">
+                  5
+                </option>
+
+              </select>
             </label>
 
           </div>
@@ -379,283 +363,34 @@
         </div>
 
 
-        <h3>
-          Cladding
-        </h3>
+        <!-- POSTS -->
 
+        <div id="postsSection">
 
-        <div class="cladding-selector">
-
-          <button
-            id="claddingButton"
-            class="selection-button"
-            type="button"
-          >
-
-            <span id="claddingButtonText">
-              Ekodeck screening 67x15mm
-            </span>
-
-            <span>
-              ▼
-            </span>
-
-          </button>
+          <h3>
+            Posts
+          </h3>
 
 
           <div
-            id="claddingMenu"
-            class="selection-menu hidden"
+            id="postsContainer"
+            class="posts-container"
           >
-
-            <button
-              type="button"
-              data-cladding="ekodeck"
-            >
-              Ekodeck screening 67x15mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="cypressPickets"
-            >
-              Cypress pickets 67x15mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="losp50"
-            >
-              LOSP 50x18mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="losp90"
-            >
-              LOSP 90x18mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="merbau90"
-            >
-              Merbau decking 90mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="merbau140"
-            >
-              Merbau decking 140mm
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="colorbond"
-            >
-              Colorbond steel cladding
-            </button>
-
-
-            <button
-              type="button"
-              data-cladding="custom"
-            >
-              Custom / Other
-            </button>
-
           </div>
 
-        </div>
 
-
-        <!-- EKODECK -->
-
-        <div id="ekodeckOptions">
-
-          <label>
-            Ekodeck colour
-
-            <select id="ekodeckColour">
-
-              <option value="Greystone">
-                Greystone
-              </option>
-
-              <option value="Alpine Ash">
-                Alpine Ash
-              </option>
-
-              <option value="Leatherwood">
-                Leatherwood
-              </option>
-
-              <option value="Riverbank Red">
-                Riverbank Red
-              </option>
-
-            </select>
-          </label>
+          <button
+            id="addPostBtn"
+            type="button"
+            class="secondary full-width"
+          >
+            + Add Post
+          </button>
 
         </div>
 
 
-        <!-- CYPRESS -->
-
-        <div
-          id="cypressOptions"
-          class="hidden"
-        >
-
-          <label>
-            Cypress stock length
-
-            <select id="picketLength">
-
-              <option value="900">
-                900mm
-              </option>
-
-              <option value="1200">
-                1200mm
-              </option>
-
-              <option value="1800">
-                1800mm
-              </option>
-
-            </select>
-          </label>
-
-
-          <label>
-            Cypress finish
-
-            <select id="cypressFinish">
-
-              <option value="raw">
-                Raw
-              </option>
-
-              <option value="painted">
-                Painted
-              </option>
-
-            </select>
-          </label>
-
-        </div>
-
-
-        <!-- COLORBOND -->
-
-        <div
-          id="colorbondOptions"
-          class="hidden"
-        >
-
-          <label>
-            Colorbond profile
-
-            <select id="colorbondProfile">
-
-              <option value="Good Neighbour">
-                Good Neighbour
-              </option>
-
-              <option value="Corrugated">
-                Corrugated
-              </option>
-
-              <option value="Trimdek">
-                Trimdek
-              </option>
-
-              <option value="Other">
-                Other
-              </option>
-
-            </select>
-          </label>
-
-
-          <label>
-            Colour / notes
-
-            <input
-              id="colorbondNotes"
-              type="text"
-              placeholder="e.g. Monument"
-            />
-          </label>
-
-        </div>
-
-
-        <!-- CUSTOM -->
-
-        <div
-          id="customCladdingOptions"
-          class="hidden"
-        >
-
-          <label>
-            Description
-
-            <input
-              id="customCladdingName"
-              type="text"
-            />
-          </label>
-
-
-          <label>
-            Material cost inc GST
-
-            <input
-              id="customCladdingCost"
-              type="number"
-              min="0"
-              step="0.01"
-              value="0"
-            />
-          </label>
-
-        </div>
-
-
-        <h3>
-          Latch
-        </h3>
-
-
-        <label>
-          Latch
-
-          <select id="latch">
-          </select>
-        </label>
-
-
-        <div class="fixed-spec">
-
-          <span>
-            Hinges
-          </span>
-
-          <strong>
-            Lock-out galvanised hinges
-          </strong>
-
-        </div>
-
+        <!-- FIXED PANEL -->
 
         <h3>
           Fixed Panel
@@ -691,7 +426,7 @@
           <div class="grid two">
 
             <label>
-              Fixed panel width (mm)
+              Overall width (mm)
 
               <input
                 id="fixedPanelWidth"
@@ -704,7 +439,7 @@
 
 
             <label>
-              Fixed panel height (mm)
+              Overall height (mm)
 
               <input
                 id="fixedPanelHeight"
@@ -778,8 +513,345 @@
         </div>
 
 
+        <!-- CLADDING -->
+
+        <div id="claddingSection">
+
+          <h3>
+            Gate Cladding
+          </h3>
+
+
+          <label>
+            Cladding material
+
+            <select id="claddingType">
+
+              <option value="ekodeck">
+                Ekodeck screening 67x15mm
+              </option>
+
+              <option value="cypressPickets">
+                Cypress pickets 67x15mm
+              </option>
+
+              <option value="losp50">
+                LOSP 50x18mm
+              </option>
+
+              <option value="losp90">
+                LOSP 90x18mm
+              </option>
+
+              <option value="merbau90">
+                Merbau decking 90mm
+              </option>
+
+              <option value="merbau140">
+                Merbau decking 140mm
+              </option>
+
+              <option value="colorbond">
+                Colorbond steel cladding
+              </option>
+
+              <option value="custom">
+                Custom / Other
+              </option>
+
+            </select>
+          </label>
+
+
+          <label>
+            Cladding direction
+
+            <select id="claddingDirection">
+
+              <option value="vertical">
+                Vertical
+              </option>
+
+              <option value="horizontal">
+                Horizontal
+              </option>
+
+            </select>
+          </label>
+
+
+          <!-- EKODECK -->
+
+          <div id="ekodeckOptions">
+
+            <label>
+              Ekodeck colour
+
+              <select id="ekodeckColour">
+
+                <option value="Greystone">
+                  Greystone
+                </option>
+
+                <option value="Alpine Ash">
+                  Alpine Ash
+                </option>
+
+                <option value="Leatherwood">
+                  Leatherwood
+                </option>
+
+                <option value="Riverbank Red">
+                  Riverbank Red
+                </option>
+
+              </select>
+            </label>
+
+          </div>
+
+
+          <!-- CYPRESS -->
+
+          <div
+            id="cypressOptions"
+            class="hidden"
+          >
+
+            <label>
+              Cypress stock length
+
+              <select id="cypressLength">
+
+                <option value="900">
+                  900mm
+                </option>
+
+                <option value="1200">
+                  1200mm
+                </option>
+
+                <option value="1800">
+                  1800mm
+                </option>
+
+              </select>
+            </label>
+
+
+            <label>
+              Cypress finish
+
+              <select id="cypressFinish">
+
+                <option value="Raw">
+                  Raw
+                </option>
+
+                <option value="Oil">
+                  Oil
+                </option>
+
+                <option value="Paint">
+                  Paint
+                </option>
+
+              </select>
+            </label>
+
+
+            <div
+              id="cypressPaintColourWrap"
+              class="hidden"
+            >
+
+              <label>
+                Paint colour
+
+                <input
+                  id="cypressPaintColour"
+                  type="text"
+                  placeholder="e.g. White"
+                />
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- LOSP -->
+
+          <div
+            id="lospOptions"
+            class="hidden"
+          >
+
+            <label>
+              LOSP finish
+
+              <select id="lospFinish">
+
+                <option value="Plain">
+                  Plain
+                </option>
+
+                <option value="Prime">
+                  Prime
+                </option>
+
+                <option value="Paint">
+                  Paint
+                </option>
+
+              </select>
+            </label>
+
+
+            <div
+              id="lospPaintColourWrap"
+              class="hidden"
+            >
+
+              <label>
+                Paint colour
+
+                <input
+                  id="lospPaintColour"
+                  type="text"
+                  placeholder="e.g. White"
+                />
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- MERBAU -->
+
+          <div
+            id="merbauOptions"
+            class="hidden"
+          >
+
+            <label>
+              Merbau finish
+
+              <select id="merbauFinish">
+
+                <option value="Raw">
+                  Raw
+                </option>
+
+                <option value="Oil">
+                  Oil
+                </option>
+
+              </select>
+            </label>
+
+          </div>
+
+
+          <!-- COLORBOND -->
+
+          <div
+            id="colorbondOptions"
+            class="hidden"
+          >
+
+            <label>
+              Colorbond profile
+
+              <select id="colorbondProfile">
+
+                <option value="Good Neighbour">
+                  Good Neighbour
+                </option>
+
+                <option value="Corrugated">
+                  Corrugated
+                </option>
+
+                <option value="Trimdek">
+                  Trimdek
+                </option>
+
+                <option value="Other">
+                  Other
+                </option>
+
+              </select>
+            </label>
+
+
+            <label>
+              Colour / notes
+
+              <input
+                id="colorbondNotes"
+                type="text"
+                placeholder="e.g. Monument"
+              />
+            </label>
+
+          </div>
+
+
+          <!-- CUSTOM -->
+
+          <div
+            id="customCladdingOptions"
+            class="hidden"
+          >
+
+            <label>
+              Description
+
+              <input
+                id="customCladdingName"
+                type="text"
+              />
+            </label>
+
+
+            <label>
+              Material cost inc GST
+
+              <input
+                id="customCladdingCost"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+              />
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- LATCH -->
+
         <h3>
-          Finish
+          Latch
+        </h3>
+
+
+        <label>
+          Latch
+
+          <select id="latch">
+          </select>
+        </label>
+
+
+        <!-- FINISH -->
+
+        <h3>
+          Steel Finish
         </h3>
 
 
@@ -937,11 +1009,8 @@
 
         <div class="calculation-note">
 
-          Proposed gate width automatically deducts:
-
-          <strong>
-            left post + right post + left gap + right gap
-          </strong>
+          Proposed gate size will deduct the posts and fixed-panel width
+          that physically occupy the cavity.
 
         </div>
 
@@ -994,45 +1063,10 @@
         </div>
 
 
-        <h3>
-          Mid Rail
-        </h3>
-
-
-        <label>
-          Mid rail
-
-          <select id="midRailOption">
-
-            <option value="none">
-              No mid rail
-            </option>
-
-            <option value="horizontal">
-              Add horizontal mid rail
-            </option>
-
-            <option value="vertical">
-              Add vertical mid rail
-            </option>
-
-          </select>
-        </label>
-
-
         <div
-          id="midRailResult"
-          class="fixed-spec"
+          id="measurementBreakdown"
+          class="measurement-breakdown"
         >
-
-          <span>
-            Mid rail length
-          </span>
-
-          <strong id="midRailLength">
-            0 mm
-          </strong>
-
         </div>
 
       </div>
@@ -1057,160 +1091,201 @@
       <div class="section-content">
 
 
-        <h3>
-          Frame Steel
-        </h3>
+        <div id="frameMaterialBlock">
+
+          <h3>
+            Frame Steel
+          </h3>
 
 
-        <div class="summary-grid">
+          <div class="summary-grid">
 
-          <div>
-            <span>
-              Gate frame
-            </span>
+            <div>
+              <span>
+                Gate frame
+              </span>
 
-            <strong id="frameMetres">
-              0.00 m
-            </strong>
-          </div>
-
-
-          <div>
-            <span>
-              Mid rail
-            </span>
-
-            <strong id="midRailMetres">
-              0.00 m
-            </strong>
-          </div>
+              <strong id="frameMetres">
+                0.00 m
+              </strong>
+            </div>
 
 
-          <div>
-            <span>
-              Total frame steel
-            </span>
+            <div>
+              <span>
+                Horizontal rails
+              </span>
 
-            <strong id="totalFrameMetres">
-              0.00 m
-            </strong>
-          </div>
-
-
-          <div>
-            <span>
-              8m lengths to buy
-            </span>
-
-            <strong id="frameLengths">
-              0
-            </strong>
-          </div>
+              <strong id="horizontalRailMetres">
+                0.00 m
+              </strong>
+            </div>
 
 
-          <div>
-            <span>
-              Frame steel waste
-            </span>
+            <div>
+              <span>
+                Vertical rails
+              </span>
 
-            <strong id="frameWaste">
-              0.00 m
-            </strong>
-          </div>
-
-        </div>
+              <strong id="verticalRailMetres">
+                0.00 m
+              </strong>
+            </div>
 
 
-        <h3>
-          Posts
-        </h3>
+            <div>
+              <span>
+                Fixed-panel frame
+              </span>
+
+              <strong id="fixedPanelFrameMetres">
+                0.00 m
+              </strong>
+            </div>
 
 
-        <div class="summary-grid">
+            <div>
+              <span>
+                Total frame steel
+              </span>
 
-          <div>
-            <span>
-              Post material required
-            </span>
-
-            <strong id="postMetres">
-              0.00 m
-            </strong>
-          </div>
+              <strong id="totalFrameMetres">
+                0.00 m
+              </strong>
+            </div>
 
 
-          <div>
-            <span>
-              8m lengths to buy
-            </span>
+            <div>
+              <span>
+                8m lengths to buy
+              </span>
 
-            <strong id="postLengths">
-              0
-            </strong>
-          </div>
+              <strong id="frameLengths">
+                0
+              </strong>
+            </div>
 
 
-          <div>
-            <span>
-              Post waste
-            </span>
+            <div>
+              <span>
+                Frame waste
+              </span>
 
-            <strong id="postWaste">
-              0.00 m
-            </strong>
+              <strong id="frameWaste">
+                0.00 m
+              </strong>
+            </div>
+
           </div>
 
         </div>
 
 
-        <h3>
-          Gate Cladding
-        </h3>
+        <div id="postMaterialBlock">
+
+          <h3>
+            Posts
+          </h3>
 
 
-        <div class="summary-grid">
+          <div class="summary-grid">
 
-          <div>
-            <span>
-              Boards / pieces
-            </span>
+            <div>
+              <span>
+                Post steel required
+              </span>
 
-            <strong id="claddingBoards">
-              0
-            </strong>
+              <strong id="postMetres">
+                0.00 m
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                8m lengths to buy
+              </span>
+
+              <strong id="postLengths">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Post waste
+              </span>
+
+              <strong id="postWaste">
+                0.00 m
+              </strong>
+            </div>
+
           </div>
 
 
-          <div>
-            <span>
-              Lineal metres required
-            </span>
-
-            <strong id="claddingMetres">
-              0.00 m
-            </strong>
+          <div
+            id="postCutList"
+            class="cut-list"
+          >
           </div>
 
-
-          <div>
-            <span>
-              Stock lengths required
-            </span>
-
-            <strong id="claddingStockLengths">
-              0
-            </strong>
-          </div>
+        </div>
 
 
-          <div>
-            <span>
-              Cladding waste
-            </span>
+        <div id="claddingMaterialBlock">
 
-            <strong id="claddingWaste">
-              0.00 m
-            </strong>
+          <h3>
+            Cladding
+          </h3>
+
+
+          <div class="summary-grid">
+
+            <div>
+              <span>
+                Boards / pieces
+              </span>
+
+              <strong id="claddingBoards">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Lineal metres required
+              </span>
+
+              <strong id="claddingMetres">
+                0.00 m
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Stock lengths required
+              </span>
+
+              <strong id="claddingStockLengths">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Cladding waste
+              </span>
+
+              <strong id="claddingWaste">
+                0.00 m
+              </strong>
+            </div>
+
           </div>
 
         </div>
@@ -1230,7 +1305,7 @@
 
             <div>
               <span>
-                Fixed panel area
+                Area
               </span>
 
               <strong id="fixedPanelArea">
@@ -1241,10 +1316,10 @@
 
             <div>
               <span>
-                Fixed panel frame steel
+                Frame
               </span>
 
-              <strong id="fixedPanelFrameMetres">
+              <strong id="fixedPanelFrameSummary">
                 0.00 m
               </strong>
             </div>
@@ -1252,7 +1327,7 @@
 
             <div>
               <span>
-                Fixed panel cladding
+                Cladding
               </span>
 
               <strong id="fixedPanelCladdingMetres">
@@ -1270,7 +1345,7 @@
 
 
     <!-- ======================================================
-         LABOUR / TRAVEL / OTHER COSTS
+         LABOUR / TRAVEL / COSTS
     ======================================================= -->
 
     <details
@@ -1348,19 +1423,6 @@
         <div class="grid two">
 
           <label>
-            Concrete bags
-
-            <input
-              id="concreteBags"
-              type="number"
-              min="0"
-              step="1"
-              value="2"
-            />
-          </label>
-
-
-          <label>
             Travel distance (km)
 
             <input
@@ -1372,27 +1434,27 @@
             />
           </label>
 
+
+          <label>
+            Other direct costs inc GST
+
+            <input
+              id="otherCosts"
+              type="number"
+              min="0"
+              step="0.01"
+              value="0"
+            />
+          </label>
+
         </div>
 
 
         <label>
-          Extra material / hardware cost
+          Extra material / hardware inc GST
 
           <input
             id="extraHardware"
-            type="number"
-            min="0"
-            step="0.01"
-            value="0"
-          />
-        </label>
-
-
-        <label>
-          Other direct costs
-
-          <input
-            id="otherCosts"
             type="number"
             min="0"
             step="0.01"
@@ -1527,6 +1589,28 @@
           </strong>
         </div>
 
+
+        <div>
+          <span>
+            Project area
+          </span>
+
+          <strong id="projectAreaTotal">
+            0.00 m²
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Effective rate
+          </span>
+
+          <strong id="effectiveRate">
+            $0.00/m²
+          </strong>
+        </div>
+
       </div>
 
 
@@ -1623,18 +1707,32 @@
         <div class="quote-meta">
 
           <div>
-            <span>Project</span>
-            <strong id="quoteProjectNumber"></strong>
+            <span>
+              Project
+            </span>
+
+            <strong id="quoteProjectNumber">
+            </strong>
           </div>
 
-          <div>
-            <span>Customer</span>
-            <strong id="quoteCustomerName"></strong>
-          </div>
 
           <div>
-            <span>Site</span>
-            <strong id="quoteCustomerAddress"></strong>
+            <span>
+              Customer
+            </span>
+
+            <strong id="quoteCustomerName">
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              Site
+            </span>
+
+            <strong id="quoteCustomerAddress">
+            </strong>
           </div>
 
         </div>
@@ -1695,7 +1793,7 @@
 
 
     <!-- ======================================================
-         SEND / SAVE
+         ACTIONS
     ======================================================= -->
 
     <section class="card actions">
@@ -1754,12 +1852,248 @@
 
     </details>
 
+
   </main>
 
 
-  <script src="prices.js?v=130"></script>
-  <script src="app.js?v=130"></script>
+  <!-- ======================================================
+       POST TEMPLATE
+       JavaScript clones this for Post 1, Post 2, etc.
+  ======================================================= -->
+
+  <template id="postTemplate">
+
+    <div
+      class="post-card"
+      data-post-id=""
+    >
+
+      <div class="post-card-header">
+
+        <strong class="post-title">
+          Post
+        </strong>
+
+
+        <button
+          type="button"
+          class="remove-post-btn danger small"
+        >
+          Remove
+        </button>
+
+      </div>
+
+
+      <div class="grid two">
+
+        <label>
+          Position / description
+
+          <input
+            class="post-position"
+            type="text"
+            placeholder="e.g. Far left / house"
+          />
+        </label>
+
+
+        <label>
+          Post size
+
+          <select class="post-size">
+          </select>
+        </label>
+
+      </div>
+
+
+      <div class="grid two">
+
+        <label>
+          Height above ground (mm)
+
+          <input
+            class="post-height"
+            type="number"
+            min="0"
+            step="1"
+            value="1800"
+          />
+        </label>
+
+
+        <label>
+          Installation method
+
+          <select class="post-fixing">
+
+            <option value="concreted">
+              Concreted
+            </option>
+
+            <option value="brick">
+              Fixed to brickwork
+            </option>
+
+            <option value="fixedPanel">
+              Fixed panel post
+            </option>
+
+            <option value="existing">
+              Existing structure / no new post
+            </option>
+
+          </select>
+        </label>
+
+      </div>
+
+
+      <div
+        class="post-concrete-options"
+      >
+
+        <div class="grid two">
+
+          <label>
+            Embedment (mm)
+
+            <input
+              class="post-embed"
+              type="number"
+              min="0"
+              step="1"
+              value="600"
+            />
+          </label>
+
+
+          <label>
+            Concrete bags
+
+            <input
+              class="post-concrete-bags"
+              type="number"
+              min="0"
+              step="1"
+              value="2"
+            />
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="post-brick-options hidden"
+      >
+
+        <div class="grid two">
+
+          <label>
+            Dynabolt size
+
+            <select class="post-dynabolt-length">
+
+              <option value="50">
+                50 x 10mm
+              </option>
+
+              <option value="75">
+                75 x 10mm
+              </option>
+
+              <option value="90">
+                90 x 10mm
+              </option>
+
+            </select>
+          </label>
+
+
+          <label>
+            Existing surface height (mm)
+
+            <input
+              class="post-surface-height"
+              type="number"
+              min="0"
+              step="1"
+              value="1800"
+            />
+          </label>
+
+        </div>
+
+
+        <div class="hole-section">
+
+          <div class="hole-heading">
+
+            <strong>
+              Dynabolt holes from top
+            </strong>
+
+
+            <button
+              type="button"
+              class="add-hole-btn secondary small"
+            >
+              + Add Hole
+            </button>
+
+          </div>
+
+
+          <div class="hole-list">
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </template>
+
+
+  <!-- ======================================================
+       HOLE TEMPLATE
+  ======================================================= -->
+
+  <template id="holeTemplate">
+
+    <div class="hole-row">
+
+      <label>
+        Hole position (mm from top)
+
+        <input
+          class="hole-position"
+          type="number"
+          min="0"
+          step="1"
+          value="150"
+        />
+      </label>
+
+
+      <button
+        type="button"
+        class="remove-hole-btn danger small"
+      >
+        Remove
+      </button>
+
+    </div>
+
+  </template>
+
+
+  <script src="prices.js?v=140"></script>
+  <script src="app.js?v=140"></script>
 
 </body>
-
 </html>
