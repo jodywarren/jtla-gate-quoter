@@ -1,57 +1,37 @@
-# JTLA Gate Quoter
+# JTLA Gate Quoter V1.1
 
-Version 1 mobile-first gate quoting app.
+Changes in this version:
 
-## Files
+- Automation removed.
+- Three quote types: Single, Drive/Double, Slider.
+- Collapsible Customer Details, Gate Measurements, Gate Details, Materials, Fixings, Labour and Saved Quotes sections.
+- Customer name remains fixed near the top while scrolling.
+- Required fields start red and change to green when completed.
+- Six-digit project number validation.
+- Original cavity measurements plus left/right/bottom gaps and proposed gate dimensions.
+- Frame/post lengths calculated from proposed gate size.
+- Steel is calculated against 8 metre stock lengths with waste shown.
+- Cladding lineal metres calculated for vertical board products.
+- Ekodeck colours: Greystone, Alpine Ash, Leatherwood, Riverbank Red.
+- JTLA logo included.
+- Finished quote preview includes company details, customer, project number, scope and final price.
 
-- `index.html` - app layout
-- `style.css` - phone-friendly styling
-- `app.js` - quote calculations, saving, SMS/email/print
-- `prices.js` - editable business rates and material prices
-- `manifest.json` - installable web app settings
+## Pricing
 
-## IMPORTANT: EDIT PRICES FIRST
+Edit `prices.js` to enter your actual material prices.
 
-Open `prices.js`.
+Any material rate still shown as `0` is deliberately waiting for your real price.
 
-Any price currently set to `0` is a placeholder for you to fill in.
+## Updating GitHub
 
-Business rules already entered:
+Upload/replace these files in the root of your existing `jtla-gate-quoter` repository:
 
-- Labour: $60/hour
-- Material / bought-in markup: 20%
-- GST: 10%
-- Travel: first 20 km included, then $1.50/km
-- Concrete: $8/bag
-- Bolts: $2 each
-- Typical powder coating allowance: $250
-- Final price rounds UP to next $10
+- index.html
+- style.css
+- app.js
+- prices.js
+- manifest.json
+- README.md
+- jtla-logo.png
 
-## GitHub Pages
-
-1. Create a new GitHub repository.
-2. Upload all five app files to the root of the repository.
-3. Go to Settings > Pages.
-4. Under Build and deployment choose Deploy from a branch.
-5. Select `main` and `/ (root)`.
-6. Save.
-7. Open the GitHub Pages URL on your phone.
-
-## Saved Quotes
-
-Quotes save in the browser's local storage on the device you are using.
-
-They are not yet synced between phone and computer.
-
-## PDF
-
-The PDF / Print button opens the browser print system. On Android/iPhone/desktop you can choose Save as PDF or share the result.
-
-## Next logical upgrades
-
-- JTLA logo and matching Libre quote appearance
-- Proper PDF quote layout
-- Client-visible product colour swatches
-- Quote numbering rules
-- Import/export saved quotes
-- Link to your LibreOffice invoice workflow
+Keep your existing `.nojekyll` file in GitHub.
