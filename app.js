@@ -1,19 +1,19 @@
 // ============================================================
 // JTLA GATE QUOTER
-// V1.3
+// V1.4
 // app.js
 // ============================================================
 
 const $ = (id) => document.getElementById(id);
 
 let quoteType = "single";
-let selectedCladding = "ekodeck";
 let lastCalculation = null;
 let currentQuoteText = "";
+let postCounter = 0;
 
 
 // ============================================================
-// GENERAL HELPERS
+// BASIC HELPERS
 // ============================================================
 
 function money(value) {
@@ -34,22 +34,26 @@ function roundUp(value, increment) {
 
 
 function toExGST(price, includesGST) {
-  const amount = Number(price || 0);
+  const value = Number(price || 0);
 
-  if (includesGST) {
-    return amount / (1 + PRICES.business.gst);
+  if (!includesGST) {
+    return value;
   }
 
-  return amount;
+  return value / (1 + PRICES.business.gst);
 }
 
 
 function gateLeafCount() {
-  return quoteType === "double" ? 2 : 1;
+  if (quoteType === "double") {
+    return 2;
+  }
+
+  return 1;
 }
 
 
-function getQuoteTypeLabel() {
+function gateTypeLabel() {
   if (quoteType === "double") {
     return "Double gate";
   }
@@ -62,16 +66,31 @@ function getQuoteTypeLabel() {
 }
 
 
+function includeFrame() {
+  return $("includeFrame").checked;
+}
+
+
+function includePosts() {
+  return $("includePosts").checked;
+}
+
+
+function includeCladding() {
+  return $("includeCladding").checked;
+}
+
+
 // ============================================================
-// POPULATE DROP-DOWNS
+// BUILD STANDARD SELECTS
 // ============================================================
 
-function populateSelect(selectId, dataObject) {
+function populateSelect(selectId, data) {
   const select = $(selectId);
 
   select.innerHTML = "";
 
-  Object.entries(dataObject).forEach(([key, item]) => {
+  Object.entries(data).forEach(([key, item]) => {
     const option = document.createElement("option");
 
     option.value = key;
@@ -82,15 +101,29 @@ function populateSelect(selectId, dataObject) {
 }
 
 
+function populatePostSizeSelect(select) {
+  select.innerHTML = "";
+
+  Object.entries(PRICES.steel.posts)
+    .forEach(([key, post]) => {
+      const option =
+        document.createElement("option");
+
+      option.value = key;
+      option.textContent = post.label;
+
+      select.appendChild(option);
+    });
+
+  select.value =
+    PRICES.defaults.postType;
+}
+
+
 function setupPriceFields() {
   populateSelect(
     "frameSize",
     PRICES.steel.frame
-  );
-
-  populateSelect(
-    "postSize",
-    PRICES.steel.posts
   );
 
   populateSelect(
@@ -101,14 +134,14 @@ function setupPriceFields() {
   $("frameSize").value =
     PRICES.defaults.frame;
 
-  $("postSize").value =
-    PRICES.defaults.posts;
-
   $("latch").value =
     PRICES.defaults.latch;
 
-  $("postCount").value =
-    PRICES.defaults.postCount;
+  $("claddingType").value =
+    PRICES.defaults.cladding;
+
+  $("claddingDirection").value =
+    PRICES.defaults.claddingDirection;
 
   $("leftGap").value =
     PRICES.defaults.leftGapMm;
@@ -119,30 +152,30 @@ function setupPriceFields() {
   $("bottomGap").value =
     PRICES.defaults.bottomGapMm;
 
-  $("dynaboltLength").value =
-    PRICES.defaults.dynaboltLengthMm;
+  $("horizontalMidRails").value =
+    PRICES.defaults.horizontalMidRails;
+
+  $("verticalMidRails").value =
+    PRICES.defaults.verticalMidRails;
 
   $("powderCost").value =
     PRICES.finishing.powderCoat.typicalCost;
-
-  selectedCladding =
-    PRICES.defaults.cladding;
 }
 
 
 // ============================================================
-// CUSTOMER DISPLAY
+// CUSTOMER DISPLAY / VALIDATION
 // ============================================================
 
 function updateCustomerDisplay() {
-  const customer =
+  const name =
     $("customerName").value.trim();
 
   $("stickyCustomerName").textContent =
-    customer || "New Quote";
+    name || "New Quote";
 
   $("quoteCustomerName").textContent =
-    customer;
+    name;
 
   $("quoteCustomerAddress").textContent =
     $("siteAddress").value.trim();
@@ -152,17 +185,13 @@ function updateCustomerDisplay() {
 }
 
 
-// ============================================================
-// REQUIRED FIELD RED / GREEN
-// ============================================================
-
 function validateRequiredFields() {
-  const inputs =
+  const fields =
     document.querySelectorAll(
       ".required-field input"
     );
 
-  inputs.forEach((input) => {
+  fields.forEach((input) => {
     let valid = false;
 
     if (input.id === "projectNumber") {
@@ -220,9 +249,6 @@ function setQuoteType(type) {
       );
     });
 
-  // Starting labour only.
-  // These remain editable.
-
   if (type === "single") {
     $("fabricationHours").value = 4;
     $("installationHours").value = 2;
@@ -243,86 +269,532 @@ function setQuoteType(type) {
 
 
 // ============================================================
-// POST / FIXING HELPERS
+// INCLUDE FRAME / POSTS / CLADDING
 // ============================================================
 
-function selectedPostData() {
-  return PRICES.steel.posts[
-    $("postSize").value
-  ];
+function updateIncludeSections() {
+  $("frameSection")
+    .classList.toggle(
+      "hidden",
+      !includeFrame()
+    );
+
+  $("postsSection")
+    .classList.toggle(
+      "hidden",
+      !includePosts()
+    );
+
+  $("claddingSection")
+    .classList.toggle(
+      "hidden",
+      !includeCladding()
+    );
+
+  $("frameMaterialBlock")
+    .classList.toggle(
+      "hidden",
+      !includeFrame()
+    );
+
+  $("postMaterialBlock")
+    .classList.toggle(
+      "hidden",
+      !includePosts()
+    );
+
+  $("claddingMaterialBlock")
+    .classList.toggle(
+      "hidden",
+      !includeCladding()
+    );
 }
 
 
-function selectedFrameData() {
-  return PRICES.steel.frame[
-    $("frameSize").value
-  ];
-}
+// ============================================================
+// DYNAMIC POSTS
+// ============================================================
+
+function createPost(options = {}) {
+  postCounter++;
+
+  const template =
+    $("postTemplate");
+
+  const fragment =
+    template.content.cloneNode(true);
+
+  const card =
+    fragment.querySelector(".post-card");
+
+  card.dataset.postId =
+    String(postCounter);
+
+  const title =
+    fragment.querySelector(".post-title");
+
+  title.textContent =
+    `Post ${postCounter}`;
 
 
-function postWidthForSide(side) {
-  const fixing =
-    side === "left"
-      ? $("leftPostFixing").value
-      : $("rightPostFixing").value;
+  // --------------------------------------------------------
+  // POST SIZE
+  // --------------------------------------------------------
 
-  if (
-    fixing === "none" ||
-    fixing === "existing"
-  ) {
-    return 0;
+  const postSize =
+    fragment.querySelector(".post-size");
+
+  populatePostSizeSelect(postSize);
+
+  if (options.postSize) {
+    postSize.value =
+      options.postSize;
   }
 
-  return Number(
-    selectedPostData().widthMm || 0
+
+  // --------------------------------------------------------
+  // POSITION
+  // --------------------------------------------------------
+
+  const position =
+    fragment.querySelector(".post-position");
+
+  position.value =
+    options.position || "";
+
+
+  // --------------------------------------------------------
+  // HEIGHT
+  // --------------------------------------------------------
+
+  const height =
+    fragment.querySelector(".post-height");
+
+  height.value =
+    options.height || 1800;
+
+
+  // --------------------------------------------------------
+  // FIXING
+  // --------------------------------------------------------
+
+  const fixing =
+    fragment.querySelector(".post-fixing");
+
+  fixing.value =
+    options.fixing || "concreted";
+
+
+  // --------------------------------------------------------
+  // EMBEDMENT
+  // --------------------------------------------------------
+
+  const embed =
+    fragment.querySelector(".post-embed");
+
+  embed.value =
+    options.embed ??
+    PRICES.defaults.postEmbedMm;
+
+
+  // --------------------------------------------------------
+  // CONCRETE
+  // --------------------------------------------------------
+
+  const concreteBags =
+    fragment.querySelector(
+      ".post-concrete-bags"
+    );
+
+  concreteBags.value =
+    options.concreteBags ??
+    PRICES.postFixing.concrete
+      .defaultBagsPerPost;
+
+
+  // --------------------------------------------------------
+  // DYNABOLT
+  // --------------------------------------------------------
+
+  const dynabolt =
+    fragment.querySelector(
+      ".post-dynabolt-length"
+    );
+
+  dynabolt.value =
+    options.dynaboltLength ??
+    PRICES.defaults.dynaboltLengthMm;
+
+
+  // --------------------------------------------------------
+  // EXISTING SURFACE HEIGHT
+  // --------------------------------------------------------
+
+  const surfaceHeight =
+    fragment.querySelector(
+      ".post-surface-height"
+    );
+
+  surfaceHeight.value =
+    options.surfaceHeight ||
+    options.height ||
+    1800;
+
+
+  $("postsContainer")
+    .appendChild(fragment);
+
+  const insertedCard =
+    $("postsContainer")
+      .lastElementChild;
+
+
+  // --------------------------------------------------------
+  // RESTORE / DEFAULT HOLES
+  // --------------------------------------------------------
+
+  const holes =
+    Array.isArray(options.holes)
+      ? options.holes
+      : [];
+
+  if (holes.length) {
+    holes.forEach((hole) => {
+      addHole(insertedCard, hole);
+    });
+  }
+
+  else if (
+    fixing.value === "brick"
+  ) {
+    addHole(insertedCard, 150);
+    addHole(insertedCard, 700);
+    addHole(insertedCard, 1700);
+  }
+
+
+  setupPostCardEvents(
+    insertedCard
+  );
+
+  updatePostCardVisibility(
+    insertedCard
+  );
+
+  renumberPosts();
+
+  calculateProposedGateSize();
+}
+
+
+function renumberPosts() {
+  const cards =
+    getPostCards();
+
+  cards.forEach((card, index) => {
+    card.querySelector(
+      ".post-title"
+    ).textContent =
+      `Post ${index + 1}`;
+  });
+}
+
+
+function getPostCards() {
+  return [
+    ...document.querySelectorAll(
+      "#postsContainer .post-card"
+    )
+  ];
+}
+
+
+// ============================================================
+// POST HOLES
+// ============================================================
+
+function addHole(card, value = 150) {
+  const template =
+    $("holeTemplate");
+
+  const fragment =
+    template.content.cloneNode(true);
+
+  const input =
+    fragment.querySelector(
+      ".hole-position"
+    );
+
+  input.value = value;
+
+  const list =
+    card.querySelector(
+      ".hole-list"
+    );
+
+  list.appendChild(fragment);
+
+  const row =
+    list.lastElementChild;
+
+  row.querySelector(
+    ".remove-hole-btn"
+  ).addEventListener(
+    "click",
+    () => {
+      row.remove();
+      calculateQuote();
+    }
+  );
+
+  input.addEventListener(
+    "input",
+    calculateQuote
   );
 }
 
 
-function countKnownConcretedPosts() {
-  let count = 0;
+// ============================================================
+// POST CARD EVENTS
+// ============================================================
 
-  if (
-    $("leftPostFixing").value ===
-    "concreted"
-  ) {
-    count++;
-  }
-
-  if (
-    $("rightPostFixing").value ===
-    "concreted"
-  ) {
-    count++;
-  }
-
-  const totalPosts =
-    Number($("postCount").value || 0);
-
-  // Any additional posts beyond the left/right
-  // gate posts are assumed concreted.
-  // This suits fixed panels and larger jobs.
-
-  const extraPosts =
-    Math.max(
-      0,
-      totalPosts - 2
+function setupPostCardEvents(card) {
+  const fixing =
+    card.querySelector(
+      ".post-fixing"
     );
 
-  count += extraPosts;
+  fixing.addEventListener(
+    "change",
+    () => {
+      updatePostCardVisibility(card);
 
-  return count;
+      const holeList =
+        card.querySelector(
+          ".hole-list"
+        );
+
+      if (
+        fixing.value === "brick" &&
+        holeList.children.length === 0
+      ) {
+        addHole(card, 150);
+        addHole(card, 700);
+        addHole(card, 1700);
+      }
+
+      calculateProposedGateSize();
+    }
+  );
+
+
+  card.querySelector(
+    ".add-hole-btn"
+  ).addEventListener(
+    "click",
+    () => {
+      addHole(card, 150);
+    }
+  );
+
+
+  card.querySelector(
+    ".remove-post-btn"
+  ).addEventListener(
+    "click",
+    () => {
+      card.remove();
+
+      renumberPosts();
+
+      calculateProposedGateSize();
+    }
+  );
+
+
+  card.querySelectorAll(
+    "input, select"
+  ).forEach((element) => {
+    element.addEventListener(
+      "input",
+      calculateQuote
+    );
+
+    element.addEventListener(
+      "change",
+      () => {
+        calculateProposedGateSize();
+      }
+    );
+  });
 }
 
 
-function updateConcreteBagSuggestion() {
-  const concretedPosts =
-    countKnownConcretedPosts();
+function updatePostCardVisibility(card) {
+  const fixing =
+    card.querySelector(
+      ".post-fixing"
+    ).value;
 
-  $("concreteBags").value =
-    concretedPosts *
-    PRICES.fixings.concrete
-      .defaultBagsPerPost;
+  const concrete =
+    card.querySelector(
+      ".post-concrete-options"
+    );
+
+  const brick =
+    card.querySelector(
+      ".post-brick-options"
+    );
+
+  const needsConcrete =
+    fixing === "concreted" ||
+    fixing === "fixedPanel";
+
+  concrete.classList.toggle(
+    "hidden",
+    !needsConcrete
+  );
+
+  brick.classList.toggle(
+    "hidden",
+    fixing !== "brick"
+  );
+}
+
+
+// ============================================================
+// READ POSTS INTO DATA
+// ============================================================
+
+function collectPosts() {
+  if (!includePosts()) {
+    return [];
+  }
+
+  return getPostCards()
+    .map((card, index) => {
+      const fixing =
+        card.querySelector(
+          ".post-fixing"
+        ).value;
+
+      const postKey =
+        card.querySelector(
+          ".post-size"
+        ).value;
+
+      const postData =
+        PRICES.steel.posts[
+          postKey
+        ];
+
+      const height =
+        Number(
+          card.querySelector(
+            ".post-height"
+          ).value || 0
+        );
+
+      const embed =
+        Number(
+          card.querySelector(
+            ".post-embed"
+          ).value || 0
+        );
+
+      const concreteBags =
+        Number(
+          card.querySelector(
+            ".post-concrete-bags"
+          ).value || 0
+        );
+
+      const dynaboltLength =
+        Number(
+          card.querySelector(
+            ".post-dynabolt-length"
+          ).value || 0
+        );
+
+      const holes = [
+        ...card.querySelectorAll(
+          ".hole-position"
+        )
+      ].map((input) =>
+        Number(input.value || 0)
+      );
+
+      const isExisting =
+        fixing === "existing";
+
+      const totalLengthMm =
+        isExisting
+          ? 0
+          : height +
+            (
+              fixing === "concreted" ||
+              fixing === "fixedPanel"
+                ? embed
+                : 0
+            );
+
+      return {
+        number: index + 1,
+
+        position:
+          card.querySelector(
+            ".post-position"
+          ).value.trim(),
+
+        postKey,
+
+        postLabel:
+          postData.label,
+
+        postWidthMm:
+          Number(
+            postData.widthMm || 0
+          ),
+
+        heightMm:
+          height,
+
+        fixing,
+
+        embedMm:
+          embed,
+
+        concreteBags,
+
+        dynaboltLengthMm:
+          dynaboltLength,
+
+        holes,
+
+        totalLengthMm,
+
+        isExisting
+      };
+    });
+}
+
+
+// ============================================================
+// POSTS THAT OCCUPY THE CAVITY
+// ============================================================
+
+function calculatePostCavityDeduction(posts) {
+  return posts.reduce(
+    (total, post) => {
+      if (post.isExisting) {
+        return total;
+      }
+
+      return total +
+        post.postWidthMm;
+    },
+    0
+  );
 }
 
 
@@ -332,47 +804,57 @@ function updateConcreteBagSuggestion() {
 
 function calculateProposedGateSize() {
   const cavityWidth =
-    Number($("cavityWidth").value || 0);
+    Number(
+      $("cavityWidth").value || 0
+    );
 
   const cavityHeight =
-    Number($("cavityHeight").value || 0);
+    Number(
+      $("cavityHeight").value || 0
+    );
 
   const leftGap =
-    Number($("leftGap").value || 0);
+    Number(
+      $("leftGap").value || 0
+    );
 
   const rightGap =
-    Number($("rightGap").value || 0);
+    Number(
+      $("rightGap").value || 0
+    );
 
   const bottomGap =
-    Number($("bottomGap").value || 0);
+    Number(
+      $("bottomGap").value || 0
+    );
 
-  const leftPostWidth =
-    postWidthForSide("left");
+  const posts =
+    collectPosts();
 
-  const rightPostWidth =
-    postWidthForSide("right");
+  const postDeduction =
+    includePosts()
+      ? calculatePostCavityDeduction(
+          posts
+        )
+      : 0;
 
-  let fixedPanelWidth = 0;
-
-  if (
+  const fixedPanelWidth =
     $("fixedPanelOption").value !==
     "none"
-  ) {
-    fixedPanelWidth =
-      Number(
-        $("fixedPanelWidth").value || 0
-      );
-  }
+      ? Number(
+          $("fixedPanelWidth")
+            .value || 0
+        )
+      : 0;
 
   const proposedWidth =
     Math.max(
       0,
       cavityWidth -
-      leftPostWidth -
-      rightPostWidth -
+      postDeduction -
+      fixedPanelWidth -
       leftGap -
-      rightGap -
-      fixedPanelWidth
+      rightGap
     );
 
   const proposedHeight =
@@ -392,123 +874,178 @@ function calculateProposedGateSize() {
       Math.round(proposedHeight);
   }
 
+  updateMeasurementBreakdown(
+    cavityWidth,
+    postDeduction,
+    fixedPanelWidth,
+    leftGap,
+    rightGap,
+    proposedWidth
+  );
+
   calculateQuote();
 }
 
 
 // ============================================================
-// CLADDING MENU
+// MEASUREMENT BREAKDOWN
 // ============================================================
 
-function setupCladdingMenu() {
-  $("claddingButton")
-    .addEventListener(
-      "click",
-      () => {
-        $("claddingMenu")
-          .classList.toggle("hidden");
-      }
-    );
+function updateMeasurementBreakdown(
+  cavityWidth,
+  postDeduction,
+  fixedPanelWidth,
+  leftGap,
+  rightGap,
+  proposedWidth
+) {
+  const rows = [];
 
-  document
-    .querySelectorAll(
-      "[data-cladding]"
-    )
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        () => {
-          selectedCladding =
-            button.dataset.cladding;
+  rows.push(`
+    <div>
+      <span>Original cavity</span>
+      <strong>${cavityWidth} mm</strong>
+    </div>
+  `);
 
-          updateCladdingDisplay();
+  if (
+    includePosts() &&
+    postDeduction > 0
+  ) {
+    rows.push(`
+      <div>
+        <span>Posts</span>
+        <strong>− ${postDeduction} mm</strong>
+      </div>
+    `);
+  }
 
-          $("claddingMenu")
-            .classList.add("hidden");
+  if (fixedPanelWidth > 0) {
+    rows.push(`
+      <div>
+        <span>Fixed panel</span>
+        <strong>− ${fixedPanelWidth} mm</strong>
+      </div>
+    `);
+  }
 
-          calculateQuote();
-        }
-      );
-    });
+  rows.push(`
+    <div>
+      <span>Left clearance</span>
+      <strong>− ${leftGap} mm</strong>
+    </div>
+  `);
 
-  updateCladdingDisplay();
+  rows.push(`
+    <div>
+      <span>Right clearance</span>
+      <strong>− ${rightGap} mm</strong>
+    </div>
+  `);
+
+  rows.push(`
+    <div class="measurement-total">
+      <span>Proposed gate width</span>
+      <strong>${Math.round(proposedWidth)} mm</strong>
+    </div>
+  `);
+
+  $("measurementBreakdown")
+    .innerHTML =
+    rows.join("");
 }
 
 
-function updateCladdingDisplay() {
-  const data =
-    PRICES.cladding[
-      selectedCladding
-    ];
+// ============================================================
+// CLADDING OPTIONS
+// ============================================================
 
-  $("claddingButtonText")
-    .textContent =
-    data
-      ? data.label
-      : "Custom / Other";
+function updateCladdingOptions() {
+  const type =
+    $("claddingType").value;
 
   $("ekodeckOptions")
     .classList.toggle(
       "hidden",
-      selectedCladding !== "ekodeck"
+      type !== "ekodeck"
     );
 
   $("cypressOptions")
     .classList.toggle(
       "hidden",
-      selectedCladding !==
+      type !==
       "cypressPickets"
+    );
+
+  $("lospOptions")
+    .classList.toggle(
+      "hidden",
+      ![
+        "losp50",
+        "losp90"
+      ].includes(type)
+    );
+
+  $("merbauOptions")
+    .classList.toggle(
+      "hidden",
+      ![
+        "merbau90",
+        "merbau140"
+      ].includes(type)
     );
 
   $("colorbondOptions")
     .classList.toggle(
       "hidden",
-      selectedCladding !==
-      "colorbond"
+      type !== "colorbond"
     );
 
   $("customCladdingOptions")
     .classList.toggle(
       "hidden",
-      selectedCladding !==
-      "custom"
+      type !== "custom"
+    );
+
+  $("cypressPaintColourWrap")
+    .classList.toggle(
+      "hidden",
+      $("cypressFinish").value !==
+      "Paint"
+    );
+
+  $("lospPaintColourWrap")
+    .classList.toggle(
+      "hidden",
+      $("lospFinish").value !==
+      "Paint"
     );
 }
 
 
 // ============================================================
-// CONDITIONAL SECTIONS
+// OTHER CONDITIONAL SECTIONS
 // ============================================================
 
 function updateConditionalSections() {
-  const leftFix =
-    $("leftPostFixing").value;
+  updateIncludeSections();
 
-  const rightFix =
-    $("rightPostFixing").value;
+  updateCladdingOptions();
 
-  const needsDynabolts =
-    leftFix === "brick" ||
-    rightFix === "brick";
-
-  $("dynaboltOptions")
-    .classList.toggle(
-      "hidden",
-      !needsDynabolts
-    );
+  const hasFixedPanel =
+    $("fixedPanelOption").value !==
+    "none";
 
   $("fixedPanelOptions")
     .classList.toggle(
       "hidden",
-      $("fixedPanelOption").value ===
-      "none"
+      !hasFixedPanel
     );
 
   $("fixedPanelMaterialSummary")
     .classList.toggle(
       "hidden",
-      $("fixedPanelOption").value ===
-      "none"
+      !hasFixedPanel
     );
 
   $("powderOptions")
@@ -516,39 +1053,73 @@ function updateConditionalSections() {
       "hidden",
       !$("powderCoat").checked
     );
-
-  $("midRailResult")
-    .classList.toggle(
-      "hidden",
-      $("midRailOption").value ===
-      "none"
-    );
 }
 
 
 // ============================================================
-// STOCK CUTTING / WASTE
-// Simple best-fit decreasing calculation.
-// More accurate than simply total metres / stock length.
+// STOCK CUT OPTIMISER
 // ============================================================
 
-function calculateStockFromPieces(
-  piecesMetres,
-  stockLengthM
+function splitLongPieces(
+  pieces,
+  stockLength
 ) {
-  const pieces =
-    piecesMetres
-      .filter((piece) => piece > 0)
-      .sort((a, b) => b - a);
+  const output = [];
 
-  if (!pieces.length) {
+  pieces.forEach((piece) => {
+    let remaining = piece;
+
+    while (
+      remaining >
+      stockLength + 0.000001
+    ) {
+      output.push(stockLength);
+      remaining -= stockLength;
+    }
+
+    if (remaining > 0.000001) {
+      output.push(remaining);
+    }
+  });
+
+  return output;
+}
+
+
+function calculateStockFromPieces(
+  originalPieces,
+  stockLength
+) {
+  if (
+    !stockLength ||
+    stockLength <= 0
+  ) {
+    const total =
+      originalPieces.reduce(
+        (sum, value) =>
+          sum + value,
+        0
+      );
+
     return {
       stockLengths: 0,
-      purchasedMetres: 0,
-      usedMetres: 0,
+      purchasedMetres: total,
+      usedMetres: total,
       wasteMetres: 0
     };
   }
+
+  const pieces =
+    splitLongPieces(
+      originalPieces,
+      stockLength
+    )
+      .filter(
+        (piece) => piece > 0
+      )
+      .sort(
+        (a, b) => b - a
+      );
 
   const bins = [];
 
@@ -562,7 +1133,7 @@ function calculateStockFromPieces(
     ) {
       if (
         bins[i] + piece <=
-        stockLengthM + 0.000001
+        stockLength + 0.000001
       ) {
         bins[i] += piece;
         placed = true;
@@ -583,294 +1154,231 @@ function calculateStockFromPieces(
     );
 
   const purchasedMetres =
-    bins.length * stockLengthM;
+    bins.length *
+    stockLength;
 
   return {
-    stockLengths: bins.length,
+    stockLengths:
+      bins.length,
+
     purchasedMetres,
+
     usedMetres,
+
     wasteMetres:
-      purchasedMetres -
-      usedMetres
-  };
-}
-
-
-// ============================================================
-// MID RAIL
-// ============================================================
-
-function calculateMidRail(
-  gateWidthMm,
-  gateHeightMm
-) {
-  const option =
-    $("midRailOption").value;
-
-  const frame =
-    selectedFrameData();
-
-  const frameFace =
-    Number(frame.faceMm || 0);
-
-  const leaves =
-    gateLeafCount();
-
-  if (option === "none") {
-    $("midRailLength").textContent =
-      "0 mm";
-
-    return {
-      piecesMm: [],
-      totalM: 0
-    };
-  }
-
-  let railLength = 0;
-
-  if (option === "vertical") {
-    railLength =
       Math.max(
         0,
-        gateHeightMm -
-        (frameFace * 2)
-      );
-  }
-
-  else if (option === "horizontal") {
-    const leafWidth =
-      gateWidthMm / leaves;
-
-    railLength =
-      Math.max(
-        0,
-        leafWidth -
-        (frameFace * 2)
-      );
-  }
-
-  const piecesMm =
-    Array(leaves)
-      .fill(railLength);
-
-  const totalM =
-    piecesMm.reduce(
-      (sum, value) =>
-        sum + value,
-      0
-    ) / 1000;
-
-  if (leaves > 1) {
-    $("midRailLength").textContent =
-      `${Math.round(railLength)} mm × ${leaves}`;
-  }
-
-  else {
-    $("midRailLength").textContent =
-      `${Math.round(railLength)} mm`;
-  }
-
-  return {
-    piecesMm,
-    totalM
+        purchasedMetres -
+        usedMetres
+      )
   };
 }
 
 
 // ============================================================
-// FRAME STEEL
+// FRAME CALCULATION
 // ============================================================
 
-function calculateGateFrame(
+function calculateFrame(
   gateWidthMm,
   gateHeightMm,
-  midRail
-) {
-  const leaves =
-    gateLeafCount();
-
-  const framePiecesMm = [];
-
-  if (quoteType === "double") {
-    const leafWidth =
-      gateWidthMm / 2;
-
-    for (
-      let i = 0;
-      i < 2;
-      i++
-    ) {
-      framePiecesMm.push(
-        leafWidth,
-        leafWidth,
-        gateHeightMm,
-        gateHeightMm
-      );
-    }
-  }
-
-  else {
-    framePiecesMm.push(
-      gateWidthMm,
-      gateWidthMm,
-      gateHeightMm,
-      gateHeightMm
-    );
-  }
-
-  const perimeterM =
-    framePiecesMm.reduce(
-      (sum, piece) =>
-        sum + piece,
-      0
-    ) / 1000;
-
-  const allPiecesM = [
-    ...framePiecesMm,
-    ...midRail.piecesMm
-  ].map(
-    (value) =>
-      value / 1000
-  );
-
-  const frameData =
-    selectedFrameData();
-
-  const stock =
-    calculateStockFromPieces(
-      allPiecesM,
-      frameData.stockLengthM
-    );
-
-  const rawStockCost =
-    stock.stockLengths *
-    Number(frameData.price || 0);
-
-  const costExGST =
-    toExGST(
-      rawStockCost,
-      frameData.priceIncludesGST
-    );
-
-  return {
-    perimeterM,
-    midRailM: midRail.totalM,
-    totalUsedM: stock.usedMetres,
-    stockLengths: stock.stockLengths,
-    purchasedMetres:
-      stock.purchasedMetres,
-    wasteM:
-      stock.wasteMetres,
-    costExGST
-  };
-}
-
-
-// ============================================================
-// FIXED PANEL FRAME
-// ============================================================
-
-function calculateFixedPanelFrame() {
-  if (
-    $("fixedPanelOption").value ===
-    "none"
-  ) {
-    return {
-      widthMm: 0,
-      heightMm: 0,
-      areaM2: 0,
-      frameM: 0,
-      piecesM: []
-    };
-  }
-
-  const widthMm =
-    Number(
-      $("fixedPanelWidth").value || 0
-    );
-
-  const heightMm =
-    Number(
-      $("fixedPanelHeight").value || 0
-    );
-
-  const piecesM = [
-    widthMm / 1000,
-    widthMm / 1000,
-    heightMm / 1000,
-    heightMm / 1000
-  ];
-
-  const frameM =
-    piecesM.reduce(
-      (sum, item) =>
-        sum + item,
-      0
-    );
-
-  return {
-    widthMm,
-    heightMm,
-    areaM2:
-      (widthMm / 1000) *
-      (heightMm / 1000),
-    frameM,
-    piecesM
-  };
-}
-
-
-// ============================================================
-// COMBINED FRAME INCLUDING FIXED PANEL
-// ============================================================
-
-function calculateCombinedFrame(
-  gateWidthMm,
-  gateHeightMm,
-  midRail,
   fixedPanel
 ) {
-  const gatePiecesMm = [];
+  if (!includeFrame()) {
+    return {
+      perimeterM: 0,
+      horizontalRailM: 0,
+      verticalRailM: 0,
+      fixedPanelFrameM: 0,
+      totalUsedM: 0,
+      stockLengths: 0,
+      purchasedM: 0,
+      wasteM: 0,
+      costExGST: 0
+    };
+  }
+
+  const frameKey =
+    $("frameSize").value;
+
+  const frame =
+    PRICES.steel.frame[
+      frameKey
+    ];
+
+  const face =
+    Number(
+      frame.faceMm || 0
+    );
+
+  const leaves =
+    gateLeafCount();
+
+  const piecesM = [];
+
+  let perimeterM = 0;
+
+
+  // --------------------------------------------------------
+  // GATE PERIMETER
+  // --------------------------------------------------------
 
   if (quoteType === "double") {
-    const leafWidth =
+    const leafWidthMm =
       gateWidthMm / 2;
 
-    for (
-      let i = 0;
-      i < 2;
-      i++
-    ) {
-      gatePiecesMm.push(
-        leafWidth,
-        leafWidth,
-        gateHeightMm,
-        gateHeightMm
+    for (let i = 0; i < 2; i++) {
+      piecesM.push(
+        leafWidthMm / 1000,
+        leafWidthMm / 1000,
+        gateHeightMm / 1000,
+        gateHeightMm / 1000
       );
     }
+
+    perimeterM =
+      (
+        gateWidthMm * 2 +
+        gateHeightMm * 4
+      ) / 1000;
   }
 
   else {
-    gatePiecesMm.push(
-      gateWidthMm,
-      gateWidthMm,
-      gateHeightMm,
-      gateHeightMm
+    piecesM.push(
+      gateWidthMm / 1000,
+      gateWidthMm / 1000,
+      gateHeightMm / 1000,
+      gateHeightMm / 1000
     );
+
+    perimeterM =
+      (
+        gateWidthMm * 2 +
+        gateHeightMm * 2
+      ) / 1000;
   }
 
-  const piecesM = [
-    ...gatePiecesMm.map(
-      (item) => item / 1000
-    ),
-    ...midRail.piecesMm.map(
-      (item) => item / 1000
-    ),
-    ...fixedPanel.piecesM
-  ];
 
-  const frame =
-    selectedFrameData();
+  // --------------------------------------------------------
+  // HORIZONTAL MID RAILS
+  // --------------------------------------------------------
+
+  const horizontalCount =
+    Number(
+      $("horizontalMidRails")
+        .value || 0
+    );
+
+  const leafWidthMm =
+    gateWidthMm / leaves;
+
+  const horizontalOneMm =
+    Math.max(
+      0,
+      leafWidthMm -
+      (face * 2)
+    );
+
+  let horizontalRailM = 0;
+
+  for (
+    let leaf = 0;
+    leaf < leaves;
+    leaf++
+  ) {
+    for (
+      let rail = 0;
+      rail < horizontalCount;
+      rail++
+    ) {
+      piecesM.push(
+        horizontalOneMm /
+        1000
+      );
+
+      horizontalRailM +=
+        horizontalOneMm /
+        1000;
+    }
+  }
+
+
+  // --------------------------------------------------------
+  // VERTICAL MID RAILS
+  // --------------------------------------------------------
+
+  const verticalCount =
+    Number(
+      $("verticalMidRails")
+        .value || 0
+    );
+
+  const verticalOneMm =
+    Math.max(
+      0,
+      gateHeightMm -
+      (face * 2)
+    );
+
+  let verticalRailM = 0;
+
+  for (
+    let leaf = 0;
+    leaf < leaves;
+    leaf++
+  ) {
+    for (
+      let rail = 0;
+      rail < verticalCount;
+      rail++
+    ) {
+      piecesM.push(
+        verticalOneMm /
+        1000
+      );
+
+      verticalRailM +=
+        verticalOneMm /
+        1000;
+    }
+  }
+
+
+  // --------------------------------------------------------
+  // FIXED PANEL FRAME
+  // --------------------------------------------------------
+
+  let fixedPanelFrameM = 0;
+
+  if (
+    fixedPanel.exists &&
+    fixedPanel.widthMm > 0 &&
+    fixedPanel.heightMm > 0
+  ) {
+    const w =
+      fixedPanel.widthMm /
+      1000;
+
+    const h =
+      fixedPanel.heightMm /
+      1000;
+
+    piecesM.push(
+      w,
+      w,
+      h,
+      h
+    );
+
+    fixedPanelFrameM =
+      w * 2 +
+      h * 2;
+  }
+
+
+  // --------------------------------------------------------
+  // STOCK
+  // --------------------------------------------------------
 
   const stock =
     calculateStockFromPieces(
@@ -880,17 +1388,31 @@ function calculateCombinedFrame(
 
   const rawCost =
     stock.stockLengths *
-    Number(frame.price || 0);
+    Number(
+      frame.price || 0
+    );
 
   return {
+    perimeterM,
+
+    horizontalRailM,
+
+    verticalRailM,
+
+    fixedPanelFrameM,
+
+    totalUsedM:
+      stock.usedMetres,
+
     stockLengths:
       stock.stockLengths,
-    purchasedMetres:
+
+    purchasedM:
       stock.purchasedMetres,
-    usedMetres:
-      stock.usedMetres,
+
     wasteM:
       stock.wasteMetres,
+
     costExGST:
       toExGST(
         rawCost,
@@ -901,142 +1423,312 @@ function calculateCombinedFrame(
 
 
 // ============================================================
-// POSTS
+// POST MATERIAL
 // ============================================================
 
-function calculatePostMaterial(
-  gateHeightMm
-) {
-  const post =
-    selectedPostData();
-
-  if (
-    $("postSize").value === "none"
-  ) {
+function calculatePosts(posts) {
+  if (!includePosts()) {
     return {
-      piecesM: [],
       requiredM: 0,
       stockLengths: 0,
       purchasedM: 0,
       wasteM: 0,
-      costExGST: 0
+      costExGST: 0,
+      concreteCostExGST: 0,
+      dynaboltCostExGST: 0,
+      concreteBags: 0,
+      dynabolts: 0
     };
   }
 
-  const totalCount =
-    Number(
-      $("postCount").value || 0
+  const grouped = {};
+
+  let concreteBags = 0;
+  let dynabolts = 0;
+
+
+  // --------------------------------------------------------
+  // GROUP POSTS BY STEEL SIZE
+  // --------------------------------------------------------
+
+  posts.forEach((post) => {
+    if (post.isExisting) {
+      return;
+    }
+
+    if (
+      !grouped[post.postKey]
+    ) {
+      grouped[post.postKey] = [];
+    }
+
+    grouped[
+      post.postKey
+    ].push(
+      post.totalLengthMm /
+      1000
     );
 
-  if (totalCount <= 0) {
-    return {
-      piecesM: [],
-      requiredM: 0,
-      stockLengths: 0,
-      purchasedM: 0,
-      wasteM: 0,
-      costExGST: 0
-    };
-  }
+    if (
+      post.fixing ===
+      "concreted" ||
+      post.fixing ===
+      "fixedPanel"
+    ) {
+      concreteBags +=
+        post.concreteBags;
+    }
 
-  const piecesM = [];
+    if (
+      post.fixing === "brick"
+    ) {
+      dynabolts +=
+        post.holes.length;
+    }
+  });
 
-  const embedM =
-    PRICES.defaults.postEmbedMm /
-    1000;
 
-  const aboveGroundM =
-    gateHeightMm / 1000;
+  // --------------------------------------------------------
+  // STEEL COSTS
+  // --------------------------------------------------------
 
-  // Left post
+  let requiredM = 0;
+  let purchasedM = 0;
+  let wasteM = 0;
+  let stockLengths = 0;
+  let costExGST = 0;
 
-  if (
-    totalCount >= 1 &&
-    $("leftPostFixing").value !==
-    "none" &&
-    $("leftPostFixing").value !==
-    "existing"
-  ) {
-    piecesM.push(
-      aboveGroundM +
-      (
-        $("leftPostFixing").value ===
-        "concreted"
-          ? embedM
-          : 0
-      )
+  Object.entries(
+    grouped
+  ).forEach(
+    ([postKey, pieces]) => {
+      const post =
+        PRICES.steel.posts[
+          postKey
+        ];
+
+      const stock =
+        calculateStockFromPieces(
+          pieces,
+          post.stockLengthM
+        );
+
+      requiredM +=
+        stock.usedMetres;
+
+      purchasedM +=
+        stock.purchasedMetres;
+
+      wasteM +=
+        stock.wasteMetres;
+
+      stockLengths +=
+        stock.stockLengths;
+
+      const rawCost =
+        stock.stockLengths *
+        Number(
+          post.price || 0
+        );
+
+      costExGST +=
+        toExGST(
+          rawCost,
+          post.priceIncludesGST
+        );
+    }
+  );
+
+
+  // --------------------------------------------------------
+  // CONCRETE
+  // --------------------------------------------------------
+
+  const concreteRaw =
+    concreteBags *
+    PRICES.postFixing.concrete
+      .pricePerBag;
+
+  const concreteCostExGST =
+    toExGST(
+      concreteRaw,
+      PRICES.postFixing.concrete
+        .priceIncludesGST
     );
-  }
 
-  // Right post
 
-  if (
-    totalCount >= 2 &&
-    $("rightPostFixing").value !==
-    "none" &&
-    $("rightPostFixing").value !==
-    "existing"
-  ) {
-    piecesM.push(
-      aboveGroundM +
-      (
-        $("rightPostFixing").value ===
-        "concreted"
-          ? embedM
-          : 0
-      )
-    );
-  }
+  // --------------------------------------------------------
+  // DYNABOLTS
+  // --------------------------------------------------------
 
-  // Any additional posts are treated as concreted.
+  const boltRaw =
+    dynabolts *
+    PRICES.postFixing.dynabolts
+      .priceEach;
 
-  const alreadyProcessed =
-    Math.min(totalCount, 2);
-
-  for (
-    let i = alreadyProcessed;
-    i < totalCount;
-    i++
-  ) {
-    piecesM.push(
-      aboveGroundM + embedM
-    );
-  }
-
-  const stock =
-    calculateStockFromPieces(
-      piecesM,
-      post.stockLengthM
+  const dynaboltCostExGST =
+    toExGST(
+      boltRaw,
+      PRICES.postFixing.dynabolts
+        .priceIncludesGST
     );
 
-  const rawCost =
-    stock.stockLengths *
-    Number(post.price || 0);
 
   return {
-    piecesM,
-    requiredM:
-      stock.usedMetres,
-    stockLengths:
-      stock.stockLengths,
-    purchasedM:
-      stock.purchasedMetres,
-    wasteM:
-      stock.wasteMetres,
-    costExGST:
-      toExGST(
-        rawCost,
-        post.priceIncludesGST
-      )
+    requiredM,
+    stockLengths,
+    purchasedM,
+    wasteM,
+    costExGST,
+    concreteCostExGST,
+    dynaboltCostExGST,
+    concreteBags,
+    dynabolts
   };
 }
 
 
 // ============================================================
-// BOARD CLADDING CALCULATOR
+// POST CUT LIST
 // ============================================================
 
-function calculateBoardCladding({
+function updatePostCutList(posts) {
+  if (
+    !includePosts() ||
+    posts.length === 0
+  ) {
+    $("postCutList")
+      .innerHTML = "";
+
+    return;
+  }
+
+  const lines =
+    posts.map((post) => {
+      const position =
+        post.position
+          ? ` — ${post.position}`
+          : "";
+
+      if (post.isExisting) {
+        return `
+          <div>
+            <strong>
+              Post ${post.number}${position}
+            </strong>
+            <span>
+              Existing structure
+            </span>
+          </div>
+        `;
+      }
+
+      let fixingText = "";
+
+      if (
+        post.fixing ===
+        "concreted"
+      ) {
+        fixingText =
+          `Concreted, ${post.embedMm}mm embedment`;
+      }
+
+      else if (
+        post.fixing ===
+        "fixedPanel"
+      ) {
+        fixingText =
+          `Fixed panel post, ${post.embedMm}mm embedment`;
+      }
+
+      else if (
+        post.fixing === "brick"
+      ) {
+        fixingText =
+          `Brick fixed, ${post.holes.length} x ${post.dynaboltLengthMm}x10mm Dynabolts`;
+      }
+
+      return `
+        <div>
+          <strong>
+            Post ${post.number}${position}
+          </strong>
+
+          <span>
+            ${post.postLabel}
+          </span>
+
+          <span>
+            Cut:
+            ${post.totalLengthMm}mm
+          </span>
+
+          <span>
+            ${fixingText}
+          </span>
+        </div>
+      `;
+    });
+
+  $("postCutList")
+    .innerHTML =
+    lines.join("");
+}
+
+
+// ============================================================
+// FIXED PANEL
+// ============================================================
+
+function getFixedPanel() {
+  const option =
+    $("fixedPanelOption").value;
+
+  const exists =
+    option !== "none";
+
+  const widthMm =
+    exists
+      ? Number(
+          $("fixedPanelWidth")
+            .value || 0
+        )
+      : 0;
+
+  const heightMm =
+    exists
+      ? Number(
+          $("fixedPanelHeight")
+            .value || 0
+        )
+      : 0;
+
+  return {
+    exists,
+    side: option,
+    widthMm,
+    heightMm,
+
+    areaM2:
+      (widthMm / 1000) *
+      (heightMm / 1000),
+
+    direction:
+      $("fixedPanelDirection")
+        .value,
+
+    claddingType:
+      $("fixedPanelCladding")
+        .value
+  };
+}
+
+
+// ============================================================
+// BOARD CLADDING CORE
+// ============================================================
+
+function calculateBoardMaterial({
   widthMm,
   heightMm,
   direction,
@@ -1046,7 +1738,9 @@ function calculateBoardCladding({
   priceValue
 }) {
   const boardWidth =
-    Number(data.boardWidthMm || 0);
+    Number(
+      data.boardWidthMm || 0
+    );
 
   if (
     widthMm <= 0 ||
@@ -1059,18 +1753,18 @@ function calculateBoardCladding({
       stockLengths: 0,
       purchasedM: 0,
       wasteM: 0,
-      costExGST: 0
+      rawCost: 0
     };
   }
 
-  let pieceLengthM;
-  let piecesRequired;
+  let pieceLengthM = 0;
+  let courses = 0;
 
   if (direction === "horizontal") {
     pieceLengthM =
       widthMm / 1000;
 
-    piecesRequired =
+    courses =
       Math.ceil(
         heightMm /
         boardWidth
@@ -1081,7 +1775,7 @@ function calculateBoardCladding({
     pieceLengthM =
       heightMm / 1000;
 
-    piecesRequired =
+    courses =
       Math.ceil(
         widthMm /
         boardWidth
@@ -1089,25 +1783,14 @@ function calculateBoardCladding({
   }
 
   const pieces =
-    Array(piecesRequired)
+    Array(courses)
       .fill(pieceLengthM);
 
-  let stock = {
-    stockLengths: 0,
-    purchasedMetres: 0,
-    usedMetres:
-      piecesRequired *
-      pieceLengthM,
-    wasteMetres: 0
-  };
-
-  if (stockLengthM > 0) {
-    stock =
-      calculateStockFromPieces(
-        pieces,
-        stockLengthM
-      );
-  }
+  const stock =
+    calculateStockFromPieces(
+      pieces,
+      stockLengthM
+    );
 
   let rawCost = 0;
 
@@ -1117,78 +1800,196 @@ function calculateBoardCladding({
   ) {
     rawCost =
       stock.stockLengths *
-      priceValue;
+      Number(
+        priceValue || 0
+      );
   }
 
   else if (
     priceMode ===
     "linealMetre"
   ) {
-    const metresCharged =
+    const chargeM =
       stockLengthM > 0
         ? stock.purchasedMetres
         : stock.usedMetres;
 
     rawCost =
-      metresCharged *
-      priceValue;
+      chargeM *
+      Number(
+        priceValue || 0
+      );
   }
 
   return {
-    boards: piecesRequired,
+    boards: courses,
+
     requiredM:
       stock.usedMetres,
+
     stockLengths:
       stock.stockLengths,
+
     purchasedM:
       stock.purchasedMetres,
+
     wasteM:
       stock.wasteMetres,
+
     rawCost
   };
 }
 
 
 // ============================================================
-// GATE CLADDING
+// CLADDING DESCRIPTION
+// ============================================================
+
+function getGateCladdingDescription() {
+  const type =
+    $("claddingType").value;
+
+  const data =
+    PRICES.cladding[type];
+
+  if (type === "ekodeck") {
+    return (
+      `${data.label}, ` +
+      `${$("ekodeckColour").value}, ` +
+      `${$("claddingDirection").value}`
+    );
+  }
+
+  if (
+    type ===
+    "cypressPickets"
+  ) {
+    let text =
+      `${data.label}, ` +
+      `${$("cypressFinish").value}`;
+
+    if (
+      $("cypressFinish").value ===
+      "Paint" &&
+      $("cypressPaintColour")
+        .value.trim()
+    ) {
+      text +=
+        `, ${$("cypressPaintColour")
+          .value.trim()}`;
+    }
+
+    text +=
+      `, ${$("claddingDirection").value}`;
+
+    return text;
+  }
+
+  if (
+    type === "losp50" ||
+    type === "losp90"
+  ) {
+    let text =
+      `${data.label}, ` +
+      `${$("lospFinish").value}`;
+
+    if (
+      $("lospFinish").value ===
+      "Paint" &&
+      $("lospPaintColour")
+        .value.trim()
+    ) {
+      text +=
+        `, ${$("lospPaintColour")
+          .value.trim()}`;
+    }
+
+    text +=
+      `, ${$("claddingDirection").value}`;
+
+    return text;
+  }
+
+  if (
+    type === "merbau90" ||
+    type === "merbau140"
+  ) {
+    return (
+      `${data.label}, ` +
+      `${$("merbauFinish").value}, ` +
+      `${$("claddingDirection").value}`
+    );
+  }
+
+  if (type === "colorbond") {
+    let text =
+      `Colorbond ` +
+      `${$("colorbondProfile").value}`;
+
+    if (
+      $("colorbondNotes")
+        .value.trim()
+    ) {
+      text +=
+        `, ${$("colorbondNotes")
+          .value.trim()}`;
+    }
+
+    return text;
+  }
+
+  return (
+    $("customCladdingName")
+      .value.trim() ||
+    "Custom cladding"
+  );
+}
+
+
+// ============================================================
+// GATE CLADDING COST
 // ============================================================
 
 function calculateGateCladding(
   widthMm,
   heightMm
 ) {
+  if (!includeCladding()) {
+    return {
+      boards: 0,
+      requiredM: 0,
+      stockLengths: 0,
+      purchasedM: 0,
+      wasteM: 0,
+      costExGST: 0,
+      description: ""
+    };
+  }
+
+  const type =
+    $("claddingType").value;
+
   const data =
-    PRICES.cladding[
-      selectedCladding
-    ];
+    PRICES.cladding[type];
+
+  const direction =
+    $("claddingDirection").value;
 
   const areaM2 =
     (widthMm / 1000) *
     (heightMm / 1000);
 
-  let result = {
-    boards: 0,
-    requiredM: 0,
-    stockLengths: 0,
-    purchasedM: 0,
-    wasteM: 0,
-    costExGST: 0,
-    description:
-      data ? data.label : "",
-    areaM2
-  };
 
+  // --------------------------------------------------------
   // EKODECK
+  // --------------------------------------------------------
 
-  if (
-    selectedCladding ===
-    "ekodeck"
-  ) {
+  if (type === "ekodeck") {
     const calc =
-      calculateBoardCladding({
+      calculateBoardMaterial({
         widthMm,
         heightMm,
-        direction: "vertical",
+        direction,
         data,
         stockLengthM:
           data.stockLengthM,
@@ -1198,69 +1999,74 @@ function calculateGateCladding(
           data.pricePerStockLength
       });
 
-    result = {
-      ...result,
+    return {
       ...calc,
+
       costExGST:
         toExGST(
           calc.rawCost,
           data.priceIncludesGST
         ),
+
       description:
-        `${data.label}, ` +
-        `${$("ekodeckColour").value}`
+        getGateCladdingDescription()
     };
   }
 
-  // CYPRESS
 
-  else if (
-    selectedCladding ===
-    "cypressPickets"
+  // --------------------------------------------------------
+  // CYPRESS
+  // --------------------------------------------------------
+
+  if (
+    type === "cypressPickets"
   ) {
-    const stockM =
+    const stockLengthM =
       Number(
-        $("picketLength").value
+        $("cypressLength").value
       ) / 1000;
 
     const calc =
-      calculateBoardCladding({
+      calculateBoardMaterial({
         widthMm,
         heightMm,
-        direction: "vertical",
+        direction,
         data,
-        stockLengthM: stockM,
+        stockLengthM,
         priceMode:
           "stockLength",
         priceValue:
           data.pricePerStockLength
       });
 
-    result = {
-      ...result,
+    return {
       ...calc,
+
       costExGST:
         toExGST(
           calc.rawCost,
           data.priceIncludesGST
         ),
+
       description:
-        `${data.label}, ` +
-        `${$("cypressFinish").value}`
+        getGateCladdingDescription()
     };
   }
 
-  // LOSP
 
-  else if (
-    selectedCladding === "losp50" ||
-    selectedCladding === "losp90"
+  // --------------------------------------------------------
+  // LOSP
+  // --------------------------------------------------------
+
+  if (
+    type === "losp50" ||
+    type === "losp90"
   ) {
     const calc =
-      calculateBoardCladding({
+      calculateBoardMaterial({
         widthMm,
         heightMm,
-        direction: "vertical",
+        direction,
         data,
         stockLengthM:
           data.stockLengthM,
@@ -1270,28 +2076,34 @@ function calculateGateCladding(
           data.pricePerLinealM
       });
 
-    result = {
-      ...result,
+    return {
       ...calc,
+
       costExGST:
         toExGST(
           calc.rawCost,
           data.priceIncludesGST
-        )
+        ),
+
+      description:
+        getGateCladdingDescription()
     };
   }
 
-  // MERBAU
 
-  else if (
-    selectedCladding === "merbau90" ||
-    selectedCladding === "merbau140"
+  // --------------------------------------------------------
+  // MERBAU
+  // --------------------------------------------------------
+
+  if (
+    type === "merbau90" ||
+    type === "merbau140"
   ) {
     const calc =
-      calculateBoardCladding({
+      calculateBoardMaterial({
         widthMm,
         heightMm,
-        direction: "vertical",
+        direction,
         data,
         stockLengthM:
           data.stockLengthM || 0,
@@ -1301,70 +2113,74 @@ function calculateGateCladding(
           data.pricePerLinealM || 0
       });
 
-    result = {
-      ...result,
+    return {
       ...calc,
+
       costExGST:
         toExGST(
           calc.rawCost,
           data.priceIncludesGST
-        )
+        ),
+
+      description:
+        getGateCladdingDescription()
     };
   }
 
-  // COLORBOND
 
-  else if (
-    selectedCladding ===
-    "colorbond"
-  ) {
+  // --------------------------------------------------------
+  // COLORBOND
+  // --------------------------------------------------------
+
+  if (type === "colorbond") {
     const rawCost =
       areaM2 *
       Number(
         data.pricePerM2 || 0
       );
 
-    result.costExGST =
-      toExGST(
-        rawCost,
-        data.priceIncludesGST
-      );
+    return {
+      boards: 0,
+      requiredM: 0,
+      stockLengths: 0,
+      purchasedM: 0,
+      wasteM: 0,
 
-    result.description =
-      `Colorbond ` +
-      `${$("colorbondProfile").value}`;
+      costExGST:
+        toExGST(
+          rawCost,
+          data.priceIncludesGST
+        ),
 
-    if (
-      $("colorbondNotes")
-        .value.trim()
-    ) {
-      result.description +=
-        `, ${$("colorbondNotes")
-          .value.trim()}`;
-    }
+      description:
+        getGateCladdingDescription()
+    };
   }
 
-  // CUSTOM
 
-  else if (
-    selectedCladding === "custom"
-  ) {
-    result.costExGST =
+  // --------------------------------------------------------
+  // CUSTOM
+  // --------------------------------------------------------
+
+  return {
+    boards: 0,
+    requiredM: 0,
+    stockLengths: 0,
+    purchasedM: 0,
+    wasteM: 0,
+
+    costExGST:
       toExGST(
         Number(
           $("customCladdingCost")
             .value || 0
         ),
         true
-      );
+      ),
 
-    result.description =
-      $("customCladdingName")
-        .value.trim() ||
-      "Custom cladding";
-  }
-
-  return result;
+    description:
+      getGateCladdingDescription()
+  };
 }
 
 
@@ -1376,118 +2192,187 @@ function calculateFixedPanelCladding(
   fixedPanel
 ) {
   if (
-    $("fixedPanelOption").value ===
-    "none"
+    !fixedPanel.exists ||
+    !includeCladding()
   ) {
     return {
-      boards: 0,
       requiredM: 0,
-      stockLengths: 0,
-      purchasedM: 0,
-      wasteM: 0,
       costExGST: 0,
       description: ""
     };
   }
 
   let type =
-    $("fixedPanelCladding").value;
+    fixedPanel.claddingType;
 
   if (type === "same") {
-    type = selectedCladding;
+    type =
+      $("claddingType").value;
   }
 
   const data =
     PRICES.cladding[type];
 
-  const direction =
-    $("fixedPanelDirection").value;
-
   if (!data) {
     return {
-      boards: 0,
       requiredM: 0,
-      stockLengths: 0,
-      purchasedM: 0,
-      wasteM: 0,
       costExGST: 0,
       description: ""
     };
   }
 
-  let calc = {
-    boards: 0,
-    requiredM: 0,
-    stockLengths: 0,
-    purchasedM: 0,
-    wasteM: 0,
-    rawCost: 0
-  };
+  const direction =
+    fixedPanel.direction;
+
+
+  // --------------------------------------------------------
+  // EKODECK
+  // --------------------------------------------------------
 
   if (type === "ekodeck") {
-    calc =
-      calculateBoardCladding({
+    const calc =
+      calculateBoardMaterial({
         widthMm:
           fixedPanel.widthMm,
+
         heightMm:
           fixedPanel.heightMm,
+
         direction,
+
         data,
+
         stockLengthM:
           data.stockLengthM,
+
         priceMode:
           "stockLength",
+
         priceValue:
           data.pricePerStockLength
       });
+
+    return {
+      requiredM:
+        calc.requiredM,
+
+      costExGST:
+        toExGST(
+          calc.rawCost,
+          data.priceIncludesGST
+        ),
+
+      description:
+        data.label
+    };
   }
 
-  else if (
+
+  // --------------------------------------------------------
+  // CYPRESS
+  // --------------------------------------------------------
+
+  if (
     type === "cypressPickets"
   ) {
-    calc =
-      calculateBoardCladding({
+    const stockM =
+      Number(
+        $("cypressLength").value
+      ) / 1000;
+
+    const calc =
+      calculateBoardMaterial({
         widthMm:
           fixedPanel.widthMm,
+
         heightMm:
           fixedPanel.heightMm,
+
         direction,
+
         data,
+
         stockLengthM:
-          Number(
-            $("picketLength").value
-          ) / 1000,
+          stockM,
+
         priceMode:
           "stockLength",
+
         priceValue:
           data.pricePerStockLength
       });
+
+    return {
+      requiredM:
+        calc.requiredM,
+
+      costExGST:
+        toExGST(
+          calc.rawCost,
+          data.priceIncludesGST
+        ),
+
+      description:
+        data.label
+    };
   }
 
-  else if (
-    type === "losp50" ||
-    type === "losp90" ||
-    type === "merbau90" ||
-    type === "merbau140"
+
+  // --------------------------------------------------------
+  // LOSP / MERBAU
+  // --------------------------------------------------------
+
+  if (
+    [
+      "losp50",
+      "losp90",
+      "merbau90",
+      "merbau140"
+    ].includes(type)
   ) {
-    calc =
-      calculateBoardCladding({
+    const calc =
+      calculateBoardMaterial({
         widthMm:
           fixedPanel.widthMm,
+
         heightMm:
           fixedPanel.heightMm,
+
         direction,
+
         data,
+
         stockLengthM:
           data.stockLengthM || 0,
+
         priceMode:
           "linealMetre",
+
         priceValue:
           data.pricePerLinealM || 0
       });
+
+    return {
+      requiredM:
+        calc.requiredM,
+
+      costExGST:
+        toExGST(
+          calc.rawCost,
+          data.priceIncludesGST
+        ),
+
+      description:
+        data.label
+    };
   }
 
-  else if (type === "colorbond") {
+
+  // --------------------------------------------------------
+  // COLORBOND
+  // --------------------------------------------------------
+
+  if (type === "colorbond") {
     const rawCost =
       fixedPanel.areaM2 *
       Number(
@@ -1495,32 +2380,23 @@ function calculateFixedPanelCladding(
       );
 
     return {
-      boards: 0,
       requiredM: 0,
-      stockLengths: 0,
-      purchasedM: 0,
-      wasteM: 0,
+
       costExGST:
         toExGST(
           rawCost,
           data.priceIncludesGST
         ),
+
       description:
-        "Colorbond steel cladding"
+        data.label
     };
   }
 
   return {
-    ...calc,
-
-    costExGST:
-      toExGST(
-        calc.rawCost,
-        data.priceIncludesGST
-      ),
-
-    description:
-      data.label
+    requiredM: 0,
+    costExGST: 0,
+    description: ""
   };
 }
 
@@ -1529,12 +2405,36 @@ function calculateFixedPanelCladding(
 // HARDWARE
 // ============================================================
 
-function calculateHardware() {
-  const leaves =
-    gateLeafCount();
+function calculateHardware(
+  fixedPanel
+) {
+  let hingeSets = 0;
+  let latchCostExGST = 0;
 
-  const hingeSets =
-    leaves;
+  if (includeFrame()) {
+    if (quoteType === "single") {
+      hingeSets = 1;
+    }
+
+    else if (
+      quoteType === "double"
+    ) {
+      hingeSets = 2;
+    }
+
+    // Slider = 0 hinge sets.
+
+    const latch =
+      PRICES.hardware.latches[
+        $("latch").value
+      ];
+
+    latchCostExGST =
+      toExGST(
+        latch.price,
+        latch.priceIncludesGST
+      );
+  }
 
   const hingeRaw =
     hingeSets *
@@ -1548,28 +2448,21 @@ function calculateHardware() {
         .priceIncludesGST
     );
 
-  const latch =
-    PRICES.hardware.latches[
-      $("latch").value
-    ];
 
-  const latchCostExGST =
-    toExGST(
-      latch.price,
-      latch.priceIncludesGST
-    );
+  // --------------------------------------------------------
+  // SCREWS
+  // --------------------------------------------------------
 
-  // One screw allowance per gate leaf,
-  // plus one for a fixed panel.
+  let screwUnits = 0;
 
-  const screwUnits =
-    leaves +
-    (
-      $("fixedPanelOption").value !==
-      "none"
-        ? 1
-        : 0
-    );
+  if (includeCladding()) {
+    screwUnits +=
+      gateLeafCount();
+
+    if (fixedPanel.exists) {
+      screwUnits++;
+    }
+  }
 
   const screwsRaw =
     screwUnits *
@@ -1588,109 +2481,48 @@ function calculateHardware() {
     hingeCostExGST,
     latchCostExGST,
     screwsCostExGST,
+
     latchLabel:
-      latch.label
+      PRICES.hardware.latches[
+        $("latch").value
+      ].label
   };
 }
 
 
 // ============================================================
-// FIXING COSTS
-// ============================================================
-
-function calculateFixings() {
-  const concretedPosts =
-    countKnownConcretedPosts();
-
-  const concreteBags =
-    Number(
-      $("concreteBags").value || 0
-    );
-
-  const concreteRaw =
-    concreteBags *
-    PRICES.fixings.concrete
-      .pricePerBag;
-
-  const concreteCostExGST =
-    toExGST(
-      concreteRaw,
-      PRICES.fixings.concrete
-        .priceIncludesGST
-    );
-
-  const leftBrick =
-    $("leftPostFixing").value ===
-    "brick";
-
-  const rightBrick =
-    $("rightPostFixing").value ===
-    "brick";
-
-  const needsBolts =
-    leftBrick || rightBrick;
-
-  const boltCount =
-    needsBolts
-      ? Number(
-          $("dynaboltCount").value || 0
-        )
-      : 0;
-
-  const boltRaw =
-    boltCount *
-    PRICES.fixings.dynabolts
-      .priceEach;
-
-  const boltCostExGST =
-    toExGST(
-      boltRaw,
-      PRICES.fixings.dynabolts
-        .priceIncludesGST
-    );
-
-  return {
-    concretedPosts,
-    concreteBags,
-    concreteCostExGST,
-    boltCount,
-    boltCostExGST
-  };
-}
-
-
-// ============================================================
-// FINISHING
+// FINISH
 // ============================================================
 
 function calculateFinishing(
-  gateAreaM2,
-  fixedPanelAreaM2
+  projectArea
 ) {
-  const totalArea =
-    gateAreaM2 +
-    fixedPanelAreaM2;
-
-  if ($("powderCoat").checked) {
-    const raw =
-      Number(
-        $("powderCost").value || 0
-      );
-
+  if (!includeFrame()) {
     return {
-      powderCostExGST:
-        toExGST(
-          raw,
-          PRICES.finishing
-            .powderCoat
-            .priceIncludesGST
-        ),
+      powderCostExGST: 0,
       touchUpCostExGST: 0
     };
   }
 
-  const rawTouchUp =
-    totalArea *
+  if ($("powderCoat").checked) {
+    return {
+      powderCostExGST:
+        toExGST(
+          Number(
+            $("powderCost")
+              .value || 0
+          ),
+          PRICES.finishing
+            .powderCoat
+            .priceIncludesGST
+        ),
+
+      touchUpCostExGST: 0
+    };
+  }
+
+  const raw =
+    projectArea *
     PRICES.finishing
       .galvanisedTouchUp
       .pricePerM2;
@@ -1700,7 +2532,7 @@ function calculateFinishing(
 
     touchUpCostExGST:
       toExGST(
-        rawTouchUp,
+        raw,
         PRICES.finishing
           .galvanisedTouchUp
           .priceIncludesGST
@@ -1713,9 +2545,7 @@ function calculateFinishing(
 // LABOUR
 // ============================================================
 
-function calculateLabour(
-  concretedPosts
-) {
+function calculateLabour(posts) {
   const fabrication =
     Number(
       $("fabricationHours")
@@ -1728,22 +2558,30 @@ function calculateLabour(
         .value || 0
     );
 
-  let holeDig =
-    Number(
-      $("holeDigHours")
-        .value || 0
+  const hasConcrete =
+    posts.some(
+      (post) =>
+        post.fixing ===
+        "concreted" ||
+        post.fixing ===
+        "fixedPanel"
     );
 
-  let soilRemoval =
-    Number(
-      $("soilRemovalHours")
-        .value || 0
-    );
+  const holeDig =
+    hasConcrete
+      ? Number(
+          $("holeDigHours")
+            .value || 0
+        )
+      : 0;
 
-  if (concretedPosts === 0) {
-    holeDig = 0;
-    soilRemoval = 0;
-  }
+  const soilRemoval =
+    hasConcrete
+      ? Number(
+          $("soilRemovalHours")
+            .value || 0
+        )
+      : 0;
 
   const totalHours =
     fabrication +
@@ -1797,14 +2635,12 @@ function calculateTravel() {
 
 
 // ============================================================
-// MAIN CALCULATION
+// MAIN CALCULATOR
 // ============================================================
 
 function calculateQuote() {
   validateRequiredFields();
-
   updateCustomerDisplay();
-
   updateConditionalSections();
 
   const gateWidthMm =
@@ -1817,63 +2653,59 @@ function calculateQuote() {
       $("gateHeight").value || 0
     );
 
-  const gateAreaM2 =
+  const gateArea =
     (gateWidthMm / 1000) *
     (gateHeightMm / 1000);
 
   $("gateArea").textContent =
-    `${gateAreaM2.toFixed(2)} m²`;
+    `${gateArea.toFixed(2)} m²`;
 
-  // ----------------------------
-  // MID RAIL
-  // ----------------------------
 
-  const midRail =
-    calculateMidRail(
-      gateWidthMm,
-      gateHeightMm
-    );
+  // --------------------------------------------------------
+  // POSTS
+  // --------------------------------------------------------
 
-  // ----------------------------
+  const posts =
+    collectPosts();
+
+  const postMaterials =
+    calculatePosts(posts);
+
+  updatePostCutList(posts);
+
+
+  // --------------------------------------------------------
   // FIXED PANEL
-  // ----------------------------
+  // --------------------------------------------------------
 
   const fixedPanel =
-    calculateFixedPanelFrame();
+    getFixedPanel();
 
-  // ----------------------------
+
+  // --------------------------------------------------------
+  // TOTAL PROJECT AREA
+  // --------------------------------------------------------
+
+  const projectArea =
+    gateArea +
+    fixedPanel.areaM2;
+
+
+  // --------------------------------------------------------
   // FRAME
-  // Includes fixed panel steel
-  // so stock waste is shared.
-  // ----------------------------
+  // --------------------------------------------------------
 
-  const combinedFrame =
-    calculateCombinedFrame(
+  const frame =
+    calculateFrame(
       gateWidthMm,
       gateHeightMm,
-      midRail,
       fixedPanel
     );
 
-  const gateFrameOnly =
-    calculateGateFrame(
-      gateWidthMm,
-      gateHeightMm,
-      midRail
-    );
 
-  // ----------------------------
-  // POSTS
-  // ----------------------------
-
-  const posts =
-    calculatePostMaterial(
-      gateHeightMm
-    );
-
-  // ----------------------------
+  // --------------------------------------------------------
   // CLADDING
-  // ----------------------------
+  // --------------------------------------------------------
 
   const gateCladding =
     calculateGateCladding(
@@ -1886,85 +2718,92 @@ function calculateQuote() {
       fixedPanel
     );
 
-  // ----------------------------
+
+  // --------------------------------------------------------
   // HARDWARE
-  // ----------------------------
+  // --------------------------------------------------------
 
   const hardware =
-    calculateHardware();
+    calculateHardware(
+      fixedPanel
+    );
 
-  // ----------------------------
-  // FIXINGS
-  // ----------------------------
 
-  const fixings =
-    calculateFixings();
-
-  // ----------------------------
-  // FINISHING
-  // ----------------------------
+  // --------------------------------------------------------
+  // FINISH
+  // --------------------------------------------------------
 
   const finishing =
     calculateFinishing(
-      gateAreaM2,
-      fixedPanel.areaM2
+      projectArea
     );
 
-  // ----------------------------
+
+  // --------------------------------------------------------
   // EXTRA MATERIAL
-  // User enters this as inc GST.
-  // ----------------------------
+  // --------------------------------------------------------
 
-  const extraHardwareRaw =
-    Number(
-      $("extraHardware")
-        .value || 0
-    );
-
-  const extraHardwareExGST =
+  const extraMaterialExGST =
     toExGST(
-      extraHardwareRaw,
+      Number(
+        $("extraHardware")
+          .value || 0
+      ),
       true
     );
 
-  // ----------------------------
-  // MATERIAL COST EX GST
-  // ----------------------------
+
+  // --------------------------------------------------------
+  // MATERIAL TOTAL
+  // --------------------------------------------------------
 
   const materialsExGST =
-    combinedFrame.costExGST +
-    posts.costExGST +
-    gateCladding.costExGST +
-    panelCladding.costExGST +
-    hardware.hingeCostExGST +
-    hardware.latchCostExGST +
-    hardware.screwsCostExGST +
-    fixings.concreteCostExGST +
-    fixings.boltCostExGST +
-    finishing.powderCostExGST +
-    finishing.touchUpCostExGST +
-    extraHardwareExGST;
+    frame.costExGST +
 
-  // ----------------------------
+    postMaterials.costExGST +
+
+    postMaterials
+      .concreteCostExGST +
+
+    postMaterials
+      .dynaboltCostExGST +
+
+    gateCladding.costExGST +
+
+    panelCladding.costExGST +
+
+    hardware.hingeCostExGST +
+
+    hardware.latchCostExGST +
+
+    hardware.screwsCostExGST +
+
+    finishing.powderCostExGST +
+
+    finishing.touchUpCostExGST +
+
+    extraMaterialExGST;
+
+
+  // --------------------------------------------------------
   // LABOUR
-  // ----------------------------
+  // --------------------------------------------------------
 
   const labour =
-    calculateLabour(
-      fixings.concretedPosts
-    );
+    calculateLabour(posts);
 
-  // ----------------------------
+
+  // --------------------------------------------------------
   // TRAVEL
-  // ----------------------------
+  // --------------------------------------------------------
 
   const travel =
     calculateTravel();
 
-  // ----------------------------
+
+  // --------------------------------------------------------
   // OTHER COSTS
-  // User-entered as inc GST.
-  // ----------------------------
+  // --------------------------------------------------------
 
   const otherCostsExGST =
     toExGST(
@@ -1975,121 +2814,154 @@ function calculateQuote() {
       true
     );
 
-  // ----------------------------
+
+  // --------------------------------------------------------
   // MARKUP
-  // Markup applies to materials.
-  // ----------------------------
+  // --------------------------------------------------------
 
   const markup =
     materialsExGST *
     PRICES.business
       .materialMarkup;
 
-  // ----------------------------
-  // TOTALS
-  // ----------------------------
 
-  const calculatedExGST =
+  // --------------------------------------------------------
+  // TOTALS
+  // --------------------------------------------------------
+
+  const exGST =
     materialsExGST +
     labour.costExGST +
     travel.costExGST +
     otherCostsExGST +
     markup;
 
-  const calculatedGST =
-    calculatedExGST *
+  const gst =
+    exGST *
     PRICES.business.gst;
 
-  const calculatedIncGST =
-    calculatedExGST +
-    calculatedGST;
+  const incGST =
+    exGST + gst;
 
   const roundedFinal =
     roundUp(
-      calculatedIncGST,
+      incGST,
       PRICES.business.roundTo
     );
 
-  // ----------------------------
-  // DISPLAY MATERIALS
-  // ----------------------------
+
+  // --------------------------------------------------------
+  // MATERIAL DISPLAY
+  // --------------------------------------------------------
 
   $("frameMetres").textContent =
-    `${gateFrameOnly.perimeterM.toFixed(2)} m`;
+    `${frame.perimeterM.toFixed(2)} m`;
 
-  $("midRailMetres").textContent =
-    `${midRail.totalM.toFixed(2)} m`;
+  $("horizontalRailMetres")
+    .textContent =
+    `${frame.horizontalRailM.toFixed(2)} m`;
 
-  $("totalFrameMetres").textContent =
-    `${combinedFrame.usedMetres.toFixed(2)} m`;
+  $("verticalRailMetres")
+    .textContent =
+    `${frame.verticalRailM.toFixed(2)} m`;
+
+  $("fixedPanelFrameMetres")
+    .textContent =
+    `${frame.fixedPanelFrameM.toFixed(2)} m`;
+
+  $("totalFrameMetres")
+    .textContent =
+    `${frame.totalUsedM.toFixed(2)} m`;
 
   $("frameLengths").textContent =
-    combinedFrame.stockLengths;
+    frame.stockLengths;
 
   $("frameWaste").textContent =
-    `${combinedFrame.wasteM.toFixed(2)} m`;
+    `${frame.wasteM.toFixed(2)} m`;
+
 
   $("postMetres").textContent =
-    `${posts.requiredM.toFixed(2)} m`;
+    `${postMaterials.requiredM.toFixed(2)} m`;
 
   $("postLengths").textContent =
-    posts.stockLengths;
+    postMaterials.stockLengths;
 
   $("postWaste").textContent =
-    `${posts.wasteM.toFixed(2)} m`;
+    `${postMaterials.wasteM.toFixed(2)} m`;
+
 
   $("claddingBoards").textContent =
-    gateCladding.boards;
+    gateCladding.boards || 0;
 
   $("claddingMetres").textContent =
-    `${gateCladding.requiredM.toFixed(2)} m`;
+    `${(gateCladding.requiredM || 0).toFixed(2)} m`;
 
-  $("claddingStockLengths").textContent =
-    gateCladding.stockLengths;
+  $("claddingStockLengths")
+    .textContent =
+    gateCladding.stockLengths || 0;
 
-  $("claddingWaste").textContent =
-    `${gateCladding.wasteM.toFixed(2)} m`;
+  $("claddingWaste")
+    .textContent =
+    `${(gateCladding.wasteM || 0).toFixed(2)} m`;
 
-  $("fixedPanelArea").textContent =
+
+  $("fixedPanelArea")
+    .textContent =
     `${fixedPanel.areaM2.toFixed(2)} m²`;
 
-  $("fixedPanelFrameMetres").textContent =
-    `${fixedPanel.frameM.toFixed(2)} m`;
+  $("fixedPanelFrameSummary")
+    .textContent =
+    `${frame.fixedPanelFrameM.toFixed(2)} m`;
 
-  $("fixedPanelCladdingMetres").textContent =
-    `${panelCladding.requiredM.toFixed(2)} m`;
+  $("fixedPanelCladdingMetres")
+    .textContent =
+    `${(panelCladding.requiredM || 0).toFixed(2)} m`;
 
-  // ----------------------------
-  // INTERNAL COST DISPLAY
-  // ----------------------------
 
-  $("materialsTotal").textContent =
+  // --------------------------------------------------------
+  // COST DISPLAY
+  // --------------------------------------------------------
+
+  $("materialsTotal")
+    .textContent =
     money(materialsExGST);
 
-  $("labourTotal").textContent =
+  $("labourTotal")
+    .textContent =
     money(labour.costExGST);
 
-  $("travelTotal").textContent =
+  $("travelTotal")
+    .textContent =
     money(travel.costExGST);
 
-  $("directOtherTotal").textContent =
+  $("directOtherTotal")
+    .textContent =
     money(otherCostsExGST);
 
-  $("markupTotal").textContent =
+  $("markupTotal")
+    .textContent =
     money(markup);
 
-  $("exGstTotal").textContent =
-    money(calculatedExGST);
+  $("exGstTotal")
+    .textContent =
+    money(exGST);
 
-  $("gstTotal").textContent =
-    money(calculatedGST);
+  $("gstTotal")
+    .textContent =
+    money(gst);
 
-  $("incGstTotal").textContent =
-    money(calculatedIncGST);
+  $("incGstTotal")
+    .textContent =
+    money(incGST);
 
-  // Don't overwrite a manually changed
-  // final price unless the previous price
-  // matched the previous calculation.
+  $("projectAreaTotal")
+    .textContent =
+    `${projectArea.toFixed(2)} m²`;
+
+
+  // --------------------------------------------------------
+  // FINAL PRICE
+  // --------------------------------------------------------
 
   const currentFinal =
     Number(
@@ -2108,50 +2980,52 @@ function calculateQuote() {
       roundedFinal;
   }
 
+
   lastCalculation = {
     gateWidthMm,
     gateHeightMm,
-    gateAreaM2,
+    gateArea,
 
-    midRail,
-    fixedPanel,
-
-    combinedFrame,
-    gateFrameOnly,
     posts,
+    postMaterials,
+
+    fixedPanel,
+    projectArea,
+
+    frame,
 
     gateCladding,
     panelCladding,
 
     hardware,
-    fixings,
     finishing,
 
-    extraHardwareExGST,
-
     materialsExGST,
+
     labour,
     travel,
+
     otherCostsExGST,
 
     markup,
-    calculatedExGST,
-    calculatedGST,
-    calculatedIncGST,
+    exGST,
+    gst,
+    incGST,
+
     roundedFinal
   };
 
-  updateProfitAndFinalQuote();
+  updateFinalNumbers();
 
   updateDetailedCosting();
 }
 
 
 // ============================================================
-// FINAL PRICE / PROFIT / GST
+// FINAL PRICE / PROFIT / EFFECTIVE M²
 // ============================================================
 
-function updateProfitAndFinalQuote() {
+function updateFinalNumbers() {
   if (!lastCalculation) {
     return;
   }
@@ -2182,13 +3056,45 @@ function updateProfitAndFinalQuote() {
   $("profitTotal").textContent =
     money(profit);
 
-  $("quoteExGstDisplay").textContent =
+
+  // --------------------------------------------------------
+  // EFFECTIVE RATE
+  // INTERNAL ONLY
+  // --------------------------------------------------------
+
+  if (
+    lastCalculation.projectArea > 0
+  ) {
+    const rate =
+      finalIncGST /
+      lastCalculation.projectArea;
+
+    $("effectiveRate")
+      .textContent =
+      `${money(rate)}/m²`;
+  }
+
+  else {
+    $("effectiveRate")
+      .textContent =
+      "N/A";
+  }
+
+
+  // --------------------------------------------------------
+  // CUSTOMER QUOTE PRICE
+  // --------------------------------------------------------
+
+  $("quoteExGstDisplay")
+    .textContent =
     money(finalExGST);
 
-  $("quoteGstDisplay").textContent =
+  $("quoteGstDisplay")
+    .textContent =
     money(finalGST);
 
-  $("quoteTotalDisplay").textContent =
+  $("quoteTotalDisplay")
+    .textContent =
     money(finalIncGST);
 
   buildFinishedQuote(
@@ -2200,206 +3106,188 @@ function updateProfitAndFinalQuote() {
 
 
 // ============================================================
-// DETAILED COSTING
+// INTERNAL BREAKDOWN
 // ============================================================
 
 function updateDetailedCosting() {
-  if (!lastCalculation) {
-    return;
-  }
-
   const c =
     lastCalculation;
 
-  $("costBreakdown").innerHTML = `
+  if (!c) {
+    return;
+  }
 
-    <p>
-      <span>Frame steel stock</span>
-      <strong>
-        ${c.combinedFrame.stockLengths}
-        x 8m
-      </strong>
-    </p>
+  $("costBreakdown")
+    .innerHTML = `
 
-    <p>
-      <span>Frame steel cost ex GST</span>
-      <strong>
-        ${money(c.combinedFrame.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Frame steel</span>
+        <strong>
+          ${money(c.frame.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Post stock</span>
-      <strong>
-        ${c.posts.stockLengths}
-        x 8m
-      </strong>
-    </p>
+      <p>
+        <span>Post steel</span>
+        <strong>
+          ${money(c.postMaterials.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Post cost ex GST</span>
-      <strong>
-        ${money(c.posts.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Concrete</span>
+        <strong>
+          ${money(c.postMaterials.concreteCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Gate cladding</span>
-      <strong>
-        ${money(c.gateCladding.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>
+          Dynabolts
+          (${c.postMaterials.dynabolts})
+        </span>
+        <strong>
+          ${money(c.postMaterials.dynaboltCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Fixed panel cladding</span>
-      <strong>
-        ${money(c.panelCladding.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Gate cladding</span>
+        <strong>
+          ${money(c.gateCladding.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>
-        Lock-out hinges
-        (${c.hardware.hingeSets} set)
-      </span>
-      <strong>
-        ${money(c.hardware.hingeCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Fixed panel cladding</span>
+        <strong>
+          ${money(c.panelCladding.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Latch</span>
-      <strong>
-        ${money(c.hardware.latchCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>
+          Lock-out hinge sets
+          (${c.hardware.hingeSets})
+        </span>
+        <strong>
+          ${money(c.hardware.hingeCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Screws / fixings allowance</span>
-      <strong>
-        ${money(c.hardware.screwsCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Latch</span>
+        <strong>
+          ${money(c.hardware.latchCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Concrete</span>
-      <strong>
-        ${money(c.fixings.concreteCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Screws / cladding fixings</span>
+        <strong>
+          ${money(c.hardware.screwsCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Dynabolts</span>
-      <strong>
-        ${money(c.fixings.boltCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Powder coating</span>
+        <strong>
+          ${money(c.finishing.powderCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Powder coating</span>
-      <strong>
-        ${money(c.finishing.powderCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Etch primer / galv spray</span>
+        <strong>
+          ${money(c.finishing.touchUpCostExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>
-        Etch primer / galv spray
-      </span>
-      <strong>
-        ${money(c.finishing.touchUpCostExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Total labour</span>
+        <strong>
+          ${c.labour.totalHours.toFixed(2)} hrs
+        </strong>
+      </p>
 
-    <p>
-      <span>Total labour</span>
-      <strong>
-        ${c.labour.totalHours.toFixed(2)} hrs
-      </strong>
-    </p>
+      <p>
+        <span>Labour cost</span>
+        <strong>
+          ${money(c.labour.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>
-        Labour @
-        ${money(PRICES.business.labourRateExGST)}/hr
-      </span>
-      <strong>
-        ${money(c.labour.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>Chargeable travel</span>
+        <strong>
+          ${c.travel.chargeableKm.toFixed(0)} km
+        </strong>
+      </p>
 
-    <p>
-      <span>Chargeable travel</span>
-      <strong>
-        ${c.travel.chargeableKm.toFixed(0)} km
-      </strong>
-    </p>
+      <p>
+        <span>Travel cost</span>
+        <strong>
+          ${money(c.travel.costExGST)}
+        </strong>
+      </p>
 
-    <p>
-      <span>Travel</span>
-      <strong>
-        ${money(c.travel.costExGST)}
-      </strong>
-    </p>
+      <p>
+        <span>20% material markup</span>
+        <strong>
+          ${money(c.markup)}
+        </strong>
+      </p>
 
-    <p>
-      <span>20% material markup</span>
-      <strong>
-        ${money(c.markup)}
-      </strong>
-    </p>
-
-  `;
+    `;
 }
 
 
 // ============================================================
-// POST INSTALLATION TEXT
+// POST QUOTE TEXT
 // ============================================================
 
-function postFixingText(side) {
-  const fixing =
-    side === "left"
-      ? $("leftPostFixing").value
-      : $("rightPostFixing").value;
+function postQuoteLines(posts) {
+  const lines = [];
 
-  const label =
-    side === "left"
-      ? "Left post"
-      : "Right post";
+  posts.forEach((post) => {
+    const name =
+      post.position ||
+      `Post ${post.number}`;
 
-  if (fixing === "concreted") {
-    return (
-      `${label} concreted approximately ` +
-      `${PRICES.defaults.postEmbedMm}mm ` +
-      `into ground`
-    );
-  }
+    if (post.isExisting) {
+      lines.push(
+        `${name}: existing structure`
+      );
 
-  if (fixing === "brick") {
-    return (
-      `${label} fixed to existing ` +
-      `brickwork with ` +
-      `${$("dynaboltLength").value}x10mm ` +
-      `galvanised Dynabolts`
-    );
-  }
+      return;
+    }
 
-  if (fixing === "existing") {
-    return (
-      `${label} uses existing ` +
-      `post / structure`
-    );
-  }
+    if (
+      post.fixing ===
+      "concreted" ||
+      post.fixing ===
+      "fixedPanel"
+    ) {
+      lines.push(
+        `${name}: ${post.postLabel}, concreted approximately ${post.embedMm}mm into ground`
+      );
+    }
 
-  return `${label}: no new post`;
+    else if (
+      post.fixing === "brick"
+    ) {
+      lines.push(
+        `${name}: ${post.postLabel}, fixed to existing brickwork`
+      );
+    }
+  });
+
+  return lines;
 }
 
 
 // ============================================================
 // FINISHED QUOTE
-// Same underlying wording is used for
-// screen, SMS and email.
 // ============================================================
 
 function buildFinishedQuote(
@@ -2407,34 +3295,28 @@ function buildFinishedQuote(
   finalGST,
   finalIncGST
 ) {
-  if (!lastCalculation) {
+  const c =
+    lastCalculation;
+
+  if (!c) {
     return;
   }
 
   const customer =
-    $("customerName").value.trim();
+    $("customerName")
+      .value.trim();
 
   const address =
-    $("siteAddress").value.trim();
+    $("siteAddress")
+      .value.trim();
 
   const project =
-    $("projectNumber").value.trim();
-
-  const frameLabel =
-    selectedFrameData().label;
-
-  const postLabel =
-    selectedPostData().label;
-
-  const latchLabel =
-    lastCalculation
-      .hardware.latchLabel;
+    $("projectNumber")
+      .value.trim();
 
   const lines = [];
 
-  lines.push(
-    "JTLA GATES"
-  );
+  lines.push("JTLA GATES");
 
   lines.push(
     "Jody Tuuta | 0439 517 783"
@@ -2457,112 +3339,171 @@ function buildFinishedQuote(
   lines.push("");
 
   lines.push(
-    `Supply and install custom ` +
-    `${getQuoteTypeLabel().toLowerCase()}.`
+    "SCOPE OF WORKS"
   );
 
-  lines.push("");
 
-  lines.push(
-    `Gate: ` +
-    `${lastCalculation.gateWidthMm}mm wide x ` +
-    `${lastCalculation.gateHeightMm}mm high`
-  );
+  // --------------------------------------------------------
+  // FRAME
+  // --------------------------------------------------------
 
-  lines.push(
-    `Frame: ${frameLabel}`
-  );
+  if (includeFrame()) {
+    lines.push(
+      `${gateTypeLabel()}: ` +
+      `${c.gateWidthMm}mm wide x ` +
+      `${c.gateHeightMm}mm high`
+    );
+
+    lines.push(
+      `Frame: ` +
+      `${
+        PRICES.steel.frame[
+          $("frameSize").value
+        ].label
+      }`
+    );
+
+    if (
+      Number(
+        $("horizontalMidRails")
+          .value || 0
+      ) > 0
+    ) {
+      lines.push(
+        `Horizontal mid rails: ` +
+        `${$("horizontalMidRails").value}`
+      );
+    }
+
+    if (
+      Number(
+        $("verticalMidRails")
+          .value || 0
+      ) > 0
+    ) {
+      lines.push(
+        `Vertical mid rails: ` +
+        `${$("verticalMidRails").value}`
+      );
+    }
+  }
+
+
+  // --------------------------------------------------------
+  // POSTS
+  // --------------------------------------------------------
 
   if (
-    $("postSize").value !== "none" &&
-    Number($("postCount").value) > 0
+    includePosts() &&
+    c.posts.length
   ) {
-    lines.push(
-      `Posts: ${$("postCount").value} x ${postLabel}`
+    lines.push("");
+
+    postQuoteLines(
+      c.posts
+    ).forEach(
+      (line) =>
+        lines.push(line)
     );
   }
 
-  lines.push(
-    `Cladding: ` +
-    `${lastCalculation.gateCladding.description}`
-  );
 
-  if (
-    $("midRailOption").value !==
-    "none"
-  ) {
-    const direction =
-      $("midRailOption").value;
+  // --------------------------------------------------------
+  // CLADDING
+  // --------------------------------------------------------
+
+  if (includeCladding()) {
+    lines.push("");
 
     lines.push(
-      `Mid rail: ${direction}, ` +
-      `${$("midRailLength").textContent}`
+      `Cladding: ` +
+      `${c.gateCladding.description}`
     );
   }
 
-  if (
-    $("fixedPanelOption").value !==
-    "none"
-  ) {
+
+  // --------------------------------------------------------
+  // FIXED PANEL
+  // --------------------------------------------------------
+
+  if (c.fixedPanel.exists) {
+    lines.push("");
+
     lines.push(
       `Fixed panel: ` +
-      `${lastCalculation.fixedPanel.widthMm}mm x ` +
-      `${lastCalculation.fixedPanel.heightMm}mm, ` +
-      `${$("fixedPanelDirection").value} cladding`
+      `${c.fixedPanel.widthMm}mm wide x ` +
+      `${c.fixedPanel.heightMm}mm high, ` +
+      `${c.fixedPanel.direction} cladding`
     );
   }
 
-  lines.push(
-    `Hinges: Lock-out galvanised hinges`
-  );
 
-  lines.push(
-    `Latch: ${latchLabel}`
-  );
+  // --------------------------------------------------------
+  // HARDWARE
+  // --------------------------------------------------------
 
-  lines.push("");
-
-  lines.push(
-    "Installation:"
-  );
-
-  lines.push(
-    postFixingText("left")
-  );
-
-  lines.push(
-    postFixingText("right")
-  );
-
-  if ($("powderCoat").checked) {
-    const colour =
-      $("powderColour")
-        .value.trim();
-
+  if (includeFrame()) {
     lines.push("");
 
-    lines.push(
-      `Finish: Powder coated` +
-      (
-        colour
-          ? ` ${colour}`
-          : ""
-      )
-    );
+    if (
+      quoteType !== "slider"
+    ) {
+      lines.push(
+        "Lock-out galvanised hinges"
+      );
+    }
 
-    lines.push(
-      PRICES.finishing
-        .powderCoat.quoteNote
-    );
+    if (
+      $("latch").value !==
+      "none"
+    ) {
+      lines.push(
+        c.hardware.latchLabel
+      );
+    }
   }
 
-  else {
+
+  // --------------------------------------------------------
+  // FINISH
+  // --------------------------------------------------------
+
+  if (includeFrame()) {
     lines.push("");
 
-    lines.push(
-      "Steel finish: Duragalv with exposed fabrication areas treated with etch primer and silver galvanising spray."
-    );
+    if (
+      $("powderCoat").checked
+    ) {
+      const colour =
+        $("powderColour")
+          .value.trim();
+
+      lines.push(
+        `Steel finish: Powder coated` +
+        (
+          colour
+            ? ` ${colour}`
+            : ""
+        )
+      );
+
+      lines.push(
+        PRICES.finishing
+          .powderCoat.quoteNote
+      );
+    }
+
+    else {
+      lines.push(
+        "Steel finish: Duragalv with exposed fabrication areas treated with etch primer and silver galvanising spray."
+      );
+    }
   }
+
+
+  // --------------------------------------------------------
+  // PRICE
+  // --------------------------------------------------------
 
   lines.push("");
 
@@ -2581,107 +3522,129 @@ function buildFinishedQuote(
   currentQuoteText =
     lines.join("\n");
 
-  // ----------------------------
-  // PROFESSIONAL SCREEN VERSION
-  // ----------------------------
 
-  const quoteHTML = [];
+  // ========================================================
+  // ON-SCREEN PROFESSIONAL VERSION
+  // ========================================================
 
-  quoteHTML.push(
-    `<p>
-      Supply and install custom
-      <strong>
-        ${getQuoteTypeLabel().toLowerCase()}
-      </strong>.
-    </p>`
-  );
+  const html = [];
 
-  quoteHTML.push(
-    `<p>
-      <strong>Gate:</strong>
-      ${lastCalculation.gateWidthMm}mm wide
-      ×
-      ${lastCalculation.gateHeightMm}mm high
-    </p>`
-  );
+  html.push(`
+    <p>
+      <strong>Scope of Works</strong>
+    </p>
+  `);
 
-  quoteHTML.push(
-    `<p>
-      <strong>Frame:</strong>
-      ${frameLabel}
-    </p>`
-  );
 
-  if (
-    $("postSize").value !== "none" &&
-    Number($("postCount").value) > 0
-  ) {
-    quoteHTML.push(
-      `<p>
-        <strong>Posts:</strong>
-        ${$("postCount").value}
-        ×
-        ${postLabel}
-      </p>`
-    );
+  if (includeFrame()) {
+    html.push(`
+      <p>
+        Supply and install
+        <strong>
+          ${gateTypeLabel().toLowerCase()}
+        </strong>
+        measuring
+        ${c.gateWidthMm}mm wide ×
+        ${c.gateHeightMm}mm high.
+      </p>
+
+      <p>
+        <strong>Frame:</strong>
+        ${
+          PRICES.steel.frame[
+            $("frameSize").value
+          ].label
+        }
+      </p>
+    `);
   }
 
-  quoteHTML.push(
-    `<p>
-      <strong>Cladding:</strong>
-      ${lastCalculation.gateCladding.description}
-    </p>`
-  );
 
   if (
-    $("midRailOption").value !==
-    "none"
+    includePosts() &&
+    c.posts.length
   ) {
-    quoteHTML.push(
-      `<p>
-        <strong>Mid rail:</strong>
-        ${$("midRailOption").value},
-        ${$("midRailLength").textContent}
-      </p>`
-    );
+    const postHtml =
+      postQuoteLines(
+        c.posts
+      )
+        .map(
+          (line) =>
+            `${line}.`
+        )
+        .join("<br>");
+
+    html.push(`
+      <p>
+        <strong>Posts:</strong><br>
+        ${postHtml}
+      </p>
+    `);
   }
 
-  if (
-    $("fixedPanelOption").value !==
-    "none"
-  ) {
-    quoteHTML.push(
-      `<p>
+
+  if (includeCladding()) {
+    html.push(`
+      <p>
+        <strong>Cladding:</strong>
+        ${c.gateCladding.description}
+      </p>
+    `);
+  }
+
+
+  if (c.fixedPanel.exists) {
+    html.push(`
+      <p>
         <strong>Fixed panel:</strong>
-        ${lastCalculation.fixedPanel.widthMm}mm
-        ×
-        ${lastCalculation.fixedPanel.heightMm}mm,
-        ${$("fixedPanelDirection").value}
-        cladding
-      </p>`
-    );
+        ${c.fixedPanel.widthMm}mm wide ×
+        ${c.fixedPanel.heightMm}mm high,
+        ${c.fixedPanel.direction} cladding.
+      </p>
+    `);
   }
 
-  quoteHTML.push(
-    `<p>
-      <strong>Hardware:</strong>
-      Lock-out galvanised hinges;
-      ${latchLabel}
-    </p>`
-  );
 
-  quoteHTML.push(
-    `<p>
-      <strong>Installation:</strong><br>
-      ${postFixingText("left")}.<br>
-      ${postFixingText("right")}.
-    </p>`
-  );
+  if (includeFrame()) {
+    let hardwareText = "";
 
-  if ($("powderCoat").checked) {
-    quoteHTML.push(
-      `<p>
-        <strong>Finish:</strong>
+    if (
+      quoteType !== "slider"
+    ) {
+      hardwareText +=
+        "Lock-out galvanised hinges";
+    }
+
+    if (
+      $("latch").value !==
+      "none"
+    ) {
+      if (hardwareText) {
+        hardwareText += "; ";
+      }
+
+      hardwareText +=
+        c.hardware.latchLabel;
+    }
+
+    if (hardwareText) {
+      html.push(`
+        <p>
+          <strong>Hardware:</strong>
+          ${hardwareText}
+        </p>
+      `);
+    }
+  }
+
+
+  if (
+    includeFrame() &&
+    $("powderCoat").checked
+  ) {
+    html.push(`
+      <p>
+        <strong>Steel finish:</strong>
         Powder coated
         ${
           $("powderColour")
@@ -2697,44 +3660,46 @@ function buildFinishedQuote(
               .powderCoat.quoteNote
           }
         </em>
-      </p>`
-    );
+      </p>
+    `);
   }
 
-  else {
-    quoteHTML.push(
-      `<p>
+  else if (includeFrame()) {
+    html.push(`
+      <p>
         <strong>Steel finish:</strong>
         Duragalv with exposed fabrication
         areas treated with etch primer and
         silver galvanising spray.
-      </p>`
-    );
+      </p>
+    `);
   }
 
-  $("quoteDescription").innerHTML =
-    quoteHTML.join("");
+  $("quoteDescription")
+    .innerHTML =
+    html.join("");
 
   updateCustomerDisplay();
 }
 
 
 // ============================================================
-// SAVE QUOTES
+// SAVE / LOAD
 // ============================================================
+
+function serializePosts() {
+  return collectPosts();
+}
+
 
 function collectQuoteData() {
   const form = {};
 
   document
     .querySelectorAll(
-      "input, select"
+      "input[id], select[id]"
     )
     .forEach((element) => {
-      if (!element.id) {
-        return;
-      }
-
       form[element.id] =
         element.type === "checkbox"
           ? element.checked
@@ -2743,26 +3708,32 @@ function collectQuoteData() {
 
   return {
     id:
-      $("projectNumber").value.trim(),
+      $("projectNumber")
+        .value.trim(),
 
     savedAt:
       new Date().toISOString(),
 
     quoteType,
-    selectedCladding,
 
     customerName:
-      $("customerName").value.trim(),
+      $("customerName")
+        .value.trim(),
 
     siteAddress:
-      $("siteAddress").value.trim(),
+      $("siteAddress")
+        .value.trim(),
 
     finalPrice:
       Number(
-        $("finalPrice").value || 0
+        $("finalPrice")
+          .value || 0
       ),
 
-    form
+    form,
+
+    posts:
+      serializePosts()
   };
 }
 
@@ -2771,9 +3742,14 @@ function saveQuote() {
   calculateQuote();
 
   const project =
-    $("projectNumber").value.trim();
+    $("projectNumber")
+      .value.trim();
 
-  if (!/^[0-9]{6}$/.test(project)) {
+  if (
+    !/^[0-9]{6}$/.test(
+      project
+    )
+  ) {
     alert(
       "Enter a 6-digit project number before saving."
     );
@@ -2791,18 +3767,21 @@ function saveQuote() {
       ) || "[]"
     );
 
-  const existing =
+  const index =
     quotes.findIndex(
       (item) =>
         item.id === quote.id
     );
 
-  if (existing >= 0) {
-    quotes[existing] = quote;
+  if (index >= 0) {
+    quotes[index] =
+      quote;
   }
 
   else {
-    quotes.unshift(quote);
+    quotes.unshift(
+      quote
+    );
   }
 
   localStorage.setItem(
@@ -2813,10 +3792,6 @@ function saveQuote() {
   renderSavedQuotes();
 }
 
-
-// ============================================================
-// SAVED QUOTES DISPLAY
-// ============================================================
 
 function renderSavedQuotes() {
   const quotes =
@@ -2839,8 +3814,9 @@ function renderSavedQuotes() {
   }
 
   container.innerHTML =
-    quotes
-      .map((quote) => `
+    quotes.map(
+      (quote) => `
+
         <div class="saved-row">
 
           <div>
@@ -2863,10 +3839,13 @@ function renderSavedQuotes() {
             </small>
           </div>
 
+
           <div class="saved-actions">
 
             <strong>
-              ${money(quote.finalPrice)}
+              ${money(
+                quote.finalPrice
+              )}
             </strong>
 
             <button
@@ -2888,11 +3867,14 @@ function renderSavedQuotes() {
           </div>
 
         </div>
-      `)
-      .join("");
+
+      `
+    ).join("");
 
   container
-    .querySelectorAll("[data-load]")
+    .querySelectorAll(
+      "[data-load]"
+    )
     .forEach((button) => {
       button.addEventListener(
         "click",
@@ -2904,7 +3886,9 @@ function renderSavedQuotes() {
     });
 
   container
-    .querySelectorAll("[data-delete]")
+    .querySelectorAll(
+      "[data-delete]"
+    )
     .forEach((button) => {
       button.addEventListener(
         "click",
@@ -2917,9 +3901,13 @@ function renderSavedQuotes() {
 }
 
 
-// ============================================================
-// LOAD QUOTE
-// ============================================================
+function clearPosts() {
+  $("postsContainer")
+    .innerHTML = "";
+
+  postCounter = 0;
+}
+
 
 function loadQuote(id) {
   const quotes =
@@ -2940,47 +3928,96 @@ function loadQuote(id) {
   }
 
   quoteType =
-    quote.quoteType || "single";
-
-  selectedCladding =
-    quote.selectedCladding ||
-    "ekodeck";
+    quote.quoteType ||
+    "single";
 
   document
     .querySelectorAll(".tab")
     .forEach((tab) => {
       tab.classList.toggle(
         "active",
-        tab.dataset.type === quoteType
+        tab.dataset.type ===
+        quoteType
       );
     });
 
+
+  // --------------------------------------------------------
+  // STANDARD FORM VALUES
+  // --------------------------------------------------------
+
   Object.entries(
     quote.form || {}
-  ).forEach(([id, value]) => {
-    const element = $(id);
+  ).forEach(
+    ([id, value]) => {
+      const element = $(id);
 
-    if (!element) {
-      return;
+      if (!element) {
+        return;
+      }
+
+      if (
+        element.type ===
+        "checkbox"
+      ) {
+        element.checked =
+          Boolean(value);
+      }
+
+      else {
+        element.value =
+          value;
+      }
     }
+  );
 
-    if (
-      element.type === "checkbox"
-    ) {
-      element.checked =
-        Boolean(value);
-    }
 
-    else {
-      element.value = value;
-    }
-  });
+  // --------------------------------------------------------
+  // POSTS
+  // --------------------------------------------------------
 
-  updateCladdingDisplay();
+  clearPosts();
+
+  if (
+    Array.isArray(
+      quote.posts
+    )
+  ) {
+    quote.posts.forEach(
+      (post) => {
+        createPost({
+          position:
+            post.position,
+
+          postSize:
+            post.postKey,
+
+          height:
+            post.heightMm,
+
+          fixing:
+            post.fixing,
+
+          embed:
+            post.embedMm,
+
+          concreteBags:
+            post.concreteBags,
+
+          dynaboltLength:
+            post.dynaboltLengthMm,
+
+          holes:
+            post.holes
+        });
+      }
+    );
+  }
+
 
   updateConditionalSections();
 
-  calculateQuote();
+  calculateProposedGateSize();
 
   window.scrollTo({
     top: 0,
@@ -2988,10 +4025,6 @@ function loadQuote(id) {
   });
 }
 
-
-// ============================================================
-// DELETE QUOTE
-// ============================================================
 
 function deleteQuote(id) {
   let quotes =
@@ -3027,6 +4060,57 @@ function newQuote() {
   $("customerPhone").value = "";
   $("customerEmail").value = "";
 
+  $("includeFrame").checked = true;
+  $("includePosts").checked = true;
+  $("includeCladding").checked = true;
+
+  $("frameSize").value =
+    PRICES.defaults.frame;
+
+  $("horizontalMidRails").value =
+    0;
+
+  $("verticalMidRails").value =
+    0;
+
+  $("fixedPanelOption").value =
+    "none";
+
+  $("fixedPanelWidth").value = 0;
+  $("fixedPanelHeight").value = 0;
+
+  $("claddingType").value =
+    PRICES.defaults.cladding;
+
+  $("claddingDirection").value =
+    PRICES.defaults
+      .claddingDirection;
+
+  $("ekodeckColour").value =
+    "Greystone";
+
+  $("cypressFinish").value =
+    "Raw";
+
+  $("lospFinish").value =
+    "Plain";
+
+  $("merbauFinish").value =
+    "Raw";
+
+  $("latch").value =
+    PRICES.defaults.latch;
+
+  $("powderCoat").checked =
+    false;
+
+  $("powderColour").value = "";
+
+  $("powderCost").value =
+    PRICES.finishing
+      .powderCoat
+      .typicalCost;
+
   $("cavityWidth").value = "";
   $("cavityHeight").value = "";
 
@@ -3042,81 +4126,39 @@ function newQuote() {
   $("gateWidth").value = "";
   $("gateHeight").value = "";
 
-  $("frameSize").value =
-    PRICES.defaults.frame;
-
-  $("postSize").value =
-    PRICES.defaults.posts;
-
-  $("postCount").value =
-    PRICES.defaults.postCount;
-
-  $("leftPostFixing").value =
-    "concreted";
-
-  $("rightPostFixing").value =
-    "concreted";
-
-  $("dynaboltLength").value =
-    PRICES.defaults
-      .dynaboltLengthMm;
-
-  $("dynaboltCount").value = 2;
-
-  $("fixedPanelOption").value =
-    "none";
-
-  $("fixedPanelWidth").value = 0;
-  $("fixedPanelHeight").value = 0;
-
-  $("midRailOption").value =
-    "none";
-
-  selectedCladding =
-    PRICES.defaults.cladding;
-
-  $("ekodeckColour").value =
-    "Greystone";
-
-  $("latch").value =
-    PRICES.defaults.latch;
-
-  $("powderCoat").checked =
-    false;
-
-  $("powderColour").value = "";
-
-  $("powderCost").value =
-    PRICES.finishing
-      .powderCoat.typicalCost;
-
   $("fabricationHours").value = 4;
   $("installationHours").value = 2;
   $("holeDigHours").value = 1;
   $("soilRemovalHours").value = 0.5;
 
   $("travelKm").value = 0;
-  $("extraHardware").value = 0;
   $("otherCosts").value = 0;
+  $("extraHardware").value = 0;
+
+  clearPosts();
+
+  createPost({
+    position: "Left",
+    fixing: "concreted"
+  });
+
+  createPost({
+    position: "Right",
+    fixing: "concreted"
+  });
 
   setQuoteType("single");
-
-  updateConcreteBagSuggestion();
-
-  updateCladdingDisplay();
 
   updateConditionalSections();
 
   validateRequiredFields();
 
-  updateCustomerDisplay();
-
-  calculateQuote();
+  calculateProposedGateSize();
 }
 
 
 // ============================================================
-// SMS
+// SMS / EMAIL
 // ============================================================
 
 function sendSMS() {
@@ -3134,8 +4176,6 @@ function sendSMS() {
     return;
   }
 
-  // Same quote wording as email.
-
   window.location.href =
     `sms:${phone}?body=` +
     encodeURIComponent(
@@ -3143,10 +4183,6 @@ function sendSMS() {
     );
 }
 
-
-// ============================================================
-// EMAIL
-// ============================================================
 
 function sendEmail() {
   calculateQuote();
@@ -3165,9 +4201,8 @@ function sendEmail() {
 
   const subject =
     `JTLA Gates Quote ` +
-    `${$("projectNumber").value.trim()}`;
-
-  // Same quote wording as SMS.
+    `${$("projectNumber")
+      .value.trim()}`;
 
   window.location.href =
     `mailto:${email}` +
@@ -3176,19 +4211,14 @@ function sendEmail() {
 }
 
 
-// ============================================================
-// PDF / PRINT
-// ============================================================
-
 function printQuote() {
   calculateQuote();
-
   window.print();
 }
 
 
 // ============================================================
-// EVENTS
+// MAIN EVENTS
 // ============================================================
 
 document.addEventListener(
@@ -3197,17 +4227,44 @@ document.addEventListener(
 
     setupPriceFields();
 
-    setupCladdingMenu();
+
+    // --------------------------------------------------------
+    // CREATE STARTING POSTS
+    // --------------------------------------------------------
+
+    createPost({
+      position: "Left",
+      fixing: "concreted"
+    });
+
+    createPost({
+      position: "Right",
+      fixing: "concreted"
+    });
 
 
-    // ----------------------------
+    // --------------------------------------------------------
+    // ADD POST BUTTON
+    // --------------------------------------------------------
+
+    $("addPostBtn")
+      .addEventListener(
+        "click",
+        () => {
+          createPost({
+            position: ""
+          });
+        }
+      );
+
+
+    // --------------------------------------------------------
     // GATE TYPE
-    // ----------------------------
+    // --------------------------------------------------------
 
     document
       .querySelectorAll(".tab")
       .forEach((tab) => {
-
         tab.addEventListener(
           "click",
           () =>
@@ -3215,13 +4272,31 @@ document.addEventListener(
               tab.dataset.type
             )
         );
-
       });
 
 
-    // ----------------------------
-    // CUSTOMER DETAILS
-    // ----------------------------
+    // --------------------------------------------------------
+    // INCLUDE SWITCHES
+    // --------------------------------------------------------
+
+    [
+      "includeFrame",
+      "includePosts",
+      "includeCladding"
+    ].forEach((id) => {
+      $(id).addEventListener(
+        "change",
+        () => {
+          updateConditionalSections();
+          calculateProposedGateSize();
+        }
+      );
+    });
+
+
+    // --------------------------------------------------------
+    // CUSTOMER
+    // --------------------------------------------------------
 
     [
       "customerName",
@@ -3230,26 +4305,20 @@ document.addEventListener(
       "customerPhone",
       "customerEmail"
     ].forEach((id) => {
-
       $(id).addEventListener(
         "input",
         () => {
-
           updateCustomerDisplay();
-
           validateRequiredFields();
-
           calculateQuote();
-
         }
       );
-
     });
 
 
-    // ----------------------------
-    // CAVITY / GATE SIZE
-    // ----------------------------
+    // --------------------------------------------------------
+    // MEASUREMENTS
+    // --------------------------------------------------------
 
     [
       "cavityWidth",
@@ -3259,131 +4328,101 @@ document.addEventListener(
       "bottomGap",
       "fixedPanelWidth"
     ].forEach((id) => {
-
       $(id).addEventListener(
         "input",
         calculateProposedGateSize
       );
-
     });
 
 
-    // ----------------------------
-    // POST SETTINGS
-    // ----------------------------
-
-    [
-      "postSize",
-      "postCount",
-      "leftPostFixing",
-      "rightPostFixing"
-    ].forEach((id) => {
-
-      $(id).addEventListener(
-        "change",
-        () => {
-
-          updateConditionalSections();
-
-          updateConcreteBagSuggestion();
-
-          calculateProposedGateSize();
-
-        }
-      );
-
-    });
-
-
-    // ----------------------------
+    // --------------------------------------------------------
     // FIXED PANEL
-    // ----------------------------
+    // --------------------------------------------------------
 
     $("fixedPanelOption")
       .addEventListener(
         "change",
         () => {
-
           updateConditionalSections();
-
           calculateProposedGateSize();
-
         }
       );
 
 
-    // ----------------------------
-    // POWDER COATING
-    // ----------------------------
+    // --------------------------------------------------------
+    // CLADDING
+    // --------------------------------------------------------
+
+    [
+      "claddingType",
+      "cypressFinish",
+      "lospFinish"
+    ].forEach((id) => {
+      $(id).addEventListener(
+        "change",
+        () => {
+          updateCladdingOptions();
+          calculateQuote();
+        }
+      );
+    });
+
+
+    // --------------------------------------------------------
+    // POWDER
+    // --------------------------------------------------------
 
     $("powderCoat")
       .addEventListener(
         "change",
         () => {
-
           updateConditionalSections();
-
           calculateQuote();
-
         }
       );
 
 
-    // ----------------------------
-    // MID RAIL
-    // ----------------------------
-
-    $("midRailOption")
-      .addEventListener(
-        "change",
-        () => {
-
-          updateConditionalSections();
-
-          calculateQuote();
-
-        }
-      );
-
-
-    // ----------------------------
-    // ALL OTHER INPUTS
-    // ----------------------------
+    // --------------------------------------------------------
+    // ALL OTHER STANDARD INPUTS
+    // --------------------------------------------------------
 
     document
       .querySelectorAll(
-        "input, select"
+        "input[id], select[id]"
       )
       .forEach((element) => {
 
-        const handled = [
+        const special = [
           "customerName",
           "siteAddress",
           "projectNumber",
           "customerPhone",
           "customerEmail",
 
+          "includeFrame",
+          "includePosts",
+          "includeCladding",
+
           "cavityWidth",
           "cavityHeight",
           "leftGap",
           "rightGap",
           "bottomGap",
+
           "fixedPanelWidth",
-
-          "postSize",
-          "postCount",
-          "leftPostFixing",
-          "rightPostFixing",
-
           "fixedPanelOption",
+
+          "claddingType",
+          "cypressFinish",
+          "lospFinish",
+
           "powderCoat",
-          "midRailOption",
 
           "finalPrice"
         ];
 
         if (
-          handled.includes(
+          special.includes(
             element.id
           )
         ) {
@@ -3399,24 +4438,23 @@ document.addEventListener(
           "change",
           calculateQuote
         );
-
       });
 
 
-    // ----------------------------
-    // FINAL PRICE OVERRIDE
-    // ----------------------------
+    // --------------------------------------------------------
+    // FINAL OVERRIDE
+    // --------------------------------------------------------
 
     $("finalPrice")
       .addEventListener(
         "input",
-        updateProfitAndFinalQuote
+        updateFinalNumbers
       );
 
 
-    // ----------------------------
+    // --------------------------------------------------------
     // BUTTONS
-    // ----------------------------
+    // --------------------------------------------------------
 
     $("calculateBtn")
       .addEventListener(
@@ -3455,16 +4493,12 @@ document.addEventListener(
       );
 
 
-    // ----------------------------
+    // --------------------------------------------------------
     // INITIAL STATE
-    // ----------------------------
+    // --------------------------------------------------------
 
     quoteType =
       PRICES.defaults.gateType;
-
-    updateConcreteBagSuggestion();
-
-    updateCladdingDisplay();
 
     updateConditionalSections();
 
@@ -3472,7 +4506,7 @@ document.addEventListener(
 
     validateRequiredFields();
 
-    calculateQuote();
+    calculateProposedGateSize();
 
     renderSavedQuotes();
 
