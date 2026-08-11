@@ -21,14 +21,16 @@ const PRICES = {
   steel: {
     frame: {
       "50x25_rhs": { label: "50x25 RHS", ratePerM: 0 },
+      "25x25_rhs": { label: "25x25 RHS", ratePerM: 0 }, 
       "40x40_rhs": { label: "40x40 RHS", ratePerM: 0 },
-      "custom": { label: "Custom frame", ratePerM: 0 }
-    },
+      "50x50_rhs": { label: "50x50 RHS", ratePerM: 0 },
+      
     posts: {
       "65x65_shs": { label: "65x65 SHS", ratePerM: 0 },
       "50x50_shs": { label: "50x50 SHS", ratePerM: 0 },
+      "90x90_shs": { label: "90x90 SHS", ratePerM: 0 },
+      "100x100_shs": { label: "50x50 SHS", ratePerM: 0 },
       "none": { label: "No new posts", ratePerM: 0 },
-      "custom": { label: "Custom posts", ratePerM: 0 }
     }
   },
 
@@ -72,20 +74,20 @@ const PRICES = {
 
   hardware: {
     hinges: {
-      heavy: { label: "Heavy duty galvanised hinges", price: 0 },
-      lockout: { label: "Heavy duty lock-out galvanised hinges", price: 0 },
+      lockout: { label: "Lock-out galvanised hinges", price: 0 },
       none: { label: "No hinges", price: 0 }
     },
     latches: {
       ddDualKey: { label: "D&D dual-way key lockable latch", price: 0 },
-      standard: { label: "Standard latch", price: 0 },
+      D latch: { label: "Standard D latch", price: 0 },
+      Snap latch: { label: "Standard Snap latch", price: 0 },
       none: { label: "No latch", price: 0 }
     }
   },
 
   fixings: {
     concreteBag: 8,
-    boltEach: 2
+    boltEach: 3
   },
 
   finishing: {
