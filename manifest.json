@@ -1,0 +1,8 @@
+{
+  "name": "JTLA Gate Quoter",
+  "short_name": "Gate Quoter",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f4",
+  "theme_color": "#315c3b"
+}
