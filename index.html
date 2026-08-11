@@ -2,374 +2,1409 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#315c3b" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="theme-color"
+    content="#315c3b"
+  />
+
   <title>JTLA Gate Quoter</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
+  <link
+    rel="manifest"
+    href="manifest.json"
+  />
 </head>
+
 <body>
-  <header class="topbar">
-    <img src="jtla-logo.png" alt="JTLA logo" class="logo" />
-    <div class="titleblock">
-      <strong>Gate Quoter</strong>
-      <span>JT Landscape Architect</span>
+
+  <!-- =========================================
+       HEADER
+  ========================================== -->
+
+  <header class="app-header">
+
+    <div class="header-brand">
+
+      <img
+        src="jtla-logo.png"
+        alt="JTLA Gates"
+        class="header-logo"
+      />
+
+      <div>
+        <h1>JTLA Gate Quoter</h1>
+        <p>Gate quotation calculator</p>
+      </div>
+
     </div>
-    <button id="newQuoteBtn" class="light-btn">New</button>
+
+    <button
+      id="newQuoteBtn"
+      class="secondary small"
+      type="button"
+    >
+      New Quote
+    </button>
+
   </header>
 
+
+  <!-- =========================================
+       FIXED CUSTOMER STRIP
+  ========================================== -->
+
   <div class="customer-sticky">
-    <span>Customer:</span>
-    <strong id="stickyCustomerName">New quote</strong>
+
+    <span>Customer</span>
+
+    <strong id="stickyCustomerName">
+      New Quote
+    </strong>
+
   </div>
 
+
   <main class="app-shell">
+
+
+    <!-- =========================================
+         GATE TYPE
+    ========================================== -->
+
     <section class="tabs card">
-      <button class="tab active" data-type="single">Single</button>
-      <button class="tab" data-type="double">Drive / Double</button>
-      <button class="tab" data-type="slider">Slider</button>
+
+      <button
+        class="tab active"
+        data-type="single"
+        type="button"
+      >
+        Single
+      </button>
+
+      <button
+        class="tab"
+        data-type="double"
+        type="button"
+      >
+        Drive / Double
+      </button>
+
+      <button
+        class="tab"
+        data-type="slider"
+        type="button"
+      >
+        Slider
+      </button>
+
     </section>
 
-    <details class="card form-section" open>
-      <summary>Customer Details <span class="section-status">Required</span></summary>
-      <div class="section-body">
-        <label>Name
-          <input class="required-field" id="customerName" type="text" placeholder="Customer name" />
+
+    <!-- =========================================
+         CUSTOMER DETAILS
+    ========================================== -->
+
+    <details class="card section-card" open>
+
+      <summary>
+        Customer Details
+      </summary>
+
+      <div class="section-content">
+
+        <label class="required-field">
+          Customer name
+
+          <input
+            id="customerName"
+            type="text"
+            autocomplete="name"
+            required
+          />
         </label>
-        <label>Address
-          <input class="required-field" id="siteAddress" type="text" placeholder="Site address" />
+
+
+        <label class="required-field">
+          Address
+
+          <input
+            id="siteAddress"
+            type="text"
+            autocomplete="street-address"
+            required
+          />
         </label>
+
+
         <div class="grid two">
-          <label>Project number (6 numerals)
-            <input class="required-field" id="projectNumber" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="001242" />
+
+          <label class="required-field">
+            Project number
+
+            <input
+              id="projectNumber"
+              type="text"
+              inputmode="numeric"
+              maxlength="6"
+              pattern="[0-9]{6}"
+              placeholder="001242"
+              required
+            />
           </label>
-          <label>Phone number
-            <input class="required-field" id="customerPhone" type="tel" />
+
+
+          <label>
+            Phone number
+
+            <input
+              id="customerPhone"
+              type="tel"
+              autocomplete="tel"
+            />
           </label>
+
         </div>
-        <label>Email address
-          <input class="required-field" id="customerEmail" type="email" />
+
+
+        <label>
+          Email address
+
+          <input
+            id="customerEmail"
+            type="email"
+            autocomplete="email"
+          />
         </label>
+
       </div>
+
     </details>
 
-    <details class="card form-section" open>
-      <summary>Gate Measurements <span class="section-status">Required</span></summary>
-      <div class="section-body">
+
+    <!-- =========================================
+         GATE MEASUREMENTS
+    ========================================== -->
+
+    <details class="card section-card" open>
+
+      <summary>
+        Gate Measurements
+      </summary>
+
+      <div class="section-content">
+
+
         <h3>Original cavity</h3>
+
         <div class="grid two">
-          <label>Cavity width (mm)
-            <input class="required-field" id="cavityWidth" type="number" min="0" value="1000" />
+
+          <label class="required-field">
+            Cavity width (mm)
+
+            <input
+              id="cavityWidth"
+              type="number"
+              min="0"
+              step="1"
+              required
+            />
           </label>
-          <label>Cavity height (mm)
-            <input class="required-field" id="cavityHeight" type="number" min="0" value="1800" />
+
+
+          <label class="required-field">
+            Cavity height (mm)
+
+            <input
+              id="cavityHeight"
+              type="number"
+              min="0"
+              step="1"
+              required
+            />
           </label>
+
         </div>
 
-        <h3>Clearances / gaps</h3>
+
+        <h3>Required gaps</h3>
+
         <div class="grid three">
-          <label>Left gap (mm)
-            <input class="required-field" id="gapLeft" type="number" min="0" value="10" />
+
+          <label>
+            Left gap (mm)
+
+            <input
+              id="leftGap"
+              type="number"
+              min="0"
+              step="1"
+              value="10"
+            />
           </label>
-          <label>Right gap (mm)
-            <input class="required-field" id="gapRight" type="number" min="0" value="10" />
+
+
+          <label>
+            Right gap (mm)
+
+            <input
+              id="rightGap"
+              type="number"
+              min="0"
+              step="1"
+              value="10"
+            />
           </label>
-          <label>Under gate (mm)
-            <input class="required-field" id="gapBottom" type="number" min="0" value="20" />
+
+
+          <label>
+            Under gate (mm)
+
+            <input
+              id="bottomGap"
+              type="number"
+              min="0"
+              step="1"
+              value="20"
+            />
           </label>
+
         </div>
 
-        <div class="calc-box">
-          <div><span>Calculated proposed width</span><strong id="calcGateWidth">980 mm</strong></div>
-          <div><span>Calculated proposed height</span><strong id="calcGateHeight">1780 mm</strong></div>
-        </div>
 
         <h3>Proposed gate size</h3>
-        <p class="muted">These fill automatically from the cavity and gaps, but you can change them.</p>
+
         <div class="grid two">
-          <label>Gate width (mm)
-            <input class="required-field" id="gateWidth" type="number" min="0" value="980" />
+
+          <label class="required-field">
+            Gate width (mm)
+
+            <input
+              id="gateWidth"
+              type="number"
+              min="0"
+              step="1"
+              required
+            />
           </label>
-          <label>Gate height (mm)
-            <input class="required-field" id="gateHeight" type="number" min="0" value="1780" />
+
+
+          <label class="required-field">
+            Gate height (mm)
+
+            <input
+              id="gateHeight"
+              type="number"
+              min="0"
+              step="1"
+              required
+            />
           </label>
+
         </div>
+
+
+        <div class="info-line">
+
+          <span>
+            Gate area
+          </span>
+
+          <strong id="gateArea">
+            0.00 m²
+          </strong>
+
+        </div>
+
       </div>
+
     </details>
 
-    <details class="card form-section" open>
-      <summary>Gate Details <span class="section-status">Required</span></summary>
-      <div class="section-body">
+
+    <!-- =========================================
+         GATE DETAILS
+    ========================================== -->
+
+    <details class="card section-card" open>
+
+      <summary>
+        Gate Details
+      </summary>
+
+      <div class="section-content">
+
+
         <div class="grid two">
-          <label>Frame
-            <select class="required-field" id="frameSize"></select>
+
+          <label>
+            Frame
+
+            <select id="frameSize">
+            </select>
+
           </label>
-          <label>Posts
-            <select class="required-field" id="postSize"></select>
+
+
+          <label>
+            Posts
+
+            <select id="postSize">
+            </select>
+
           </label>
+
         </div>
 
-        <div id="customSteelFields" class="grid two hidden">
-          <label>Custom frame description
-            <input id="customFrameLabel" type="text" placeholder="e.g. 40x20 RHS" />
+
+        <div class="grid two">
+
+          <label>
+            Number of posts
+
+            <input
+              id="postCount"
+              type="number"
+              min="0"
+              step="1"
+              value="2"
+            />
           </label>
-          <label>Custom frame $/m
-            <input id="customFrameRate" type="number" min="0" step="0.01" />
+
+
+          <label>
+            Post below ground (mm)
+
+            <input
+              id="postEmbed"
+              type="number"
+              min="0"
+              step="1"
+              value="600"
+            />
           </label>
-          <label>Custom post description
-            <input id="customPostLabel" type="text" placeholder="e.g. 75x75 SHS" />
-          </label>
-          <label>Custom post $/m
-            <input id="customPostRate" type="number" min="0" step="0.01" />
-          </label>
+
         </div>
 
-        <label>Cladding
-          <select class="required-field" id="claddingType">
-            <option value="ekodeck">Ekodeck screening 67x15mm</option>
-            <option value="cypress">Cypress 67x15mm</option>
-            <option value="cypressPickets">Cypress pickets</option>
-            <option value="merbau90">Merbau decking 90mm</option>
-            <option value="merbau140">Merbau decking 140mm</option>
-            <option value="colorbond">Colorbond steel cladding</option>
-            <option value="custom">Custom / Other</option>
-          </select>
-        </label>
+
+        <!-- CLADDING SELECTOR -->
+
+        <div class="cladding-selector">
+
+          <label>
+            Cladding
+          </label>
+
+          <button
+            id="claddingButton"
+            class="selection-button"
+            type="button"
+          >
+
+            <span id="claddingButtonText">
+              Ekodeck screening 67x15mm
+            </span>
+
+            <span>
+              ▼
+            </span>
+
+          </button>
+
+
+          <div
+            id="claddingMenu"
+            class="selection-menu hidden"
+          >
+
+            <button
+              type="button"
+              data-cladding="ekodeck"
+            >
+              Ekodeck screening 67x15mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="cypressPickets"
+            >
+              Cypress pickets 67x15mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="losp50"
+            >
+              LOSP 50x22mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="losp90"
+            >
+              LOSP 90x22mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="merbau90"
+            >
+              Merbau decking 90mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="merbau140"
+            >
+              Merbau decking 140mm
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="colorbond"
+            >
+              Colorbond steel cladding
+            </button>
+
+
+            <button
+              type="button"
+              data-cladding="custom"
+            >
+              Custom / Other
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- EKODECK OPTIONS -->
 
         <div id="ekodeckOptions">
-          <label>Ekodeck colour
-            <select class="required-field" id="ekodeckColour"></select>
-          </label>
-        </div>
 
-        <div id="cypressOptions" class="hidden">
-          <label>Cypress finish
-            <select class="required-field" id="cypressFinish">
-              <option value="raw">Raw</option>
-              <option value="painted">Painted</option>
+          <label>
+            Ekodeck colour
+
+            <select id="ekodeckColour">
+
+              <option value="Greystone">
+                Greystone
+              </option>
+
+              <option value="Alpine Ash">
+                Alpine Ash
+              </option>
+
+              <option value="Leatherwood">
+                Leatherwood
+              </option>
+
+              <option value="Riverbank Red">
+                Riverbank Red
+              </option>
+
             </select>
+
           </label>
+
         </div>
 
-        <div id="picketOptions" class="hidden">
-          <label>Picket stock length
-            <select class="required-field" id="picketLength"></select>
+
+        <!-- CYPRESS PICKET OPTIONS -->
+
+        <div
+          id="cypressOptions"
+          class="hidden"
+        >
+
+          <label>
+            Cypress length
+
+            <select id="picketLength">
+
+              <option value="900">
+                900mm
+              </option>
+
+              <option value="1200">
+                1200mm
+              </option>
+
+              <option value="1800">
+                1800mm
+              </option>
+
+            </select>
+
           </label>
+
+
+          <label>
+            Finish
+
+            <select id="cypressFinish">
+
+              <option value="raw">
+                Raw
+              </option>
+
+              <option value="painted">
+                Painted
+              </option>
+
+            </select>
+
+          </label>
+
         </div>
 
-        <div id="colorbondOptions" class="hidden">
-          <label>Colorbond profile
-            <select class="required-field" id="colorbondProfile"></select>
+
+        <!-- COLORBOND OPTIONS -->
+
+        <div
+          id="colorbondOptions"
+          class="hidden"
+        >
+
+          <label>
+            Colorbond profile
+
+            <select id="colorbondProfile">
+
+              <option value="Good Neighbour">
+                Good Neighbour
+              </option>
+
+              <option value="Corrugated">
+                Corrugated
+              </option>
+
+              <option value="Trimdek">
+                Trimdek
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+
+            </select>
+
           </label>
-          <label>Colour / profile notes
-            <input id="colorbondNotes" type="text" placeholder="e.g. Monument" />
+
+
+          <label>
+            Colour / description
+
+            <input
+              id="colorbondNotes"
+              type="text"
+              placeholder="e.g. Monument"
+            />
           </label>
+
         </div>
 
-        <div id="customCladdingOptions" class="hidden">
-          <div class="grid two">
-            <label>Cladding description
-              <input id="customCladdingName" type="text" />
-            </label>
-            <label>Cost per metre ($)
-              <input id="customCladdingRate" type="number" min="0" step="0.01" />
-            </label>
-          </div>
-          <label>Board face width (mm)
-            <input id="customBoardWidth" type="number" min="1" value="70" />
+
+        <!-- CUSTOM CLADDING -->
+
+        <div
+          id="customCladdingOptions"
+          class="hidden"
+        >
+
+          <label>
+            Cladding description
+
+            <input
+              id="customCladdingName"
+              type="text"
+            />
           </label>
+
+
+          <label>
+            Material cost
+
+            <input
+              id="customCladdingCost"
+              type="number"
+              min="0"
+              step="0.01"
+              value="0"
+            />
+          </label>
+
         </div>
 
-        <div class="grid two">
-          <label>Gap between vertical boards (mm)
-            <input id="boardGap" type="number" min="0" value="10" />
-          </label>
-          <label>Number of posts
-            <input id="postCount" type="number" min="0" step="1" value="2" />
-          </label>
-        </div>
 
-        <label>Post total length each (mm)
-          <input id="postLengthMm" type="number" min="0" value="2400" />
-        </label>
+        <!-- LATCH -->
 
-        <div class="grid two">
-          <label>Hinges
-            <select class="required-field" id="hinges"></select>
-          </label>
-          <label>Latch
-            <select class="required-field" id="latch"></select>
-          </label>
-        </div>
+        <label>
+          Latch
 
-        <label>Extra frame / brace length (mm)
-          <input id="extraFrameLengthMm" type="number" min="0" value="0" />
-        </label>
-      </div>
-    </details>
-
-    <details class="card form-section">
-      <summary>Material Lengths & Waste <span class="section-status neutral">Calculated</span></summary>
-      <div class="section-body">
-        <div class="summary-grid">
-          <div><span>Frame required</span><strong id="frameMetres">0.00 m</strong></div>
-          <div><span>8m frame lengths to buy</span><strong id="frameStockLengths">0</strong></div>
-          <div><span>Frame waste</span><strong id="frameWaste">0.00 m</strong></div>
-          <div><span>Posts required</span><strong id="postMetres">0.00 m</strong></div>
-          <div><span>8m post lengths to buy</span><strong id="postStockLengths">0</strong></div>
-          <div><span>Post waste</span><strong id="postWaste">0.00 m</strong></div>
-          <div><span>Cladding quantity</span><strong id="claddingQty">0</strong></div>
-          <div><span>Cladding lineal metres</span><strong id="claddingMetres">0.00 m</strong></div>
-          <div><span>Total lineal metres</span><strong id="totalMaterialMetres">0.00 m</strong></div>
-        </div>
-      </div>
-    </details>
-
-    <details class="card form-section">
-      <summary>Fixings & Finishing <span class="section-status neutral">Optional</span></summary>
-      <div class="section-body">
-        <label>Installation method
-          <select id="fixingType">
-            <option value="concreted">Posts concreted into ground</option>
-            <option value="brick">Bolted to brickwork</option>
-            <option value="concreteBrick">Concrete + brick fixing</option>
-            <option value="existing">Existing posts / structure</option>
+          <select id="latch">
           </select>
+
         </label>
+
+
+        <div class="fixed-spec">
+
+          <span>
+            Hinges
+          </span>
+
+          <strong>
+            Lock-out galvanised hinges
+          </strong>
+
+        </div>
+
+      </div>
+
+    </details>
+
+
+    <!-- =========================================
+         MATERIAL LENGTHS AND WASTE
+    ========================================== -->
+
+    <details class="card section-card" open>
+
+      <summary>
+        Material Lengths & Waste
+      </summary>
+
+      <div class="section-content">
+
+
+        <h3>Frame steel</h3>
+
+        <div class="summary-grid">
+
+          <div>
+            <span>
+              Total frame required
+            </span>
+
+            <strong id="frameMetres">
+              0.00 m
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              8m lengths required
+            </span>
+
+            <strong id="frameLengths">
+              0
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              Frame waste
+            </span>
+
+            <strong id="frameWaste">
+              0.00 m
+            </strong>
+          </div>
+
+        </div>
+
+
+        <h3>Posts</h3>
+
+        <div class="summary-grid">
+
+          <div>
+            <span>
+              Total post material
+            </span>
+
+            <strong id="postMetres">
+              0.00 m
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              8m lengths required
+            </span>
+
+            <strong id="postLengths">
+              0
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              Post waste
+            </span>
+
+            <strong id="postWaste">
+              0.00 m
+            </strong>
+          </div>
+
+        </div>
+
+
+        <h3>Cladding</h3>
+
+        <div class="summary-grid">
+
+          <div>
+            <span>
+              Number of boards
+            </span>
+
+            <strong id="claddingBoards">
+              0
+            </strong>
+          </div>
+
+
+          <div>
+            <span>
+              Total lineal metres
+            </span>
+
+            <strong id="claddingMetres">
+              0.00 m
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+    </details>
+
+
+    <!-- =========================================
+         FIXINGS AND FINISHING
+    ========================================== -->
+
+    <details class="card section-card">
+
+      <summary>
+        Fixings & Finishing
+      </summary>
+
+      <div class="section-content">
+
+
+        <label>
+          Installation method
+
+          <select id="fixingType">
+
+            <option value="concreted">
+              Posts concreted into ground
+            </option>
+
+            <option value="brick">
+              Bolted to brickwork
+            </option>
+
+            <option value="concreteBrick">
+              Concrete + brick fixing
+            </option>
+
+            <option value="existing">
+              Existing posts / structure
+            </option>
+
+            <option value="custom">
+              Custom
+            </option>
+
+          </select>
+
+        </label>
+
 
         <div id="concreteOptions">
+
           <div class="grid two">
-            <label>Concrete bags
-              <input id="concreteBags" type="number" min="0" value="2" />
+
+            <label>
+              Concrete bags
+
+              <input
+                id="concreteBags"
+                type="number"
+                min="0"
+                step="1"
+                value="2"
+              />
             </label>
-            <label>Hole digging + soil labour (hrs)
-              <input id="groundHours" type="number" min="0" step="0.25" value="1.5" />
+
+
+            <label>
+              Hole digging labour (hrs)
+
+              <input
+                id="holeDigHours"
+                type="number"
+                min="0"
+                step="0.25"
+                value="1"
+              />
             </label>
+
+
+            <label>
+              Soil removal labour (hrs)
+
+              <input
+                id="soilRemovalHours"
+                type="number"
+                min="0"
+                step="0.25"
+                value="0.5"
+              />
+            </label>
+
+
+            <label>
+              Disposal cost
+
+              <input
+                id="soilDisposalCost"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+              />
+            </label>
+
           </div>
+
         </div>
 
-        <div id="boltOptions" class="hidden">
+
+        <div
+          id="boltOptions"
+          class="hidden"
+        >
+
           <div class="grid two">
-            <label>Bolt type
+
+            <label>
+              Bolt type
+
               <select id="boltType">
-                <option>75x10 Galv Dynabolt</option>
-                <option>75x10 Galv Sleeve Anchor</option>
+
+                <option value="dynabolt">
+                  75x10 Galv Dynabolt
+                </option>
+
+                <option value="sleeve">
+                  75x10 Galv Sleeve Anchor
+                </option>
+
               </select>
+
             </label>
-            <label>Number of bolts
-              <input id="boltCount" type="number" min="0" value="2" />
+
+
+            <label>
+              Number of bolts
+
+              <input
+                id="boltCount"
+                type="number"
+                min="0"
+                step="1"
+                value="2"
+              />
             </label>
+
           </div>
+
         </div>
 
-        <label class="check-row"><input id="powderCoat" type="checkbox" /> Powder coat steel</label>
-        <div id="powderOptions" class="hidden">
-          <div class="grid two">
-            <label>Colour
-              <input id="powderColour" type="text" placeholder="e.g. Monument" />
-            </label>
-            <label>Powder coat allowance ($)
-              <input id="powderCost" type="number" min="0" value="250" />
-            </label>
-          </div>
-        </div>
 
-        <div id="paintOptions" class="hidden">
-          <div class="grid two">
-            <label>Paint material cost ($)
-              <input id="paintMaterialCost" type="number" min="0" value="40" />
-            </label>
-            <label>Painting labour (hrs)
-              <input id="paintHours" type="number" min="0" step="0.25" value="2" />
-            </label>
-          </div>
-          <label>Paint colour / finish
-            <input id="paintColour" type="text" placeholder="e.g. Semi-gloss outdoor white" />
+        <label class="check-row">
+
+          <input
+            id="powderCoat"
+            type="checkbox"
+          />
+
+          Powder coat steel
+
+        </label>
+
+
+        <div
+          id="powderOptions"
+          class="hidden"
+        >
+
+          <label>
+            Powder coat colour
+
+            <input
+              id="powderColour"
+              type="text"
+              placeholder="e.g. Monument"
+            />
           </label>
+
+
+          <label>
+            Powder coating cost
+
+            <input
+              id="powderCost"
+              type="number"
+              min="0"
+              step="0.01"
+              value="250"
+            />
+          </label>
+
         </div>
+
       </div>
+
     </details>
 
-    <details class="card form-section">
-      <summary>Labour, Travel & Costs <span class="section-status neutral">Costing</span></summary>
-      <div class="section-body">
+
+    <!-- =========================================
+         LABOUR, TRAVEL AND COSTS
+    ========================================== -->
+
+    <details class="card section-card">
+
+      <summary>
+        Labour, Travel & Costs
+      </summary>
+
+      <div class="section-content">
+
+
         <div class="grid two">
-          <label>Fabrication labour (hrs)
-            <input id="fabricationHours" type="number" min="0" step="0.25" value="4" />
+
+          <label>
+            Fabrication labour (hrs)
+
+            <input
+              id="fabricationHours"
+              type="number"
+              min="0"
+              step="0.25"
+              value="4"
+            />
           </label>
-          <label>Installation labour (hrs)
-            <input id="installationHours" type="number" min="0" step="0.25" value="2" />
+
+
+          <label>
+            Installation labour (hrs)
+
+            <input
+              id="installationHours"
+              type="number"
+              min="0"
+              step="0.25"
+              value="2"
+            />
           </label>
+
         </div>
+
+
         <div class="grid two">
-          <label>Total travel distance (km)
-            <input id="travelKm" type="number" min="0" value="0" />
+
+          <label>
+            Travel distance (km)
+
+            <input
+              id="travelKm"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+            />
           </label>
-          <label>Other direct costs ($)
-            <input id="otherCosts" type="number" min="0" step="0.01" value="0" />
+
+
+          <label>
+            Other direct costs
+
+            <input
+              id="otherCosts"
+              type="number"
+              min="0"
+              step="0.01"
+              value="0"
+            />
           </label>
+
         </div>
-        <p class="muted">First 20 km included. Extra distance is charged at $1.50/km.</p>
+
+
+        <label>
+          Additional hardware / materials
+
+          <input
+            id="extraHardware"
+            type="number"
+            min="0"
+            step="0.01"
+            value="0"
+          />
+        </label>
+
+
+        <p class="muted">
+          First 20 km included. Additional travel is charged
+          according to prices.js.
+        </p>
+
       </div>
+
     </details>
+
+
+    <!-- =========================================
+         CALCULATE
+    ========================================== -->
 
     <section class="card">
-      <button id="calculateBtn" class="primary big">Calculate Quote</button>
+
+      <button
+        id="calculateBtn"
+        class="primary big"
+        type="button"
+      >
+        Calculate Quote
+      </button>
+
     </section>
+
+
+    <!-- =========================================
+         INTERNAL COSTING
+    ========================================== -->
 
     <section class="card result-card">
-      <h2>Internal Costing</h2>
+
+      <h2>
+        Internal Costing
+      </h2>
+
+
       <div class="summary-grid">
-        <div><span>Materials / bought-in costs</span><strong id="materialsTotal">$0.00</strong></div>
-        <div><span>Labour</span><strong id="labourTotal">$0.00</strong></div>
-        <div><span>Travel</span><strong id="travelTotal">$0.00</strong></div>
-        <div><span>Markup</span><strong id="markupTotal">$0.00</strong></div>
-        <div><span>GST</span><strong id="gstTotal">$0.00</strong></div>
-        <div><span>Calculated incl. GST</span><strong id="incGstTotal">$0.00</strong></div>
+
+        <div>
+          <span>
+            Materials
+          </span>
+
+          <strong id="materialsTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Labour
+          </span>
+
+          <strong id="labourTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Travel
+          </span>
+
+          <strong id="travelTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Other costs
+          </span>
+
+          <strong id="directOtherTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Markup
+          </span>
+
+          <strong id="markupTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Ex GST
+          </span>
+
+          <strong id="exGstTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            GST
+          </span>
+
+          <strong id="gstTotal">
+            $0.00
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            Calculated total
+          </span>
+
+          <strong id="incGstTotal">
+            $0.00
+          </strong>
+        </div>
+
       </div>
-      <label>Final quote price incl. GST
-        <input id="finalPrice" type="number" min="0" step="10" />
+
+
+      <hr />
+
+
+      <label>
+        Final quote price incl. GST
+
+        <input
+          id="finalPrice"
+          type="number"
+          min="0"
+          step="10"
+        />
       </label>
-      <div class="profit-box"><span>Profit after labour & direct costs</span><strong id="profitTotal">$0.00</strong></div>
+
+
+      <div class="profit-box">
+
+        <span>
+          Actual profit
+        </span>
+
+        <strong id="profitTotal">
+          $0.00
+        </strong>
+
+      </div>
+
+
+      <details>
+
+        <summary>
+          Detailed costing
+        </summary>
+
+        <div
+          id="costBreakdown"
+          class="breakdown"
+        >
+        </div>
+
+      </details>
+
     </section>
 
-    <section class="card quote-preview" id="quotePreview">
-      <div class="quote-company">
-        <img src="jtla-logo.png" alt="JTLA logo" />
-        <div>
-          <strong id="quoteCompanyName"></strong>
-          <span id="quoteCompanyAddress"></span>
-          <span id="quoteCompanyContact"></span>
-          <span id="quoteCompanyWeb"></span>
-          <span id="quoteCompanyAbn"></span>
+
+    <!-- =========================================
+         CUSTOMER QUOTE
+    ========================================== -->
+
+    <section class="card">
+
+      <h2>
+        Finished Quote
+      </h2>
+
+
+      <div class="quote-preview">
+
+        <div class="quote-preview-header">
+
+          <img
+            src="jtla-logo.png"
+            alt="JTLA Gates"
+            class="quote-logo"
+          />
+
+          <div>
+
+            <strong>
+              JTLA Gates
+            </strong>
+
+            <span>
+              Jody
+            </span>
+
+          </div>
+
         </div>
+
+
+        <div class="quote-customer">
+
+          <p>
+            <strong>Customer:</strong>
+            <span id="quoteCustomerName"></span>
+          </p>
+
+
+          <p>
+            <strong>Address:</strong>
+            <span id="quoteCustomerAddress"></span>
+          </p>
+
+
+          <p>
+            <strong>Project:</strong>
+            <span id="quoteProjectNumber"></span>
+          </p>
+
+        </div>
+
+
+        <textarea
+          id="quoteDescription"
+          rows="16"
+        >
+        </textarea>
+
+
+        <div class="quote-total">
+
+          <span>
+            Total incl. GST
+          </span>
+
+          <strong id="quoteTotalDisplay">
+            $0.00
+          </strong>
+
+        </div>
+
       </div>
-      <h2>QUOTATION</h2>
-      <div class="quote-meta">
-        <div><span>Project No.</span><strong id="quoteProject"></strong></div>
-        <div><span>Customer</span><strong id="quoteCustomer"></strong></div>
-        <div><span>Site</span><strong id="quoteAddress"></strong></div>
-      </div>
-      <h3>Scope of Works</h3>
-      <textarea id="quoteDescription" rows="15"></textarea>
-      <div class="quote-total"><span>Total incl. GST</span><strong id="quotePrice">$0.00</strong></div>
-      <p class="terms">50% deposit required prior to commencement. Balance payable on completion.</p>
+
     </section>
+
+
+    <!-- =========================================
+         ACTIONS
+    ========================================== -->
 
     <section class="card actions">
-      <button id="saveBtn" class="primary">Save Quote</button>
-      <button id="smsBtn">SMS</button>
-      <button id="emailBtn">Email</button>
-      <button id="printBtn">PDF / Print</button>
+
+      <button
+        id="saveBtn"
+        class="primary"
+        type="button"
+      >
+        Save Quote
+      </button>
+
+
+      <button
+        id="smsBtn"
+        type="button"
+      >
+        SMS
+      </button>
+
+
+      <button
+        id="emailBtn"
+        type="button"
+      >
+        Email
+      </button>
+
+
+      <button
+        id="printBtn"
+        type="button"
+      >
+        PDF / Print
+      </button>
+
     </section>
 
-    <details class="card form-section">
-      <summary>Saved Quotes <span class="section-status neutral">Local</span></summary>
-      <div class="section-body" id="savedQuotes"></div>
+
+    <!-- =========================================
+         SAVED QUOTES
+    ========================================== -->
+
+    <details class="card section-card">
+
+      <summary>
+        Saved Quotes
+      </summary>
+
+      <div
+        id="savedQuotes"
+        class="section-content"
+      >
+      </div>
+
     </details>
+
+
   </main>
+
 
   <script src="prices.js"></script>
   <script src="app.js"></script>
+
 </body>
+
 </html>
