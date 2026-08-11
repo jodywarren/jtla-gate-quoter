@@ -1,1 +1,809 @@
-*{box-sizing:border-box} :root{--green:#315c3b;--green2:#1f6a3b;--red:#b63b3b;--light:#f3f5f3;--border:#d5dad5;--grey:#666} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--light);color:#222}.topbar{background:#fff;display:flex;align-items:center;gap:14px;padding:10px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30}.logo{height:58px;width:auto}.titleblock{display:flex;flex-direction:column;flex:1}.titleblock strong{font-size:1.15rem;color:var(--green)}.titleblock span{font-size:.85rem;color:#555}.customer-sticky{position:sticky;top:79px;z-index:25;background:var(--green);color:#fff;padding:9px 16px;display:flex;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.12)}.app-shell{max-width:780px;margin:auto;padding:12px}.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tab{border:0;border-radius:7px;padding:12px;background:#e5e8e5}.tab.active{background:var(--green);color:#fff;font-weight:700}details.card{padding:0}summary{cursor:pointer;padding:15px;font-weight:700;color:var(--green);display:flex;justify-content:space-between;align-items:center}.section-body{padding:0 15px 15px}.section-status{font-size:.75rem;background:#f2d9d9;color:var(--red);padding:4px 7px;border-radius:999px}.section-status.neutral{background:#e9ece9;color:#555}label{display:block;font-weight:700;margin-bottom:12px}input,select,textarea{width:100%;margin-top:6px;padding:11px 12px;border:2px solid #aaa;border-radius:7px;background:#fff;font:inherit}.required-field{border-color:var(--red);background:#fff5f5}.required-field.field-ok{border-color:var(--green2);background:#f4fff7}.grid{display:grid;gap:12px}.grid.two{grid-template-columns:repeat(2,1fr)}.grid.three{grid-template-columns:repeat(3,1fr)}h3{font-size:.98rem;color:var(--green);margin:8px 0 10px}.muted{color:#666;font-size:.88rem}.calc-box,.summary-grid{display:grid;gap:7px;margin:10px 0}.calc-box>div,.summary-grid>div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eee}.calc-box{background:#eef4ef;padding:9px 12px;border-radius:8px}.check-row{display:flex;align-items:center;gap:9px}.check-row input{width:auto;margin:0}.hidden{display:none!important}.primary{background:var(--green);color:#fff;font-weight:700;border:0}.big{width:100%;padding:15px;font-size:1.05rem}.light-btn{background:#fff;color:var(--green);border:1px solid var(--green);padding:8px 11px;border-radius:7px}.profit-box{display:flex;justify-content:space-between;padding:12px;background:#e8f1ea;border-radius:8px;margin-top:12px}.quote-preview{background:#fff}.quote-company{display:flex;gap:18px;align-items:flex-start;border-bottom:2px solid var(--green);padding-bottom:12px}.quote-company img{width:170px;height:auto}.quote-company div{display:flex;flex-direction:column;font-size:.86rem}.quote-preview h2{text-align:right;color:var(--green)}.quote-meta{display:grid;gap:7px}.quote-meta>div{display:grid;grid-template-columns:120px 1fr;gap:8px}.quote-total{display:flex;justify-content:space-between;align-items:center;font-size:1.35rem;font-weight:700;padding:15px;background:#eef4ef;border-radius:8px}.terms{font-size:.88rem}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.actions button{border:0;border-radius:7px;padding:12px;background:#555;color:#fff}.actions .primary{background:var(--green)}.saved-row{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #eee;padding:10px 0}.saved-row:first-child{border-top:0}.saved-row button{padding:6px 8px}.danger{background:#8f2f2f;color:#fff;border:0}.small{font-size:.82rem}@media(max-width:620px){.grid.two,.grid.three{grid-template-columns:1fr}.actions{grid-template-columns:repeat(2,1fr)}.quote-company{flex-direction:column}.quote-company img{width:145px}.customer-sticky{top:79px}}@media print{body{background:#fff}.topbar,.customer-sticky,.tabs,.form-section,.result-card,.actions,#calculateBtn{display:none!important}.app-shell{max-width:100%;padding:0}.quote-preview{border:0;margin:0;padding:0}.quote-preview textarea{border:0;resize:none;min-height:330px}.quote-company img{width:180px}}
+/* ============================================================
+   JTLA GATE QUOTER
+   style.css
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --green: #315c3b;
+  --green-dark: #25472d;
+  --green-soft: #e8f1ea;
+
+  --red: #b63a3a;
+  --red-soft: #f7e8e8;
+
+  --grey: #5f6461;
+  --grey-light: #f3f4f3;
+
+  --border: #d5d8d5;
+
+  --white: #ffffff;
+  --black: #222222;
+}
+
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--grey-light);
+  color: var(--black);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.app-header {
+  background: var(--green);
+  color: white;
+
+  padding: 14px 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  width: 70px;
+  max-height: 60px;
+  object-fit: contain;
+  background: white;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.app-header p {
+  margin: 3px 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+
+/* ============================================================
+   STICKY CUSTOMER BAR
+   ============================================================ */
+
+.customer-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  background: var(--green-dark);
+  color: white;
+
+  padding: 9px 16px;
+
+  border-bottom: 2px solid white;
+}
+
+.customer-sticky span {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.customer-sticky strong {
+  font-size: 1rem;
+}
+
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+
+.app-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.card {
+  background: white;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  margin-bottom: 12px;
+
+  padding: 16px;
+}
+
+
+/* ============================================================
+   COLLAPSIBLE SECTIONS
+   ============================================================ */
+
+.section-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.section-card > summary {
+  list-style: none;
+
+  padding: 15px 16px;
+
+  font-weight: 700;
+  color: var(--green);
+
+  cursor: pointer;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.section-card > summary::after {
+  content: "▼";
+  font-size: 0.75rem;
+  color: var(--grey);
+}
+
+.section-card[open] > summary::after {
+  content: "▲";
+}
+
+.section-card[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.section-content {
+  padding: 16px;
+}
+
+
+/* ============================================================
+   HEADINGS
+   ============================================================ */
+
+.card h2 {
+  margin: 0 0 14px;
+  color: var(--green);
+}
+
+.section-content h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+
+  color: var(--green);
+  font-size: 1rem;
+}
+
+.section-content h3:first-child {
+  margin-top: 0;
+}
+
+
+/* ============================================================
+   GRID
+   ============================================================ */
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+
+/* ============================================================
+   LABELS / INPUTS
+   ============================================================ */
+
+label {
+  display: block;
+
+  margin-bottom: 13px;
+
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+
+  margin-top: 6px;
+
+  padding: 11px 12px;
+
+  border: 1px solid #aaa;
+  border-radius: 7px;
+
+  background: white;
+
+  color: var(--black);
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+
+/* ============================================================
+   REQUIRED FIELDS - RED / GREEN
+   ============================================================ */
+
+.required-field input {
+  border: 2px solid var(--red);
+  background: var(--red-soft);
+}
+
+.required-field input.field-incomplete {
+  border: 2px solid var(--red);
+  background: var(--red-soft);
+}
+
+.required-field input.field-complete {
+  border: 2px solid var(--green);
+  background: var(--green-soft);
+}
+
+
+/* ============================================================
+   TAB BUTTONS
+   ============================================================ */
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.tab {
+  border: 0;
+  border-radius: 7px;
+
+  padding: 12px;
+
+  background: #e4e7e4;
+  color: var(--black);
+}
+
+.tab.active {
+  background: var(--green);
+  color: white;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button {
+  border: 0;
+  border-radius: 7px;
+  padding: 11px 14px;
+}
+
+button.primary {
+  background: var(--green);
+  color: white;
+  font-weight: 700;
+}
+
+button.primary:hover {
+  background: var(--green-dark);
+}
+
+button.secondary {
+  background: white;
+  color: var(--green);
+}
+
+button.big {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.05rem;
+}
+
+button.small {
+  padding: 7px 10px;
+  font-size: 0.85rem;
+}
+
+button.danger {
+  background: var(--red);
+  color: white;
+}
+
+
+/* ============================================================
+   CLADDING BUTTON / MENU
+   ============================================================ */
+
+.cladding-selector {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.cladding-selector > label {
+  margin-bottom: 6px;
+}
+
+.selection-button {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px;
+
+  background: var(--green);
+  color: white;
+
+  font-weight: 700;
+
+  border-radius: 7px;
+}
+
+.selection-menu {
+  margin-top: 6px;
+
+  border: 1px solid var(--border);
+  border-radius: 7px;
+
+  overflow: hidden;
+
+  background: white;
+}
+
+.selection-menu button {
+  width: 100%;
+
+  text-align: left;
+
+  background: white;
+  color: var(--black);
+
+  border-radius: 0;
+
+  border-bottom: 1px solid var(--border);
+
+  padding: 12px;
+}
+
+.selection-menu button:last-child {
+  border-bottom: 0;
+}
+
+.selection-menu button:hover {
+  background: var(--green-soft);
+}
+
+
+/* ============================================================
+   FIXED SPEC
+   ============================================================ */
+
+.fixed-spec {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 11px 12px;
+
+  background: var(--green-soft);
+
+  border-radius: 7px;
+
+  margin-bottom: 12px;
+}
+
+.fixed-spec span {
+  color: var(--grey);
+}
+
+
+/* ============================================================
+   CHECKBOX ROW
+   ============================================================ */
+
+.check-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.check-row input {
+  width: auto;
+  margin: 0;
+}
+
+
+/* ============================================================
+   INFO / SUMMARY AREAS
+   ============================================================ */
+
+.info-line {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  background: var(--green-soft);
+
+  border-radius: 7px;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 7px;
+}
+
+.summary-grid > div {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 7px 0;
+
+  border-bottom: 1px solid #eee;
+}
+
+
+/* ============================================================
+   PROFIT
+   ============================================================ */
+
+.profit-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin: 12px 0;
+
+  padding: 12px;
+
+  border-radius: 7px;
+
+  background: var(--green-soft);
+
+  font-size: 1.05rem;
+}
+
+
+/* ============================================================
+   DETAILED COSTING
+   ============================================================ */
+
+.breakdown {
+  margin-top: 12px;
+}
+
+.breakdown p {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin: 7px 0;
+
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #eee;
+}
+
+
+/* ============================================================
+   QUOTE PREVIEW
+   ============================================================ */
+
+.quote-preview {
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  padding: 16px;
+
+  background: white;
+}
+
+.quote-preview-header {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding-bottom: 12px;
+
+  border-bottom: 2px solid var(--green);
+}
+
+.quote-logo {
+  width: 85px;
+  max-height: 70px;
+
+  object-fit: contain;
+}
+
+.quote-preview-header div {
+  display: flex;
+  flex-direction: column;
+}
+
+.quote-preview-header strong {
+  font-size: 1.2rem;
+  color: var(--green);
+}
+
+.quote-preview-header span {
+  color: var(--grey);
+}
+
+.quote-customer {
+  padding: 12px 0;
+}
+
+.quote-customer p {
+  margin: 5px 0;
+}
+
+.quote-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 12px;
+
+  padding: 14px;
+
+  background: var(--green);
+
+  color: white;
+
+  border-radius: 7px;
+}
+
+.quote-total strong {
+  font-size: 1.3rem;
+}
+
+
+/* ============================================================
+   ACTION BUTTONS
+   ============================================================ */
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 8px;
+}
+
+.actions button:not(.primary) {
+  background: var(--grey);
+  color: white;
+}
+
+
+/* ============================================================
+   SAVED QUOTES
+   ============================================================ */
+
+.saved-row {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eee;
+}
+
+.saved-row:last-child {
+  border-bottom: 0;
+}
+
+.saved-row > div:first-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.saved-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--grey);
+  font-size: 0.9rem;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 620px) {
+
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .header-logo {
+    width: 55px;
+  }
+
+  .app-header h1 {
+    font-size: 1.05rem;
+  }
+
+  .app-header p {
+    font-size: 0.8rem;
+  }
+
+
+  .grid.two,
+  .grid.three {
+    grid-template-columns: 1fr;
+  }
+
+
+  .tabs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+
+  .tab {
+    padding: 10px 6px;
+    font-size: 0.9rem;
+  }
+
+
+  .actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+
+  .saved-row {
+    flex-direction: column;
+  }
+
+
+  .saved-actions {
+    justify-content: space-between;
+  }
+
+
+  .quote-preview {
+    padding: 12px;
+  }
+
+}
+
+
+/* ============================================================
+   PRINT / PDF
+   ============================================================ */
+
+@media print {
+
+  body {
+    background: white;
+  }
+
+
+  .app-header,
+  .customer-sticky,
+  .tabs,
+  .actions,
+  #calculateBtn,
+  #newQuoteBtn,
+  #savedQuotes,
+  .result-card,
+  details:not(.quote-preview) {
+    display: none !important;
+  }
+
+
+  .app-shell {
+    max-width: 100%;
+    padding: 0;
+  }
+
+
+  .card {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+
+  .quote-preview {
+    border: 0;
+    padding: 0;
+  }
+
+
+  .quote-preview textarea {
+    border: 0;
+    padding: 0;
+
+    min-height: 400px;
+  }
+
+
+  .quote-total {
+    background: white;
+    color: black;
+
+    border-top: 2px solid black;
+
+    border-radius: 0;
+  }
+
+}
