@@ -1,3 +1,8 @@
+/* ==========================================================
+   JTLA GATE QUOTER
+   APP ENGINE
+   ========================================================== */
+
 const $ = id => document.getElementById(id);
 
 let components = [];
@@ -10,15 +15,14 @@ let includeState = {
   cladding: true
 };
 
-let currentJobLoaded = false;
 let lastCalculation = null;
 
 
-// ============================================================
-// HELPERS
-// ============================================================
+/* ==========================================================
+   BASIC HELPERS
+========================================================== */
 
-function n(value) {
+function num(value) {
   return Number(value || 0);
 }
 
@@ -26,33 +30,31 @@ function money(value) {
   return new Intl.NumberFormat("en-AU", {
     style: "currency",
     currency: "AUD"
-  }).format(n(value));
+  }).format(num(value));
 }
 
-function exGST(value, includesGST = true) {
-  if (!includesGST) return n(value);
+function toExGST(value, includesGST = true) {
+  if (!includesGST) {
+    return num(value);
+  }
 
-  return n(value) /
-    (1 + PRICES.business.gst);
+  return num(value) / (1 + PRICES.business.gst);
 }
 
-function roundUp(value) {
+function roundQuote(value) {
   return Math.ceil(
-    n(value) /
-    PRICES.business.roundTo
-  ) *
-  PRICES.business.roundTo;
+    num(value) / PRICES.business.roundTo
+  ) * PRICES.business.roundTo;
 }
 
-function projectFormat(value) {
-  return String(value)
-    .padStart(6, "0");
+function formatProject(value) {
+  return String(value).padStart(6, "0");
 }
 
 
-// ============================================================
-// PROJECT NUMBER
-// ============================================================
+/* ==========================================================
+   PROJECT NUMBER
+========================================================== */
 
 function getCurrentProjectNumber() {
 
@@ -63,17 +65,9 @@ function getCurrentProjectNumber() {
 
   if (!current) {
 
-    const next =
-      localStorage.getItem(
-        "jtlaNextProjectNumber"
-      );
-
-    current =
-      next ||
-      projectFormat(
-        PRICES.projectNumbers
-          .startingNumber
-      );
+    current = formatProject(
+      PRICES.projects.startingProjectNumber
+    );
 
     localStorage.setItem(
       "jtlaCurrentProjectNumber",
@@ -84,25 +78,16 @@ function getCurrentProjectNumber() {
   return current;
 }
 
-function createNextProjectNumber() {
+function nextProjectNumber() {
 
   const current =
-    Number(
-      getCurrentProjectNumber()
-    );
+    Number(getCurrentProjectNumber());
 
   const next =
-    projectFormat(
-      current + 1
-    );
+    formatProject(current + 1);
 
   localStorage.setItem(
     "jtlaCurrentProjectNumber",
-    next
-  );
-
-  localStorage.setItem(
-    "jtlaNextProjectNumber",
     next
   );
 
@@ -110,14 +95,94 @@ function createNextProjectNumber() {
 }
 
 
-// ============================================================
-// GLOBAL CLADDING
-// ============================================================
+/* ==========================================================
+   COLOURS
+========================================================== */
+
+function populateColours() {
+
+  [
+    $("colorbondColour"),
+    $("powderColour")
+  ].forEach(select => {
+
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    [...PRICES.colours]
+      .sort()
+      .forEach(colour => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = colour;
+        option.textContent = colour;
+
+        select.appendChild(option);
+      });
+  });
+}
+
+
+/* ==========================================================
+   GLOBAL CLADDING
+========================================================== */
 
 function updateCladdingUI() {
 
   const type =
     $("claddingType").value;
+
+  const direction =
+    $("claddingDirection").value;
+
+  const claddingEnabled =
+    includeState.cladding;
+
+
+  /*
+     Entire global cladding area disappears
+     when CLADDING OFF.
+  */
+
+  [
+    $("claddingType")?.closest("label"),
+    $("claddingDirection")?.closest("label"),
+    $("ekodeckOptions"),
+    $("cypressOptions"),
+    $("lospOptions"),
+    $("merbauOptions"),
+    $("colorbondOptions"),
+    $("customOptions")
+  ].forEach(element => {
+
+    if (!element) return;
+
+    if (!claddingEnabled) {
+      element.classList.add("hidden");
+    }
+  });
+
+
+  if (!claddingEnabled) {
+
+    updateGateRailVisibility();
+    updatePanelRailInformation();
+
+    return;
+  }
+
+
+  $("claddingType")
+    .closest("label")
+    ?.classList.remove("hidden");
+
+  $("claddingDirection")
+    .closest("label")
+    ?.classList.remove("hidden");
+
 
   $("ekodeckOptions")
     .classList.toggle(
@@ -125,25 +190,33 @@ function updateCladdingUI() {
       type !== "ekodeck"
     );
 
+
   $("cypressOptions")
     .classList.toggle(
       "hidden",
       type !== "cypressPickets"
     );
 
+
   $("lospOptions")
     .classList.toggle(
       "hidden",
-      !["losp50", "losp90"]
-        .includes(type)
+      ![
+        "losp90",
+        "losp140"
+      ].includes(type)
     );
+
 
   $("merbauOptions")
     .classList.toggle(
       "hidden",
-      !["merbau90", "merbau140"]
-        .includes(type)
+      ![
+        "merbau90",
+        "merbau140"
+      ].includes(type)
     );
+
 
   $("colorbondOptions")
     .classList.toggle(
@@ -151,34 +224,36 @@ function updateCladdingUI() {
       type !== "colorbond"
     );
 
+
   $("customOptions")
     .classList.toggle(
       "hidden",
       type !== "custom"
     );
 
+
   $("cypressColourWrap")
     .classList.toggle(
       "hidden",
-      $("cypressFinish").value
-        !== "Paint"
+      $("cypressFinish").value !== "Paint"
     );
+
 
   $("lospColourWrap")
     .classList.toggle(
       "hidden",
-      $("lospFinish").value
-        !== "Paint"
+      $("lospFinish").value !== "Paint"
     );
+
 
   updateGateRailVisibility();
   updatePanelRailInformation();
 }
 
 
-// ============================================================
-// COMPONENT ADD
-// ============================================================
+/* ==========================================================
+   ADD COMPONENT
+========================================================== */
 
 function addComponent(type) {
 
@@ -193,27 +268,26 @@ function addComponent(type) {
 
   buildComponentCard(component);
 
+  /*
+     Component is deliberately NOT selected and
+     we DO NOT jump down the page.
+
+     This lets you build the whole mud map first.
+  */
+
   renumberComponents();
 
-  selectedComponentId =
-    component.id;
-
   refreshEverything();
-
-  jumpToComponent(
-    component.id
-  );
 }
 
 
-// ============================================================
-// BUILD COMPONENT CARD
-// ============================================================
+/* ==========================================================
+   BUILD COMPONENT CARD
+========================================================== */
 
 function buildComponentCard(component) {
 
-  $("noComponentsMessage")
-    ?.remove();
+  $("noComponentsMessage")?.remove();
 
   const shell =
     $("componentTemplate")
@@ -228,33 +302,47 @@ function buildComponentCard(component) {
   card.dataset.componentId =
     component.id;
 
+  card.dataset.componentType =
+    component.type;
+
+
   const body =
     shell.querySelector(
       ".component-body"
     );
 
-  let template;
 
   if (component.type === "post") {
-    template = $("postTemplate");
+
+    body.appendChild(
+      $("postTemplate")
+        .content
+        .cloneNode(true)
+    );
   }
 
-  else if (
-    component.type === "gate"
-  ) {
-    template = $("gateTemplate");
+  else if (component.type === "gate") {
+
+    body.appendChild(
+      $("gateTemplate")
+        .content
+        .cloneNode(true)
+    );
   }
 
   else {
-    template = $("panelTemplate");
+
+    body.appendChild(
+      $("panelTemplate")
+        .content
+        .cloneNode(true)
+    );
   }
 
-  body.appendChild(
-    template.content.cloneNode(true)
-  );
 
   $("componentsContainer")
     .appendChild(shell);
+
 
   const inserted =
     document.querySelector(
@@ -268,9 +356,9 @@ function buildComponentCard(component) {
 }
 
 
-// ============================================================
-// SETUP COMPONENT
-// ============================================================
+/* ==========================================================
+   COMPONENT SETUP
+========================================================== */
 
 function setupComponent(
   card,
@@ -281,11 +369,11 @@ function setupComponent(
     ".remove-btn"
   ).addEventListener(
     "click",
-    () =>
-      removeComponent(
-        component.id
-      )
+    () => {
+      removeComponent(component.id);
+    }
   );
+
 
   if (component.type === "post") {
     setupPost(card);
@@ -295,9 +383,10 @@ function setupComponent(
     setupGate(card);
   }
 
+
   card
     .querySelectorAll(
-      "input, select"
+      "input, select, textarea"
     )
     .forEach(field => {
 
@@ -310,14 +399,34 @@ function setupComponent(
         "change",
         refreshEverything
       );
-
     });
 }
 
 
-// ============================================================
-// POST
-// ============================================================
+/* ==========================================================
+   FIND COMPONENT CARDS
+========================================================== */
+
+function getCards(type) {
+
+  return components
+    .filter(
+      component =>
+        component.type === type
+    )
+    .map(
+      component =>
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        )
+    )
+    .filter(Boolean);
+}
+
+
+/* ==========================================================
+   POST
+========================================================== */
 
 function setupPost(card) {
 
@@ -326,38 +435,38 @@ function setupPost(card) {
       ".post-size"
     );
 
+
   Object.entries(
     PRICES.steel.posts
-  ).forEach(
-    ([key, value]) => {
+  ).forEach(([key, item]) => {
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    const option =
+      document.createElement("option");
 
-      option.value = key;
-      option.textContent =
-        value.label;
+    option.value = key;
+    option.textContent = item.label;
 
-      select.appendChild(option);
-    }
-  );
+    select.appendChild(option);
+  });
+
 
   select.value =
     PRICES.defaults.postType;
+
 
   card.querySelector(
     ".post-fixing"
   ).addEventListener(
     "change",
     () => {
+
       updatePostConditional(card);
 
       if (
         card.querySelector(
           ".post-fixing"
-        ).value === "brick" &&
+        ).value === "brick"
+        &&
         card.querySelector(
           ".hole-list"
         ).children.length === 0
@@ -370,6 +479,7 @@ function setupPost(card) {
     }
   );
 
+
   card.querySelector(
     ".add-hole"
   ).addEventListener(
@@ -377,19 +487,20 @@ function setupPost(card) {
     () => addHole(card)
   );
 
+
   card.querySelector(
     ".house-bolt-enabled"
   ).addEventListener(
     "change",
-    () =>
-      updatePostConditional(card)
+    () => updatePostConditional(card)
   );
+
+
+  updatePostConditional(card);
 }
 
-function addHole(
-  card,
-  value = ""
-) {
+
+function addHole(card, value = "") {
 
   const fragment =
     $("holeTemplate")
@@ -408,25 +519,31 @@ function addHole(
 
   input.value = value;
 
+
   row.querySelector(
     ".remove-hole"
   ).addEventListener(
     "click",
     () => {
+
       row.remove();
+
       refreshEverything();
     }
   );
+
 
   input.addEventListener(
     "input",
     refreshEverything
   );
 
+
   card.querySelector(
     ".hole-list"
   ).appendChild(fragment);
 }
+
 
 function updatePostConditional(card) {
 
@@ -435,12 +552,14 @@ function updatePostConditional(card) {
       ".post-fixing"
     ).value;
 
+
   card.querySelector(
     ".brick-holes"
   ).classList.toggle(
     "hidden",
     fixing !== "brick"
   );
+
 
   card.querySelector(
     ".house-bolt"
@@ -449,6 +568,7 @@ function updatePostConditional(card) {
     fixing !== "concreteHouse"
   );
 
+
   card.querySelector(
     ".floating-offset"
   ).classList.toggle(
@@ -456,56 +576,64 @@ function updatePostConditional(card) {
     fixing !== "concreteFloating"
   );
 
-  const top =
+
+  const houseBolt =
     card.querySelector(
       ".house-bolt-enabled"
     ).checked;
+
 
   card.querySelector(
     ".house-bolt-position"
   ).classList.toggle(
     "hidden",
-    !top
+    !houseBolt
   );
 
+
   const height =
-    n(
+    num(
       card.querySelector(
         ".post-height"
       ).value
     );
 
-  let cut = 0;
+
+  let cutLength = 0;
+
 
   if (
     fixing === "brick" ||
     fixing === "baseplate"
   ) {
-    cut = height;
+
+    cutLength = height;
   }
 
   else if (
     fixing &&
     fixing !== "existing"
   ) {
-    cut =
+
+    cutLength =
       height +
-      PRICES.rules
-        .concreteEmbedMm;
+      PRICES.defaults
+        .concreteEmbedmentMm;
   }
+
 
   card.querySelector(
     ".post-cut"
   ).textContent =
-    cut
-      ? `${cut} mm`
+    cutLength
+      ? `${cutLength} mm`
       : "-";
 }
 
 
-// ============================================================
-// GATE
-// ============================================================
+/* ==========================================================
+   GATE
+========================================================== */
 
 function setupGate(card) {
 
@@ -514,26 +642,23 @@ function setupGate(card) {
       ".gate-frame"
     );
 
+
   Object.entries(
     PRICES.steel.frame
-  ).forEach(
-    ([key, value]) => {
+  ).forEach(([key, item]) => {
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    const option =
+      document.createElement("option");
 
-      option.value = key;
-      option.textContent =
-        value.label;
+    option.value = key;
+    option.textContent = item.label;
 
-      frame.appendChild(option);
-    }
-  );
+    frame.appendChild(option);
+  });
+
 
   frame.value =
-    PRICES.defaults.frame;
+    PRICES.defaults.frameType;
 
 
   const latch =
@@ -541,30 +666,28 @@ function setupGate(card) {
       ".gate-latch"
     );
 
+
   Object.entries(
     PRICES.hardware.latches
-  ).forEach(
-    ([key, value]) => {
+  ).forEach(([key, item]) => {
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    const option =
+      document.createElement("option");
 
-      option.value = key;
-      option.textContent =
-        value.label;
+    option.value = key;
+    option.textContent = item.label;
 
-      latch.appendChild(option);
-    }
-  );
+    latch.appendChild(option);
+  });
 
-  latch.value =
-    PRICES.defaults.latch;
+
+  latch.value = "ddDualKey";
+
 
   latch.addEventListener(
     "change",
     () => {
+
       card.querySelector(
         ".other-latch"
       ).classList.toggle(
@@ -576,126 +699,65 @@ function setupGate(card) {
 }
 
 
-// ============================================================
-// RAILS
-// ============================================================
+/* ==========================================================
+   POST HEIGHT PROPAGATION
+========================================================== */
 
-function updateGateRailVisibility() {
+function propagatePostHeight() {
 
-  const direction =
-    $("claddingDirection").value;
+  const cards =
+    getCards("post");
 
-  getCards("gate")
-    .forEach(card => {
+  let firstHeight = 0;
 
-      card.querySelector(
-        ".horizontal-rail-wrap"
-      ).classList.toggle(
-        "hidden",
-        direction !== "vertical"
-      );
 
-      card.querySelector(
-        ".vertical-rail-wrap"
-      ).classList.toggle(
-        "hidden",
-        direction !== "horizontal"
-      );
-    });
-}
+  for (const card of cards) {
 
-function updatePanelRailInformation() {
-
-  const direction =
-    $("claddingDirection").value;
-
-  getCards("panel")
-    .forEach(card => {
-
-      const info =
+    const height =
+      num(
         card.querySelector(
-          ".panel-rail-info"
-        );
+          ".post-height"
+        ).value
+      );
 
-      if (
-        direction === "horizontal"
-      ) {
+    if (height) {
 
-        info.innerHTML =
-          `<div class="calculated-line">
-             <span>Panel rails</span>
-             <strong>None</strong>
-           </div>`;
-      }
+      firstHeight = height;
 
-      else if (
-        direction === "vertical"
-      ) {
+      break;
+    }
+  }
 
-        const height =
-          n(
-            card.querySelector(
-              ".panel-height"
-            ).value
-          );
 
-        const rails =
-          height
-            ? Math.min(
-                3,
-                Math.max(
-                  1,
-                  Math.ceil(
-                    height / 900
-                  )
-                )
-              )
-            : 0;
+  if (!firstHeight) {
+    return;
+  }
 
-        info.innerHTML =
-          `<div class="calculated-line">
-             <span>Horizontal fixing rails</span>
-             <strong>
-               ${rails || "-"}
-             </strong>
-           </div>`;
-      }
 
-      else {
-        info.innerHTML = "";
-      }
-    });
+  cards.forEach(card => {
+
+    const input =
+      card.querySelector(
+        ".post-height"
+      );
+
+    if (!input.value) {
+      input.value = firstHeight;
+    }
+  });
 }
 
 
-// ============================================================
-// FIND CARDS
-// ============================================================
-
-function getCards(type) {
-
-  return components
-    .filter(c =>
-      c.type === type
-    )
-    .map(c =>
-      document.querySelector(
-        `[data-component-id="${c.id}"]`
-      )
-    )
-    .filter(Boolean);
-}
-
-
-// ============================================================
-// READ POSTS
-// ============================================================
+/* ==========================================================
+   READ POSTS
+========================================================== */
 
 function readPosts() {
 
   return components
-    .filter(c =>
-      c.type === "post"
+    .filter(
+      component =>
+        component.type === "post"
     )
     .map(component => {
 
@@ -704,36 +766,70 @@ function readPosts() {
           `[data-component-id="${component.id}"]`
         );
 
-      const key =
+
+      const steelKey =
         card.querySelector(
           ".post-size"
         ).value;
+
+
+      const steel =
+        PRICES.steel.posts[
+          steelKey
+        ];
+
 
       const fixing =
         card.querySelector(
           ".post-fixing"
         ).value;
 
+
       const height =
-        n(
+        num(
           card.querySelector(
             ".post-height"
           ).value
         );
 
+
       const holes =
-        [...card.querySelectorAll(
-          ".hole-position"
-        )]
-        .map(x => n(x.value))
-        .filter(Boolean);
+        [
+          ...card.querySelectorAll(
+            ".hole-position"
+          )
+        ]
+        .map(
+          input =>
+            num(input.value)
+        )
+        .filter(
+          value => value > 0
+        );
+
+
+      const topHole =
+        card.querySelector(
+          ".house-bolt-enabled"
+        ).checked
+        ?
+        num(
+          card.querySelector(
+            ".top-hole-position"
+          ).value
+        )
+        :
+        0;
+
 
       let cut = 0;
+
 
       if (
         fixing === "brick" ||
         fixing === "baseplate"
       ) {
+
         cut = height;
       }
 
@@ -741,47 +837,138 @@ function readPosts() {
         fixing &&
         fixing !== "existing"
       ) {
+
         cut =
           height +
-          PRICES.rules
-            .concreteEmbedMm;
+          PRICES.defaults
+            .concreteEmbedmentMm;
       }
 
+
       return {
+
         id: component.id,
         label: component.label,
-        key,
-        fixing,
-        height,
-        cut,
+
+        steelKey,
+
+        steelLabel:
+          steel.label,
+
         width:
-          PRICES.steel.posts[key]
-            .widthMm,
+          steel.widthMm,
+
+        fixing,
+
+        height,
+
+        cut,
+
         holes,
-        topHole:
-          card.querySelector(
-            ".house-bolt-enabled"
-          ).checked
-            ? n(
-                card.querySelector(
-                  ".top-hole-position"
-                ).value
-              )
-            : 0
+
+        topHole,
+
+        offset:
+          num(
+            card.querySelector(
+              ".post-offset"
+            ).value
+          )
       };
     });
 }
 
 
-// ============================================================
-// READ GATES
-// ============================================================
+/* ==========================================================
+   GATE HEIGHT
+========================================================== */
+
+function getGateBaseHeight(
+  gateComponent
+) {
+
+  const gateIndex =
+    components.findIndex(
+      component =>
+        component.id ===
+        gateComponent.id
+    );
+
+
+  /*
+     First look for a post immediately
+     either side of this gate.
+  */
+
+  for (
+    let distance = 1;
+    distance <= components.length;
+    distance++
+  ) {
+
+    const left =
+      components[
+        gateIndex - distance
+      ];
+
+    const right =
+      components[
+        gateIndex + distance
+      ];
+
+
+    for (const item of [left, right]) {
+
+      if (
+        !item ||
+        item.type !== "post"
+      ) {
+        continue;
+      }
+
+
+      const card =
+        document.querySelector(
+          `[data-component-id="${item.id}"]`
+        );
+
+
+      const height =
+        num(
+          card?.querySelector(
+            ".post-height"
+          )?.value
+        );
+
+
+      if (height > 0) {
+
+        return height;
+      }
+    }
+  }
+
+
+  /*
+     Otherwise use overall cavity height.
+  */
+
+  return num(
+    $("cavityHeight").value
+  );
+}
+
+
+/* ==========================================================
+   READ GATES
+========================================================== */
 
 function readGates() {
 
   return components
-    .filter(c =>
-      c.type === "gate"
+    .filter(
+      component =>
+        component.type === "gate"
     )
     .map(component => {
 
@@ -790,21 +977,22 @@ function readGates() {
           `[data-component-id="${component.id}"]`
         );
 
+
       return {
+
         id: component.id,
         label: component.label,
 
         width:
-          n(
+          num(
             card.dataset
               .calculatedWidth
           ),
 
         height:
-          n(
-            card.querySelector(
-              ".gate-height"
-            ).value
+          num(
+            card.dataset
+              .calculatedHeight
           ),
 
         frame:
@@ -813,14 +1001,14 @@ function readGates() {
           ).value,
 
         hRails:
-          n(
+          num(
             card.querySelector(
               ".horizontal-rails"
             ).value
           ),
 
         vRails:
-          n(
+          num(
             card.querySelector(
               ".vertical-rails"
             ).value
@@ -844,10 +1032,10 @@ function readGates() {
         otherLatch:
           card.querySelector(
             ".other-latch-description"
-          ).value,
+          ).value.trim(),
 
         otherLatchCost:
-          n(
+          num(
             card.querySelector(
               ".other-latch-cost"
             ).value
@@ -857,15 +1045,16 @@ function readGates() {
 }
 
 
-// ============================================================
-// READ PANELS
-// ============================================================
+/* ==========================================================
+   READ PANELS
+========================================================== */
 
 function readPanels() {
 
   return components
-    .filter(c =>
-      c.type === "panel"
+    .filter(
+      component =>
+        component.type === "panel"
     )
     .map(component => {
 
@@ -874,19 +1063,21 @@ function readPanels() {
           `[data-component-id="${component.id}"]`
         );
 
+
       return {
+
         id: component.id,
         label: component.label,
 
         width:
-          n(
+          num(
             card.querySelector(
               ".panel-width"
             ).value
           ),
 
         height:
-          n(
+          num(
             card.querySelector(
               ".panel-height"
             ).value
@@ -896,28 +1087,29 @@ function readPanels() {
 }
 
 
-// ============================================================
-// GATE WIDTH CALCULATION
-// ============================================================
+/* ==========================================================
+   AUTO GATE DIMENSIONS
+========================================================== */
 
-function calculateGateWidths() {
+function calculateGateDimensions() {
 
-  const cavity =
-    n(
+  const cavityWidth =
+    num(
       $("cavityWidth").value
     );
 
+
   const gates =
     components.filter(
-      c => c.type === "gate"
+      component =>
+        component.type === "gate"
     );
 
-  if (
-    !cavity ||
-    gates.length === 0
-  ) {
+
+  if (!gates.length) {
     return;
   }
+
 
   const posts =
     readPosts();
@@ -925,70 +1117,405 @@ function calculateGateWidths() {
   const panels =
     readPanels();
 
-  const postWidth =
-    posts.reduce(
-      (sum, p) =>
-        sum +
-        (
-          p.fixing === "existing"
-            ? 0
-            : p.width
-        ),
+
+  let postsWidth = 0;
+
+
+  if (includeState.posts) {
+
+    postsWidth =
+      posts.reduce(
+        (sum, post) => {
+
+          if (
+            post.fixing === "existing"
+          ) {
+            return sum;
+          }
+
+          return sum +
+            post.width;
+        },
+        0
+      );
+  }
+
+
+  const panelsWidth =
+    panels.reduce(
+      (sum, panel) =>
+        sum + panel.width,
       0
     );
 
-  const panelWidth =
-    panels.reduce(
-      (sum, p) =>
-        sum + p.width,
-      0
-    );
 
   const gaps =
     Math.max(
       0,
       components.length - 1
     ) *
-    PRICES.rules.componentGapMm;
+    PRICES.defaults
+      .componentGapMm;
 
-  const remaining =
+
+  const availableGateWidth =
     Math.max(
       0,
-      cavity -
-      postWidth -
-      panelWidth -
+      cavityWidth -
+      postsWidth -
+      panelsWidth -
       gaps
     );
 
-  const each =
-    Math.round(
-      remaining /
-      gates.length
-    );
 
-  gates.forEach(
-    component => {
+  const gateWidth =
+    gates.length
+    ?
+    Math.floor(
+      availableGateWidth /
+      gates.length
+    )
+    :
+    0;
+
+
+  gates.forEach(component => {
+
+    const card =
+      document.querySelector(
+        `[data-component-id="${component.id}"]`
+      );
+
+
+    const baseHeight =
+      getGateBaseHeight(
+        component
+      );
+
+
+    const gateHeight =
+      Math.max(
+        0,
+        baseHeight -
+        PRICES.defaults
+          .gateGroundGapMm
+      );
+
+
+    card.dataset.calculatedWidth =
+      gateWidth;
+
+    card.dataset.calculatedHeight =
+      gateHeight;
+
+
+    card.querySelector(
+      ".gate-width-display"
+    ).textContent =
+      gateWidth
+      ?
+      `${gateWidth} mm`
+      :
+      "-";
+
+
+    /*
+       Gate height input is now replaced
+       by the automatic value visually.
+    */
+
+    const heightInput =
+      card.querySelector(
+        ".gate-height"
+      );
+
+
+    if (heightInput) {
+
+      heightInput.value =
+        gateHeight || "";
+
+      heightInput.readOnly = true;
+
+      heightInput.placeholder =
+        "Calculated";
+    }
+  });
+}
+
+
+/* ==========================================================
+   RAIL VISIBILITY
+========================================================== */
+
+function updateGateRailVisibility() {
+
+  const direction =
+    $("claddingDirection").value;
+
+
+  getCards("gate")
+    .forEach(card => {
+
+      /*
+         If cladding is OFF, rails tied to
+         cladding disappear as well.
+      */
+
+      const show =
+        includeState.cladding;
+
+
+      card.querySelector(
+        ".horizontal-rail-wrap"
+      ).classList.toggle(
+        "hidden",
+        !show ||
+        direction !== "vertical"
+      );
+
+
+      card.querySelector(
+        ".vertical-rail-wrap"
+      ).classList.toggle(
+        "hidden",
+        !show ||
+        direction !== "horizontal"
+      );
+
+
+      /*
+         FRAME OFF means hide frame selector
+         and all mid rails.
+      */
+
+      const frameLabel =
+        card.querySelector(
+          ".gate-frame"
+        )?.closest("label");
+
+
+      frameLabel?.classList.toggle(
+        "hidden",
+        !includeState.frame
+      );
+
+
+      if (!includeState.frame) {
+
+        card.querySelector(
+          ".horizontal-rail-wrap"
+        ).classList.add("hidden");
+
+        card.querySelector(
+          ".vertical-rail-wrap"
+        ).classList.add("hidden");
+      }
+    });
+}
+
+
+/* ==========================================================
+   PANEL INFORMATION
+========================================================== */
+
+function updatePanelRailInformation() {
+
+  const direction =
+    $("claddingDirection").value;
+
+
+  getCards("panel")
+    .forEach(card => {
+
+      const summary =
+        card.querySelector(
+          ".panel-cladding-summary"
+        );
+
+
+      const railInfo =
+        card.querySelector(
+          ".panel-rail-info"
+        );
+
+
+      if (!includeState.cladding) {
+
+        summary
+          .closest(
+            ".calculated-line"
+          )
+          ?.classList.add(
+            "hidden"
+          );
+
+        railInfo.innerHTML = "";
+
+        return;
+      }
+
+
+      summary
+        .closest(
+          ".calculated-line"
+        )
+        ?.classList.remove(
+          "hidden"
+        );
+
+
+      summary.textContent =
+        claddingDescription();
+
+
+      if (
+        direction === "horizontal"
+      ) {
+
+        railInfo.innerHTML =
+          `
+          <div class="calculated-line">
+            <span>Steel rails</span>
+            <strong>None</strong>
+          </div>
+          `;
+      }
+
+
+      else if (
+        direction === "vertical"
+      ) {
+
+        const height =
+          num(
+            card.querySelector(
+              ".panel-height"
+            ).value
+          );
+
+
+        const railCount =
+          height
+          ?
+          Math.min(
+            3,
+            Math.max(
+              1,
+              Math.ceil(
+                height /
+                PRICES.defaults
+                  .fixedPanelVerticalRailSpacingApproxMm
+              )
+            )
+          )
+          :
+          0;
+
+
+        railInfo.innerHTML =
+          `
+          <div class="calculated-line">
+            <span>Horizontal fixing rails</span>
+            <strong>
+              ${railCount || "-"}
+            </strong>
+          </div>
+          `;
+      }
+
+
+      else {
+
+        railInfo.innerHTML = "";
+      }
+    });
+}
+
+
+/* ==========================================================
+   TOGGLE VISIBILITY
+========================================================== */
+
+function updateIncludeVisibility() {
+
+  /*
+     Post cards
+  */
+
+  components
+    .filter(
+      component =>
+        component.type === "post"
+    )
+    .forEach(component => {
 
       const card =
         document.querySelector(
           `[data-component-id="${component.id}"]`
         );
 
-      card.dataset
-        .calculatedWidth =
-        each;
-
-      card.querySelector(
-        ".gate-width-display"
-      ).textContent =
-        `${each} mm`;
+      card?.classList.toggle(
+        "component-disabled",
+        !includeState.posts
+      );
     });
+
+
+  /*
+     Material summary boxes
+  */
+
+  const frameElements = [
+    $("frameMetres")?.parentElement,
+    $("frameLengths")?.parentElement,
+    $("frameWaste")?.parentElement
+  ];
+
+  frameElements.forEach(element => {
+    element?.classList.toggle(
+      "hidden",
+      !includeState.frame
+    );
+  });
+
+
+  const postElements = [
+    $("postMetres")?.parentElement,
+    $("postLengths")?.parentElement,
+    $("postWaste")?.parentElement
+  ];
+
+  postElements.forEach(element => {
+    element?.classList.toggle(
+      "hidden",
+      !includeState.posts
+    );
+  });
+
+
+  const claddingElements = [
+    $("claddingBoards")?.parentElement,
+    $("claddingMetres")?.parentElement
+  ];
+
+  claddingElements.forEach(element => {
+    element?.classList.toggle(
+      "hidden",
+      !includeState.cladding
+    );
+  });
+
+
+  updateCladdingUI();
+  updateGateRailVisibility();
+  updatePanelRailInformation();
 }
 
 
-// ============================================================
-// COMPLETION
-// ============================================================
+/* ==========================================================
+   COMPONENT COMPLETION
+========================================================== */
 
 function componentComplete(component) {
 
@@ -997,79 +1524,101 @@ function componentComplete(component) {
       `[data-component-id="${component.id}"]`
     );
 
-  if (!card) return false;
+
+  if (!card) {
+    return false;
+  }
 
 
-  if (
-    component.type === "post"
-  ) {
+  if (component.type === "post") {
+
+    if (!includeState.posts) {
+      return true;
+    }
+
 
     const fixing =
       card.querySelector(
         ".post-fixing"
       ).value;
 
-    if (!fixing) return false;
 
-    if (
-      fixing === "existing"
-    ) return true;
+    if (!fixing) {
+      return false;
+    }
+
+
+    if (fixing === "existing") {
+      return true;
+    }
+
 
     const height =
-      n(
+      num(
         card.querySelector(
           ".post-height"
         ).value
       );
 
-    if (!height) return false;
 
-    if (
-      fixing === "brick"
-    ) {
+    if (!height) {
+      return false;
+    }
+
+
+    if (fixing === "brick") {
 
       return [
         ...card.querySelectorAll(
           ".hole-position"
         )
       ].some(
-        x => n(x.value) > 0
+        input =>
+          num(input.value) > 0
       );
     }
 
+
     if (
-      fixing === "concreteHouse" &&
+      fixing === "concreteHouse"
+      &&
       card.querySelector(
         ".house-bolt-enabled"
       ).checked
     ) {
 
-      return n(
+      return num(
         card.querySelector(
           ".top-hole-position"
         ).value
       ) > 0;
     }
 
+
     return true;
   }
 
 
-  if (
-    component.type === "gate"
-  ) {
+  if (component.type === "gate") {
 
-    return (
-      n(
+    const width =
+      num(
         card.dataset
           .calculatedWidth
-      ) > 0
+      );
+
+
+    const height =
+      num(
+        card.dataset
+          .calculatedHeight
+      );
+
+
+    return Boolean(
+      width > 0
       &&
-      n(
-        card.querySelector(
-          ".gate-height"
-        ).value
-      ) > 0
+      height > 0
       &&
       card.querySelector(
         ".hinge-side"
@@ -1086,18 +1635,16 @@ function componentComplete(component) {
   }
 
 
-  if (
-    component.type === "panel"
-  ) {
+  if (component.type === "panel") {
 
-    return (
-      n(
+    return Boolean(
+      num(
         card.querySelector(
           ".panel-width"
         ).value
       ) > 0
       &&
-      n(
+      num(
         card.querySelector(
           ".panel-height"
         ).value
@@ -1105,47 +1652,50 @@ function componentComplete(component) {
     );
   }
 
+
   return false;
 }
 
 
-// ============================================================
-// RENUMBER
-// ============================================================
+/* ==========================================================
+   RENUMBER
+========================================================== */
 
 function renumberComponents() {
 
-  let p = 0;
-  let g = 0;
-  let f = 0;
+  let post = 0;
+  let gate = 0;
+  let panel = 0;
+
 
   components.forEach(component => {
 
-    if (
-      component.type === "post"
-    ) {
+    if (component.type === "post") {
       component.label =
-        `P${++p}`;
+        `P${++post}`;
     }
 
     else if (
       component.type === "gate"
     ) {
       component.label =
-        `G${++g}`;
+        `G${++gate}`;
     }
 
     else {
       component.label =
-        `FP${++f}`;
+        `FP${++panel}`;
     }
+
 
     const card =
       document.querySelector(
         `[data-component-id="${component.id}"]`
       );
 
+
     if (card) {
+
       card.querySelector(
         ".component-title"
       ).textContent =
@@ -1155,9 +1705,9 @@ function renumberComponents() {
 }
 
 
-// ============================================================
-// MUD MAP
-// ============================================================
+/* ==========================================================
+   MUD MAP
+========================================================== */
 
 function renderMudMap() {
 
@@ -1166,22 +1716,25 @@ function renderMudMap() {
 
   map.innerHTML = "";
 
-  if (
-    components.length === 0
-  ) {
+
+  if (!components.length) {
 
     map.innerHTML =
-      `<div class="mud-empty">
+      `
+      <div class="mud-empty">
         Add components below
-       </div>`;
+      </div>
+      `;
 
     return;
   }
+
 
   components.forEach(component => {
 
     const complete =
       componentComplete(component);
+
 
     const wrapper =
       document.createElement("div");
@@ -1189,73 +1742,89 @@ function renderMudMap() {
     wrapper.className =
       "mud-item";
 
+
     const button =
       document.createElement("button");
 
     button.className =
       `mud-component ${
         complete
-          ? "complete"
-          : "incomplete"
+        ? "complete"
+        : "incomplete"
       }`;
+
 
     if (
       selectedComponentId ===
       component.id
     ) {
+
       button.classList.add(
         "selected"
       );
     }
 
+
     button.textContent =
       component.label;
 
-    if (
-      component.type === "gate"
-    ) {
+
+    if (component.type === "gate") {
 
       const card =
         document.querySelector(
           `[data-component-id="${component.id}"]`
         );
 
+
       const hinge =
         card?.querySelector(
           ".hinge-side"
-        ).value;
+        )?.value;
+
 
       if (hinge) {
 
-        const h =
+        const hingeMarker =
           document.createElement(
             "span"
           );
 
-        h.className =
+        hingeMarker.className =
           `mud-hinge ${hinge}`;
 
-        h.textContent = "H";
+        hingeMarker.textContent =
+          "H";
 
-        button.appendChild(h);
 
-        const l =
+        const latchMarker =
           document.createElement(
             "span"
           );
 
-        l.className =
+        latchMarker.className =
           `mud-latch ${
             hinge === "left"
-              ? "right"
-              : "left"
+            ? "right"
+            : "left"
           }`;
 
-        l.textContent = "L";
+        latchMarker.textContent =
+          "L";
 
-        button.appendChild(l);
+
+        button.append(
+          hingeMarker,
+          latchMarker
+        );
       }
     }
+
+
+    /*
+       Single tap:
+       select + jump.
+    */
 
     button.addEventListener(
       "click",
@@ -1272,8 +1841,14 @@ function renderMudMap() {
       }
     );
 
+
     wrapper.appendChild(button);
 
+
+    /*
+       Move arrows only appear
+       for selected component.
+    */
 
     if (
       selectedComponentId ===
@@ -1281,23 +1856,23 @@ function renderMudMap() {
     ) {
 
       const controls =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       controls.className =
         "mud-move-controls";
 
-      const left =
-        document.createElement(
-          "button"
-        );
 
+      const left =
+        document.createElement("button");
+
+      left.type = "button";
       left.textContent = "◀";
+
 
       left.addEventListener(
         "click",
         event => {
+
           event.stopPropagation();
 
           moveComponent(
@@ -1307,16 +1882,18 @@ function renderMudMap() {
         }
       );
 
-      const right =
-        document.createElement(
-          "button"
-        );
 
+      const right =
+        document.createElement("button");
+
+      right.type = "button";
       right.textContent = "▶";
+
 
       right.addEventListener(
         "click",
         event => {
+
           event.stopPropagation();
 
           moveComponent(
@@ -1326,24 +1903,27 @@ function renderMudMap() {
         }
       );
 
+
       controls.append(
         left,
         right
       );
+
 
       wrapper.appendChild(
         controls
       );
     }
 
+
     map.appendChild(wrapper);
   });
 }
 
 
-// ============================================================
-// MOVE COMPONENT
-// ============================================================
+/* ==========================================================
+   MOVE COMPONENT
+========================================================== */
 
 function moveComponent(
   id,
@@ -1352,28 +1932,37 @@ function moveComponent(
 
   const index =
     components.findIndex(
-      c => c.id === id
+      component =>
+        component.id === id
     );
+
 
   const target =
     index + direction;
 
+
   if (
     target < 0 ||
-    target >=
-      components.length
-  ) return;
+    target >= components.length
+  ) {
+
+    return;
+  }
+
 
   [
     components[index],
     components[target]
-  ] = [
+  ] =
+  [
     components[target],
     components[index]
   ];
 
+
   const container =
     $("componentsContainer");
+
 
   components.forEach(component => {
 
@@ -1382,19 +1971,22 @@ function moveComponent(
         `[data-component-id="${component.id}"]`
       );
 
+
     if (card) {
       container.appendChild(card);
     }
   });
 
+
   renumberComponents();
+
   refreshEverything();
 }
 
 
-// ============================================================
-// JUMP
-// ============================================================
+/* ==========================================================
+   JUMP
+========================================================== */
 
 function jumpToComponent(id) {
 
@@ -1403,7 +1995,11 @@ function jumpToComponent(id) {
       `[data-component-id="${id}"]`
     );
 
-  if (!card) return;
+
+  if (!card) {
+    return;
+  }
+
 
   card.scrollIntoView({
     behavior: "smooth",
@@ -1412,152 +2008,464 @@ function jumpToComponent(id) {
 }
 
 
-// ============================================================
-// REMOVE
-// ============================================================
+/* ==========================================================
+   REMOVE
+========================================================== */
 
 function removeComponent(id) {
 
   components =
     components.filter(
-      c => c.id !== id
+      component =>
+        component.id !== id
     );
+
 
   document.querySelector(
     `[data-component-id="${id}"]`
   )?.remove();
 
+
   if (
     selectedComponentId === id
   ) {
+
     selectedComponentId = null;
   }
 
+
   renumberComponents();
+
   refreshEverything();
 }
 
 
-// ============================================================
-// POST HEIGHT PROPAGATION
-// ============================================================
+/* ==========================================================
+   STOCK OPTIMISATION
+========================================================== */
 
-function propagatePostHeight() {
+function stockPieces(
+  pieces,
+  stockLength
+) {
 
-  const cards =
-    getCards("post");
-
-  let firstHeight = 0;
-
-  for (
-    const card of cards
-  ) {
-
-    const value =
-      n(
-        card.querySelector(
-          ".post-height"
-        ).value
+  const valid =
+    pieces
+      .filter(
+        piece => piece > 0
+      )
+      .sort(
+        (a, b) => b - a
       );
 
-    if (value) {
-      firstHeight = value;
-      break;
+
+  const bins = [];
+
+
+  valid.forEach(piece => {
+
+    let placed = false;
+
+
+    for (
+      let i = 0;
+      i < bins.length;
+      i++
+    ) {
+
+      if (
+        bins[i] + piece <=
+        stockLength + 0.000001
+      ) {
+
+        bins[i] += piece;
+
+        placed = true;
+
+        break;
+      }
     }
-  }
 
-  if (!firstHeight) return;
 
-  cards.forEach(card => {
-
-    const input =
-      card.querySelector(
-        ".post-height"
-      );
-
-    if (!input.value) {
-      input.value =
-        firstHeight;
+    if (!placed) {
+      bins.push(piece);
     }
   });
+
+
+  const used =
+    valid.reduce(
+      (sum, value) =>
+        sum + value,
+      0
+    );
+
+
+  const purchased =
+    bins.length *
+    stockLength;
+
+
+  return {
+
+    lengths:
+      bins.length,
+
+    used,
+
+    waste:
+      purchased - used
+  };
 }
 
 
-// ============================================================
-// POWDER COATING
-// ============================================================
+/* ==========================================================
+   CLADDING COST
+========================================================== */
+
+function calculateGlobalCladding(
+  gates,
+  panels
+) {
+
+  if (!includeState.cladding) {
+
+    return {
+      boards: 0,
+      metres: 0,
+      stockLengths: 0,
+      waste: 0,
+      costExGST: 0
+    };
+  }
+
+
+  const type =
+    $("claddingType").value;
+
+
+  const direction =
+    $("claddingDirection").value;
+
+
+  const data =
+    PRICES.cladding[type];
+
+
+  if (
+    !data ||
+    !direction
+  ) {
+
+    return {
+      boards: 0,
+      metres: 0,
+      stockLengths: 0,
+      waste: 0,
+      costExGST: 0
+    };
+  }
+
+
+  if (type === "custom") {
+
+    return {
+      boards: 0,
+      metres: 0,
+      stockLengths: 0,
+      waste: 0,
+
+      costExGST:
+        toExGST(
+          num(
+            $("customCost").value
+          ),
+          true
+        )
+    };
+  }
+
+
+  const areas = [
+
+    ...gates.map(gate => ({
+      width: gate.width,
+      height: gate.height
+    })),
+
+    ...panels.map(panel => ({
+      width: panel.width,
+      height: panel.height
+    }))
+  ];
+
+
+  if (type === "colorbond") {
+
+    const areaM2 =
+      areas.reduce(
+        (sum, area) =>
+          sum +
+          (
+            area.width / 1000
+          ) *
+          (
+            area.height / 1000
+          ),
+        0
+      );
+
+
+    const raw =
+      areaM2 *
+      num(
+        data.pricePerM2
+      );
+
+
+    return {
+
+      boards: 0,
+      metres: 0,
+      stockLengths: 0,
+      waste: 0,
+
+      costExGST:
+        toExGST(
+          raw,
+          data.priceIncludesGST
+        )
+    };
+  }
+
+
+  const module =
+    data.boardWidthMm +
+    PRICES.defaults
+      .claddingGapMm;
+
+
+  const pieces = [];
+
+
+  areas.forEach(area => {
+
+    if (
+      !area.width ||
+      !area.height
+    ) {
+
+      return;
+    }
+
+
+    const count =
+      Math.ceil(
+        (
+          direction === "vertical"
+          ? area.width
+          : area.height
+        ) /
+        module
+      );
+
+
+    const lengthM =
+      (
+        direction === "vertical"
+        ? area.height
+        : area.width
+      ) /
+      1000;
+
+
+    for (
+      let i = 0;
+      i < count;
+      i++
+    ) {
+
+      pieces.push(lengthM);
+    }
+  });
+
+
+  const usedMetres =
+    pieces.reduce(
+      (sum, value) =>
+        sum + value,
+      0
+    );
+
+
+  /*
+     Products sold by fixed stock length.
+  */
+
+  if (
+    data.stockLengthM &&
+    data.pricePerStockLength
+  ) {
+
+    const stock =
+      stockPieces(
+        pieces,
+        data.stockLengthM
+      );
+
+
+    const raw =
+      stock.lengths *
+      data.pricePerStockLength;
+
+
+    return {
+
+      boards:
+        pieces.length,
+
+      metres:
+        usedMetres,
+
+      stockLengths:
+        stock.lengths,
+
+      waste:
+        stock.waste,
+
+      costExGST:
+        toExGST(
+          raw,
+          data.priceIncludesGST
+        )
+    };
+  }
+
+
+  /*
+     Lineal-metre products.
+  */
+
+  const raw =
+    usedMetres *
+    num(
+      data.pricePerLinealM
+    );
+
+
+  return {
+
+    boards:
+      pieces.length,
+
+    metres:
+      usedMetres,
+
+    stockLengths: 0,
+
+    waste: 0,
+
+    costExGST:
+      toExGST(
+        raw,
+        data.priceIncludesGST
+      )
+  };
+}
+
+
+/* ==========================================================
+   POWDER COATING
+========================================================== */
 
 function renderPowderComponents() {
 
   const list =
     $("powderComponentList");
 
+
+  if (!list) {
+    return;
+  }
+
+
+  /*
+     Save checked IDs before rebuilding.
+  */
+
+  const checked =
+    new Set(
+      [
+        ...list.querySelectorAll(
+          ".powder-component-check:checked"
+        )
+      ]
+      .map(
+        checkbox =>
+          checkbox.dataset.id
+      )
+    );
+
+
   list.innerHTML = "";
+
 
   components.forEach(component => {
 
-    let amount = 0;
     let allowed = true;
 
-    if (
-      component.type === "gate"
-    ) {
-      amount =
-        PRICES.powderCoating
-          .gateEach;
-    }
 
-    else if (
-      component.type === "post"
-    ) {
+    if (component.type === "post") {
 
       const card =
         document.querySelector(
           `[data-component-id="${component.id}"]`
         );
 
+
       const fixing =
         card?.querySelector(
           ".post-fixing"
-        ).value;
+        )?.value;
+
 
       if (
         fixing === "existing"
       ) {
-        allowed = false;
-      }
 
-      amount =
-        PRICES.powderCoating
-          .postEach;
-    }
-
-    else {
-
-      if (
-        $("claddingDirection")
-          .value === "vertical"
-      ) {
-
-        amount =
-          PRICES.powderCoating
-            .verticalFixedPanelEach;
-      }
-
-      else {
         allowed = false;
       }
     }
 
-    if (!allowed) return;
+
+    /*
+       Horizontal fixed panels have no
+       separate $150 coating item.
+       Their posts are coated individually.
+    */
+
+    if (
+      component.type === "panel"
+      &&
+      $("claddingDirection").value
+        !== "vertical"
+    ) {
+
+      allowed = false;
+    }
+
+
+    if (!allowed) {
+      return;
+    }
+
 
     const label =
-      document.createElement(
-        "label"
-      );
+      document.createElement("label");
 
     label.className =
       "powder-item";
+
 
     label.innerHTML =
       `
@@ -1566,81 +2474,107 @@ function renderPowderComponents() {
         class="powder-component-check"
         data-id="${component.id}"
       >
+
       <span>
         ${component.label}
       </span>
-      <strong>
-        ${money(amount)}
-      </strong>
       `;
 
-    list.appendChild(label);
-  });
 
-  list.querySelectorAll(
-    ".powder-component-check"
-  ).forEach(box => {
+    const checkbox =
+      label.querySelector(
+        "input"
+      );
 
-    box.addEventListener(
+
+    checkbox.checked =
+      checked.has(
+        component.id
+      );
+
+
+    checkbox.addEventListener(
       "change",
       refreshEverything
     );
+
+
+    list.appendChild(label);
   });
 }
+
 
 function powderCostIncGST() {
 
   if (
     !$("powderEnabled").checked
-  ) return 0;
+  ) {
+
+    return 0;
+  }
+
 
   let total = 0;
+
 
   document
     .querySelectorAll(
       ".powder-component-check:checked"
     )
-    .forEach(box => {
+    .forEach(checkbox => {
 
       const component =
         components.find(
-          c =>
-            c.id ===
-            box.dataset.id
+          item =>
+            item.id ===
+            checkbox.dataset.id
         );
 
-      if (!component) return;
 
-      if (
-        component.type === "gate"
-      ) {
+      if (!component) {
+        return;
+      }
+
+
+      if (component.type === "gate") {
+
         total +=
           PRICES.powderCoating
-            .gateEach;
+            .gate
+            .priceEach;
       }
+
 
       else if (
         component.type === "post"
       ) {
+
         total +=
           PRICES.powderCoating
-            .postEach;
+            .post
+            .priceEach;
       }
 
-      else {
+
+      else if (
+        component.type === "panel"
+      ) {
+
         total +=
           PRICES.powderCoating
-            .verticalFixedPanelEach;
+            .fixedPanelVertical
+            .priceEach;
       }
     });
+
 
   return total;
 }
 
 
-// ============================================================
-// LABOUR
-// ============================================================
+/* ==========================================================
+   LABOUR
+========================================================== */
 
 function labourEstimate(
   posts,
@@ -1648,20 +2582,21 @@ function labourEstimate(
   panels
 ) {
 
-  let fabrication =
+  let fabrication = 0;
+  let installation = 0;
+
+
+  fabrication +=
     gates.length *
     PRICES.labour
-      .gateFabricationHoursEach;
+      .gateBaseHours;
+
 
   fabrication +=
     panels.length *
     PRICES.labour
-      .fixedPanelFabricationHoursEach;
+      .fixedPanelHours;
 
-  let installation =
-    gates.length *
-    PRICES.labour
-      .gateInstallHoursEach;
 
   posts.forEach(post => {
 
@@ -1669,22 +2604,26 @@ function labourEstimate(
       post.fixing &&
       post.fixing !== "existing"
     ) {
+
       fabrication +=
         PRICES.labour
-          .postFabricationHoursEach;
+          .postHours;
     }
+
 
     fabrication +=
       post.holes.length *
       PRICES.labour
-        .boltHoleFabricationHoursEach;
+        .holeHours;
+
 
     if (post.topHole) {
 
       fabrication +=
         PRICES.labour
-          .boltHoleFabricationHoursEach;
+          .holeHours;
     }
+
 
     if (
       [
@@ -1700,8 +2639,9 @@ function labourEstimate(
 
       installation +=
         PRICES.labour
-          .concretePostInstallHoursEach;
+          .concretePostHours;
     }
+
 
     if (
       post.fixing ===
@@ -1710,9 +2650,16 @@ function labourEstimate(
 
       installation +=
         PRICES.labour
-          .baseplatePostInstallHoursEach;
+          .baseplateHours;
     }
   });
+
+
+  installation +=
+    gates.length *
+    PRICES.labour
+      .hangGateHours;
+
 
   return {
     fabrication,
@@ -1721,76 +2668,14 @@ function labourEstimate(
 }
 
 
-// ============================================================
-// STOCK
-// ============================================================
-
-function stockPieces(
-  pieces,
-  stockLength
-) {
-
-  const valid =
-    pieces
-      .filter(Boolean)
-      .sort(
-        (a,b) => b-a
-      );
-
-  const bins = [];
-
-  valid.forEach(piece => {
-
-    let placed = false;
-
-    for (
-      let i = 0;
-      i < bins.length;
-      i++
-    ) {
-
-      if (
-        bins[i] + piece <=
-        stockLength
-      ) {
-
-        bins[i] += piece;
-        placed = true;
-        break;
-      }
-    }
-
-    if (!placed) {
-      bins.push(piece);
-    }
-  });
-
-  const used =
-    valid.reduce(
-      (a,b) => a+b,
-      0
-    );
-
-  const purchased =
-    bins.length *
-    stockLength;
-
-  return {
-    lengths: bins.length,
-    used,
-    waste:
-      purchased - used
-  };
-}
-
-
-// ============================================================
-// MAIN CALCULATION
-// ============================================================
+/* ==========================================================
+   MAIN COST CALCULATION
+========================================================== */
 
 function calculateQuote() {
 
-  calculateGateWidths();
+  calculateGateDimensions();
+
 
   const posts =
     readPosts();
@@ -1802,293 +2687,414 @@ function calculateQuote() {
     readPanels();
 
 
-  // FRAME
+  /* ------------------------------------------------------
+     FRAME
+  ------------------------------------------------------ */
 
-  let framePieces = [];
-  let frameCost = 0;
-
-  gates.forEach(gate => {
-
-    if (
-      !gate.width ||
-      !gate.height
-    ) return;
-
-    const frame =
-      PRICES.steel.frame[
-        gate.frame
-      ];
-
-    const w =
-      gate.width / 1000;
-
-    const h =
-      gate.height / 1000;
-
-    framePieces.push(
-      w,w,h,h
-    );
-
-    if (
-      $("claddingDirection")
-        .value === "vertical"
-    ) {
-
-      const rail =
-        Math.max(
-          0,
-          gate.width -
-          frame.faceMm * 2
-        ) / 1000;
-
-      for (
-        let i = 0;
-        i < gate.hRails;
-        i++
-      ) {
-        framePieces.push(
-          rail
-        );
-      }
-    }
-
-    if (
-      $("claddingDirection")
-        .value === "horizontal"
-    ) {
-
-      const rail =
-        Math.max(
-          0,
-          gate.height -
-          frame.faceMm * 2
-        ) / 1000;
-
-      for (
-        let i = 0;
-        i < gate.vRails;
-        i++
-      ) {
-        framePieces.push(
-          rail
-        );
-      }
-    }
-  });
+  const frameGroups = {};
 
 
-  // vertical panels use horizontal rails
+  if (includeState.frame) {
 
-  if (
-    $("claddingDirection")
-      .value === "vertical"
-  ) {
-
-    panels.forEach(panel => {
+    gates.forEach(gate => {
 
       if (
-        !panel.width ||
-        !panel.height
-      ) return;
-
-      const rails =
-        Math.min(
-          3,
-          Math.max(
-            1,
-            Math.ceil(
-              panel.height / 900
-            )
-          )
-        );
-
-      const length =
-        panel.width / 1000;
-
-      for (
-        let i = 0;
-        i < rails;
-        i++
+        !gate.width ||
+        !gate.height
       ) {
-        framePieces.push(
-          length
-        );
+
+        return;
+      }
+
+
+      if (!frameGroups[gate.frame]) {
+
+        frameGroups[
+          gate.frame
+        ] = [];
+      }
+
+
+      const frame =
+        PRICES.steel.frame[
+          gate.frame
+        ];
+
+
+      frameGroups[
+        gate.frame
+      ].push(
+
+        gate.width / 1000,
+        gate.width / 1000,
+
+        gate.height / 1000,
+        gate.height / 1000
+      );
+
+
+      if (
+        includeState.cladding
+        &&
+        $("claddingDirection").value
+          === "vertical"
+      ) {
+
+        const railLength =
+          Math.max(
+            0,
+            gate.width -
+            frame.widthMm * 2
+          ) /
+          1000;
+
+
+        for (
+          let i = 0;
+          i < gate.hRails;
+          i++
+        ) {
+
+          frameGroups[
+            gate.frame
+          ].push(
+            railLength
+          );
+        }
+      }
+
+
+      if (
+        includeState.cladding
+        &&
+        $("claddingDirection").value
+          === "horizontal"
+      ) {
+
+        const railLength =
+          Math.max(
+            0,
+            gate.height -
+            frame.widthMm * 2
+          ) /
+          1000;
+
+
+        for (
+          let i = 0;
+          i < gate.vRails;
+          i++
+        ) {
+
+          frameGroups[
+            gate.frame
+          ].push(
+            railLength
+          );
+        }
       }
     });
+
+
+    /*
+       Vertical-clad panels get horizontal rails.
+    */
+
+    if (
+      includeState.cladding
+      &&
+      $("claddingDirection").value
+        === "vertical"
+    ) {
+
+      panels.forEach(panel => {
+
+        if (
+          !panel.width ||
+          !panel.height
+        ) {
+
+          return;
+        }
+
+
+        const frameKey =
+          PRICES.defaults.frameType;
+
+
+        if (!frameGroups[frameKey]) {
+
+          frameGroups[
+            frameKey
+          ] = [];
+        }
+
+
+        const railCount =
+          Math.min(
+            3,
+            Math.max(
+              1,
+              Math.ceil(
+                panel.height /
+                PRICES.defaults
+                  .fixedPanelVerticalRailSpacingApproxMm
+              )
+            )
+          );
+
+
+        for (
+          let i = 0;
+          i < railCount;
+          i++
+        ) {
+
+          frameGroups[
+            frameKey
+          ].push(
+            panel.width /
+            1000
+          );
+        }
+      });
+    }
   }
 
-  const frameStock =
-    stockPieces(
-      framePieces,
-      8
-    );
 
-  if (
-    includeState.frame
-  ) {
+  let frameMetres = 0;
+  let frameLengths = 0;
+  let frameWaste = 0;
+  let frameCostExGST = 0;
 
-    frameCost =
-      frameStock.lengths *
-      exGST(
+
+  Object.entries(
+    frameGroups
+  ).forEach(
+    ([key, pieces]) => {
+
+      const steel =
         PRICES.steel.frame[
-          PRICES.defaults.frame
-        ].pricePerStockLength,
-        true
-      );
-  }
+          key
+        ];
 
 
-  // POSTS
+      const stock =
+        stockPieces(
+          pieces,
+          steel.stockLengthM
+        );
 
-  const postPieces =
-    posts
-      .filter(
-        p =>
-          p.fixing &&
-          p.fixing !== "existing"
-      )
-      .map(
-        p => p.cut / 1000
-      );
 
-  const postStock =
-    stockPieces(
-      postPieces,
-      8
-    );
+      frameMetres +=
+        stock.used;
 
-  let postSteelCost = 0;
+      frameLengths +=
+        stock.lengths;
 
-  if (
-    includeState.posts
-  ) {
+      frameWaste +=
+        stock.waste;
 
-    const groups = {};
+
+      frameCostExGST +=
+        stock.lengths *
+        toExGST(
+          steel.pricePerStockLength,
+          steel.priceIncludesGST
+        );
+    }
+  );
+
+
+  /* ------------------------------------------------------
+     POSTS
+  ------------------------------------------------------ */
+
+  const postGroups = {};
+
+
+  if (includeState.posts) {
 
     posts.forEach(post => {
 
       if (
         !post.cut ||
         post.fixing === "existing"
-      ) return;
+      ) {
 
-      if (!groups[post.key]) {
-        groups[post.key] = [];
+        return;
       }
 
-      groups[post.key]
-        .push(
-          post.cut / 1000
-        );
-    });
 
-    Object.entries(groups)
-      .forEach(
-        ([key,pieces]) => {
+      if (
+        !postGroups[
+          post.steelKey
+        ]
+      ) {
 
-          const steel =
-            PRICES.steel.posts[
-              key
-            ];
+        postGroups[
+          post.steelKey
+        ] = [];
+      }
 
-          const stock =
-            stockPieces(
-              pieces,
-              steel.stockLengthM
-            );
 
-          postSteelCost +=
-            stock.lengths *
-            exGST(
-              steel.pricePerStockLength,
-              steel.priceIncludesGST
-            );
-        }
+      postGroups[
+        post.steelKey
+      ].push(
+        post.cut /
+        1000
       );
+    });
   }
 
 
-  // CONCRETE / BOLTS / BASEPLATES
+  let postMetres = 0;
+  let postLengths = 0;
+  let postWaste = 0;
+  let postSteelExGST = 0;
 
-  let concreteInc = 0;
-  let boltsInc = 0;
-  let baseplatesInc = 0;
 
-  posts.forEach(post => {
+  Object.entries(
+    postGroups
+  ).forEach(
+    ([key, pieces]) => {
 
-    if (
-      [
-        "concreteHouse",
-        "concreteFloating",
-        "fixedPanelLeft",
-        "fixedPanelCentre",
-        "fixedPanelRight"
-      ].includes(post.fixing)
-    ) {
+      const steel =
+        PRICES.steel.posts[
+          key
+        ];
 
-      concreteInc +=
-        PRICES.postFixing
-          .concrete
-          .defaultBagsPerPost *
-        PRICES.postFixing
-          .concrete
-          .pricePerBag;
+
+      const stock =
+        stockPieces(
+          pieces,
+          steel.stockLengthM
+        );
+
+
+      postMetres +=
+        stock.used;
+
+      postLengths +=
+        stock.lengths;
+
+      postWaste +=
+        stock.waste;
+
+
+      postSteelExGST +=
+        stock.lengths *
+        toExGST(
+          steel.pricePerStockLength,
+          steel.priceIncludesGST
+        );
     }
-
-    if (
-      post.fixing === "brick"
-    ) {
-
-      boltsInc +=
-        post.holes.length *
-        PRICES.postFixing
-          .dynabolts
-          .priceEach;
-    }
-
-    if (post.topHole) {
-
-      boltsInc +=
-        PRICES.postFixing
-          .dynabolts
-          .priceEach;
-    }
-
-    if (
-      post.fixing === "baseplate"
-    ) {
-
-      baseplatesInc +=
-        PRICES.postFixing
-          .baseplate
-          .allowanceEach;
-    }
-  });
+  );
 
 
-  // LATCHES / HINGES
+  /* ------------------------------------------------------
+     FIXINGS / CONCRETE
+  ------------------------------------------------------ */
 
-  let hardwareEx = 0;
+  let fixingCostsIncGST = 0;
+
+
+  if (includeState.posts) {
+
+    posts.forEach(post => {
+
+      if (
+        [
+          "concreteHouse",
+          "concreteFloating",
+          "fixedPanelLeft",
+          "fixedPanelCentre",
+          "fixedPanelRight"
+        ].includes(
+          post.fixing
+        )
+      ) {
+
+        /*
+           Retain 2 bags at $8 each.
+        */
+
+        fixingCostsIncGST +=
+          2 * 8;
+      }
+
+
+      if (
+        post.fixing === "brick"
+      ) {
+
+        fixingCostsIncGST +=
+          post.holes.length *
+          PRICES.fixings
+            .dynabolt
+            .priceEach;
+      }
+
+
+      if (post.topHole) {
+
+        fixingCostsIncGST +=
+          PRICES.fixings
+            .dynabolt
+            .priceEach;
+      }
+
+
+      if (
+        post.fixing === "baseplate"
+      ) {
+
+        fixingCostsIncGST +=
+          PRICES.fixings
+            .baseplate
+            .priceEach;
+      }
+    });
+  }
+
+
+  /* ------------------------------------------------------
+     GATE HARDWARE
+  ------------------------------------------------------ */
+
+  let hardwareExGST = 0;
+
 
   gates.forEach(gate => {
 
-    hardwareEx +=
-      exGST(
+    hardwareExGST +=
+      toExGST(
         PRICES.hardware.hinges
+          .lockout
           .pricePerSet,
         true
       );
+
+
+    hardwareExGST +=
+      toExGST(
+        PRICES.fixings.screws
+          .defaultPerGate,
+        true
+      );
+
 
     if (
       gate.latch === "other"
     ) {
 
-      hardwareEx +=
-        exGST(
+      hardwareExGST +=
+        toExGST(
           gate.otherLatchCost,
           true
         );
     }
+
 
     else {
 
@@ -2097,11 +3103,20 @@ function calculateQuote() {
           gate.latch
         ];
 
+
       if (latch) {
 
-        hardwareEx +=
-          exGST(
-            latch.price,
+        const rawPrice =
+          latch.priceIncludesGST
+          ?
+          latch.price
+          :
+          latch.priceExGST;
+
+
+        hardwareExGST +=
+          toExGST(
+            rawPrice,
             latch.priceIncludesGST
           );
       }
@@ -2109,17 +3124,9 @@ function calculateQuote() {
   });
 
 
-  // POWDER
-
-  const powderInc =
-    powderCostIncGST();
-
-  $("powderTotalDisplay")
-    .textContent =
-    money(powderInc);
-
-
-  // CLADDING
+  /* ------------------------------------------------------
+     CLADDING
+  ------------------------------------------------------ */
 
   const cladding =
     calculateGlobalCladding(
@@ -2128,160 +3135,234 @@ function calculateQuote() {
     );
 
 
-  const materialsEx =
-    frameCost +
-    postSteelCost +
-    exGST(concreteInc, true) +
-    exGST(boltsInc, true) +
-    exGST(baseplatesInc, true) +
-    hardwareEx +
+  /* ------------------------------------------------------
+     POWDER COATING
+  ------------------------------------------------------ */
+
+  const powderIncGST =
+    powderCostIncGST();
+
+
+  $("powderTotalDisplay")
+    .textContent =
+      money(powderIncGST);
+
+
+  /* ------------------------------------------------------
+     MATERIAL COST TOTAL
+  ------------------------------------------------------ */
+
+  const materialsExGST =
+
+    frameCostExGST +
+
+    postSteelExGST +
+
+    toExGST(
+      fixingCostsIncGST,
+      true
+    ) +
+
+    hardwareExGST +
+
     cladding.costExGST +
-    exGST(powderInc, true) +
-    exGST(
-      n(
+
+    toExGST(
+      powderIncGST,
+      true
+    ) +
+
+    toExGST(
+      num(
         $("extraHardware").value
       ),
       true
     );
 
 
-  // LABOUR
+  /* ------------------------------------------------------
+     LABOUR
+  ------------------------------------------------------ */
 
-  const estimate =
+  const estimatedLabour =
     labourEstimate(
       posts,
       gates,
       panels
     );
 
+
   $("estimatedFabricationHours")
     .textContent =
-      `${estimate.fabrication.toFixed(2)} hrs`;
+      `${estimatedLabour.fabrication.toFixed(2)} hrs`;
+
 
   $("estimatedInstallationHours")
     .textContent =
-      `${estimate.installation.toFixed(2)} hrs`;
+      `${estimatedLabour.installation.toFixed(2)} hrs`;
+
 
   const override =
     $("overrideLabour").checked;
 
-  const fabHours =
-    override
-      ? n(
-          $("fabricationHoursOverride")
-            .value
-        )
-      : estimate.fabrication;
 
-  const installHours =
+  const fabricationHours =
     override
-      ? n(
-          $("installationHoursOverride")
-            .value
-        )
-      : estimate.installation;
+    ?
+    num(
+      $("fabricationHoursOverride")
+        .value
+    )
+    :
+    estimatedLabour.fabrication;
 
-  const labourEx =
+
+  const installationHours =
+    override
+    ?
+    num(
+      $("installationHoursOverride")
+        .value
+    )
+    :
+    estimatedLabour.installation;
+
+
+  const labourExGST =
     (
-      fabHours +
-      installHours
+      fabricationHours +
+      installationHours
     ) *
     PRICES.business
-      .labourRateExGST;
+      .labourRate;
 
 
-  // TRAVEL
+  /* ------------------------------------------------------
+     TRAVEL
+  ------------------------------------------------------ */
 
-  const oneWay =
-    n(
+  const oneWayKm =
+    num(
       $("travelKm").value
     );
 
-  const chargeable =
+
+  const chargeableOneWay =
     Math.max(
       0,
-      oneWay -
+      oneWayKm -
       PRICES.business
-        .travelFreeOneWayKm
+        .includedTravelKm
     );
 
-  const travelEx =
-    chargeable *
+
+  const travelExGST =
+    chargeableOneWay *
     2 *
     PRICES.business
       .travelRatePerKm;
 
 
-  const otherEx =
-    exGST(
-      n(
+  /* ------------------------------------------------------
+     OTHER COSTS
+  ------------------------------------------------------ */
+
+  const otherExGST =
+    toExGST(
+      num(
         $("otherCosts").value
       ),
       true
     );
 
 
+  /* ------------------------------------------------------
+     MARKUP
+  ------------------------------------------------------ */
+
   const markup =
-    materialsEx *
+    materialsExGST *
     PRICES.business
       .materialMarkup;
 
 
-  const totalEx =
-    materialsEx +
-    labourEx +
-    travelEx +
-    otherEx +
+  /* ------------------------------------------------------
+     QUOTE TOTAL
+  ------------------------------------------------------ */
+
+  const totalExGST =
+
+    materialsExGST +
+
+    labourExGST +
+
+    travelExGST +
+
+    otherExGST +
+
     markup;
 
+
   const gst =
-    totalEx *
+    totalExGST *
     PRICES.business.gst;
 
-  const calculatedInc =
-    totalEx + gst;
 
-  const rounded =
-    roundUp(
-      calculatedInc
+  const calculatedIncGST =
+    totalExGST +
+    gst;
+
+
+  const finalPrice =
+    roundQuote(
+      calculatedIncGST
     );
 
 
-  if (
-    !$("finalPrice").value ||
-    !lastCalculation
-  ) {
+  /*
+     IMPORTANT CHANGE:
 
-    $("finalPrice").value =
-      rounded;
-  }
+     Final price is ALWAYS recalculated
+     and inserted automatically.
+  */
+
+  $("finalPrice").value =
+    finalPrice;
 
 
-  // DISPLAY
+  $("finalPrice").readOnly =
+    true;
+
+
+  /* ------------------------------------------------------
+     DISPLAY MATERIALS
+  ------------------------------------------------------ */
 
   $("frameMetres")
     .textContent =
-      `${frameStock.used.toFixed(2)} m`;
+      `${frameMetres.toFixed(2)} m`;
 
   $("frameLengths")
     .textContent =
-      frameStock.lengths;
+      frameLengths;
 
   $("frameWaste")
     .textContent =
-      `${frameStock.waste.toFixed(2)} m`;
+      `${frameWaste.toFixed(2)} m`;
+
 
   $("postMetres")
     .textContent =
-      `${postStock.used.toFixed(2)} m`;
+      `${postMetres.toFixed(2)} m`;
 
   $("postLengths")
     .textContent =
-      postStock.lengths;
+      postLengths;
 
   $("postWaste")
     .textContent =
-      `${postStock.waste.toFixed(2)} m`;
+      `${postWaste.toFixed(2)} m`;
+
 
   $("claddingBoards")
     .textContent =
@@ -2291,21 +3372,30 @@ function calculateQuote() {
     .textContent =
       `${cladding.metres.toFixed(2)} m`;
 
+
+  /* ------------------------------------------------------
+     INTERNAL TOTALS
+  ------------------------------------------------------ */
+
   $("materialsTotal")
     .textContent =
-      money(materialsEx);
+      money(materialsExGST);
+
 
   $("labourTotal")
     .textContent =
-      money(labourEx);
+      money(labourExGST);
+
 
   $("travelTotal")
     .textContent =
-      money(travelEx);
+      money(travelExGST);
+
 
   $("markupTotal")
     .textContent =
       money(markup);
+
 
   $("gstTotal")
     .textContent =
@@ -2313,288 +3403,172 @@ function calculateQuote() {
 
 
   lastCalculation = {
+
     posts,
     gates,
     panels,
-    materialsEx,
-    labourEx,
-    travelEx,
-    otherEx,
+
+    materialsExGST,
+    labourExGST,
+    travelExGST,
+    otherExGST,
+
     markup,
-    totalEx,
+
+    totalExGST,
+
     gst,
-    rounded,
+
+    calculatedIncGST,
+
+    finalPrice,
+
     cladding,
-    powderInc
+
+    powderIncGST
   };
 
+
   updateFinalPriceDisplays();
+
   updateFabrication();
+
   updateLayoutCheck();
 }
 
 
-// ============================================================
-// GLOBAL CLADDING CALC
-// ============================================================
-
-function calculateGlobalCladding(
-  gates,
-  panels
-) {
-
-  if (
-    !includeState.cladding
-  ) {
-
-    return {
-      boards: 0,
-      metres: 0,
-      costExGST: 0
-    };
-  }
-
-  const type =
-    $("claddingType").value;
-
-  const direction =
-    $("claddingDirection").value;
-
-  const data =
-    PRICES.cladding[type];
-
-  if (
-    !data ||
-    !direction
-  ) {
-
-    return {
-      boards: 0,
-      metres: 0,
-      costExGST: 0
-    };
-  }
-
-  let boards = 0;
-  let metres = 0;
-  let costInc = 0;
-
-  const areas = [
-    ...gates.map(g => ({
-      width: g.width,
-      height: g.height
-    })),
-
-    ...panels.map(p => ({
-      width: p.width,
-      height: p.height
-    }))
-  ];
-
-
-  if (
-    type === "custom"
-  ) {
-
-    return {
-      boards: 0,
-      metres: 0,
-
-      costExGST:
-        exGST(
-          n(
-            $("customCost").value
-          ),
-          true
-        )
-    };
-  }
-
-
-  if (
-    type === "colorbond"
-  ) {
-
-    const m2 =
-      areas.reduce(
-        (sum,a) =>
-          sum +
-          a.width / 1000 *
-          a.height / 1000,
-        0
-      );
-
-    costInc =
-      m2 *
-      n(data.pricePerM2);
-
-    return {
-      boards: 0,
-      metres: 0,
-      costExGST:
-        exGST(
-          costInc,
-          data.priceIncludesGST
-        )
-    };
-  }
-
-
-  const module =
-    data.boardWidthMm +
-    PRICES.rules.claddingGapMm;
-
-  areas.forEach(area => {
-
-    if (
-      !area.width ||
-      !area.height
-    ) return;
-
-    const count =
-      Math.ceil(
-        (
-          direction === "vertical"
-            ? area.width
-            : area.height
-        ) /
-        module
-      );
-
-    const length =
-      (
-        direction === "vertical"
-          ? area.height
-          : area.width
-      ) / 1000;
-
-    boards += count;
-
-    metres +=
-      count * length;
-  });
-
-
-  if (
-    type === "ekodeck"
-  ) {
-
-    const lengths =
-      Math.ceil(
-        metres /
-        data.stockLengthM
-      );
-
-    costInc =
-      lengths *
-      data.pricePerStockLength;
-  }
-
-  else {
-
-    costInc =
-      metres *
-      n(data.pricePerLinealM);
-  }
-
-
-  return {
-    boards,
-    metres,
-
-    costExGST:
-      exGST(
-        costInc,
-        data.priceIncludesGST
-      )
-  };
-}
-
-
-// ============================================================
-// FINAL PRICE
-// ============================================================
+/* ==========================================================
+   FINAL PRICE DISPLAY
+========================================================== */
 
 function updateFinalPriceDisplays() {
 
-  if (!lastCalculation) return;
+  if (!lastCalculation) {
+    return;
+  }
 
-  const inc =
-    n(
-      $("finalPrice").value
+
+  const finalIncGST =
+    lastCalculation.finalPrice;
+
+
+  const finalExGST =
+    finalIncGST /
+    (
+      1 +
+      PRICES.business.gst
     );
 
-  const ex =
-    inc /
-    (1 + PRICES.business.gst);
 
-  const gst =
-    inc - ex;
+  const finalGST =
+    finalIncGST -
+    finalExGST;
+
 
   const actualCosts =
-    lastCalculation.materialsEx +
-    lastCalculation.labourEx +
-    lastCalculation.travelEx +
-    lastCalculation.otherEx;
+
+    lastCalculation
+      .materialsExGST +
+
+    lastCalculation
+      .labourExGST +
+
+    lastCalculation
+      .travelExGST +
+
+    lastCalculation
+      .otherExGST;
+
 
   const profit =
-    ex - actualCosts;
+    finalExGST -
+    actualCosts;
 
 
   $("profitTotal")
     .textContent =
       money(profit);
 
+
   $("quoteExGstDisplay")
     .textContent =
-      money(ex);
+      money(finalExGST);
+
 
   $("quoteGstDisplay")
     .textContent =
-      money(gst);
+      money(finalGST);
+
 
   $("quoteTotalDisplay")
     .textContent =
-      money(inc);
+      money(finalIncGST);
 
 
-  const area =
+  const projectArea =
     [
       ...lastCalculation.gates,
       ...lastCalculation.panels
     ]
     .reduce(
-      (sum,item) =>
-        sum +
-        item.width / 1000 *
-        item.height / 1000,
+      (sum, item) => {
+
+        return sum +
+          (
+            item.width /
+            1000
+          ) *
+          (
+            item.height /
+            1000
+          );
+      },
       0
     );
 
+
   $("effectiveRate")
     .textContent =
-      area
-        ? `${money(inc / area)}/m²`
-        : "N/A";
+      projectArea
+      ?
+      `${money(
+        finalIncGST /
+        projectArea
+      )}/m²`
+      :
+      "N/A";
+
 
   buildQuote();
 }
 
 
-// ============================================================
-// FABRICATION
-// ============================================================
+/* ==========================================================
+   FABRICATION VIEW
+========================================================== */
 
 function updateFabrication() {
 
-  if (!lastCalculation) return;
+  if (!lastCalculation) {
+    return;
+  }
+
 
   const html = [];
+
 
   lastCalculation.posts
     .forEach(post => {
 
-      html.push(`
+      if (
+        !includeState.posts
+      ) {
+        return;
+      }
+
+
+      html.push(
+        `
         <div class="fabrication-item">
 
           <strong>
@@ -2602,49 +3576,53 @@ function updateFabrication() {
           </strong>
 
           <span>
-            ${
-              PRICES.steel.posts[
-                post.key
-              ].label
-            }
+            ${post.steelLabel}
           </span>
 
           ${
             post.cut
-              ? `<span>
-                   CUT ${post.cut}mm
-                 </span>`
-              : ""
+            ?
+            `<span>
+              CUT ${post.cut} mm
+             </span>`
+            :
+            ""
           }
 
           ${
             post.fixing === "brick"
-              ? `<span>
-                  Holes @
-                  ${post.holes.join(" / ")}
-                  mm from top
-                </span>`
-              : ""
+            ?
+            `<span>
+              Holes @
+              ${post.holes.join(" / ")}
+              mm from top
+             </span>`
+            :
+            ""
           }
 
           ${
             post.topHole
-              ? `<span>
-                  Top hole @
-                  ${post.topHole}mm
-                </span>`
-              : ""
+            ?
+            `<span>
+              Top hole @
+              ${post.topHole} mm
+             </span>`
+            :
+            ""
           }
 
         </div>
-      `);
+        `
+      );
     });
 
 
   lastCalculation.gates
     .forEach(gate => {
 
-      html.push(`
+      html.push(
+        `
         <div class="fabrication-item">
 
           <strong>
@@ -2654,7 +3632,7 @@ function updateFabrication() {
           <span>
             ${gate.width}
             ×
-            ${gate.height}mm
+            ${gate.height} mm
           </span>
 
           <span>
@@ -2663,14 +3641,16 @@ function updateFabrication() {
           </span>
 
         </div>
-      `);
+        `
+      );
     });
 
 
   lastCalculation.panels
     .forEach(panel => {
 
-      html.push(`
+      html.push(
+        `
         <div class="fabrication-item">
 
           <strong>
@@ -2680,11 +3660,12 @@ function updateFabrication() {
           <span>
             ${panel.width}
             ×
-            ${panel.height}mm
+            ${panel.height} mm
           </span>
 
         </div>
-      `);
+        `
+      );
     });
 
 
@@ -2694,16 +3675,17 @@ function updateFabrication() {
 }
 
 
-// ============================================================
-// LAYOUT CHECK
-// ============================================================
+/* ==========================================================
+   LAYOUT CHECK
+========================================================== */
 
 function updateLayoutCheck() {
 
   const cavity =
-    n(
+    num(
       $("cavityWidth").value
     );
+
 
   if (!cavity) {
 
@@ -2711,12 +3693,14 @@ function updateLayoutCheck() {
       .className =
         "layout-check incomplete";
 
+
     $("layoutCheck")
       .textContent =
         "Layout incomplete";
 
     return;
   }
+
 
   const posts =
     readPosts();
@@ -2727,56 +3711,86 @@ function updateLayoutCheck() {
   const panels =
     readPanels();
 
+
   const postWidth =
+    includeState.posts
+    ?
     posts.reduce(
-      (sum,p) =>
-        sum +
-        (
-          p.fixing === "existing"
-            ? 0
-            : p.width
-        ),
+      (sum, post) => {
+
+        if (
+          post.fixing ===
+          "existing"
+        ) {
+
+          return sum;
+        }
+
+        return sum +
+          post.width;
+      },
+      0
+    )
+    :
+    0;
+
+
+  const gateWidth =
+    gates.reduce(
+      (sum, gate) =>
+        sum + gate.width,
       0
     );
 
-  const other =
-    [
-      ...gates,
-      ...panels
-    ].reduce(
-      (sum,item) =>
-        sum + item.width,
+
+  const panelWidth =
+    panels.reduce(
+      (sum, panel) =>
+        sum + panel.width,
       0
     );
+
 
   const gaps =
     Math.max(
       0,
       components.length - 1
     ) *
-    PRICES.rules.componentGapMm;
+    PRICES.defaults
+      .componentGapMm;
+
 
   const total =
+
     postWidth +
-    other +
+
+    gateWidth +
+
+    panelWidth +
+
     gaps;
+
 
   const difference =
     cavity - total;
 
 
   if (
-    Math.abs(difference) <= 2
+    Math.abs(
+      difference
+    ) <= 2
   ) {
 
     $("layoutCheck")
       .className =
         "layout-check complete";
 
+
     $("layoutCheck")
       .textContent =
-        `✓ ${cavity}mm cavity = ${Math.round(total)}mm layout`;
+        `✓ ${cavity} mm cavity = ${Math.round(total)} mm layout`;
   }
+
 
   else if (
     difference < 0
@@ -2786,10 +3800,12 @@ function updateLayoutCheck() {
       .className =
         "layout-check error";
 
+
     $("layoutCheck")
       .textContent =
-        `Layout exceeds cavity by ${Math.abs(Math.round(difference))}mm`;
+        `Layout exceeds cavity by ${Math.abs(Math.round(difference))} mm`;
   }
+
 
   else {
 
@@ -2797,36 +3813,49 @@ function updateLayoutCheck() {
       .className =
         "layout-check incomplete";
 
+
     $("layoutCheck")
       .textContent =
-        `${Math.round(difference)}mm still unallocated`;
+        `${Math.round(difference)} mm unallocated`;
   }
 }
 
 
-// ============================================================
-// QUOTE
-// ============================================================
+/* ==========================================================
+   CLADDING DESCRIPTION
+========================================================== */
 
 function claddingDescription() {
+
+  if (!includeState.cladding) {
+
+    return "No cladding";
+  }
+
 
   const type =
     $("claddingType").value;
 
+
   const data =
     PRICES.cladding[type];
 
-  if (!data) return "";
+
+  if (!data) {
+    return "";
+  }
+
 
   let text =
     data.label;
 
-  if (
-    type === "ekodeck"
-  ) {
+
+  if (type === "ekodeck") {
+
     text +=
       `, ${$("ekodeckColour").value}`;
   }
+
 
   if (
     type === "cypressPickets"
@@ -2835,62 +3864,99 @@ function claddingDescription() {
     text +=
       `, ${$("cypressFinish").value}`;
 
+
     if (
       $("cypressFinish").value
         === "Paint"
     ) {
+
       text +=
         ` ${$("cypressColour").value}`;
     }
   }
 
+
   if (
-    ["losp50","losp90"]
-      .includes(type)
+    [
+      "losp90",
+      "losp140"
+    ].includes(type)
   ) {
 
     text +=
       `, ${$("lospFinish").value}`;
 
+
     if (
       $("lospFinish").value
         === "Paint"
     ) {
+
       text +=
         ` ${$("lospColour").value}`;
     }
   }
 
+
   if (
-    ["merbau90","merbau140"]
-      .includes(type)
+    [
+      "merbau90",
+      "merbau140"
+    ].includes(type)
   ) {
 
     text +=
       `, ${$("merbauFinish").value}`;
   }
 
+
+  if (type === "colorbond") {
+
+    text +=
+      `, ${$("colorbondProfile").value}`;
+
+    text +=
+      `, ${$("colorbondColour").value}`;
+  }
+
+
+  if (type === "custom") {
+
+    text =
+      $("customDescription").value ||
+      "Custom cladding";
+  }
+
+
   if (
-    type === "colorbond"
+    $("claddingDirection").value
   ) {
 
     text +=
-      `, ${$("colorbondProfile").value}, ${$("colorbondColour").value}`;
+      `, ${$("claddingDirection").value}`;
   }
 
-  text +=
-    `, ${$("claddingDirection").value}`;
 
   return text;
 }
 
+
+/* ==========================================================
+   FINISHED QUOTE
+========================================================== */
+
 function buildQuote() {
 
-  if (!lastCalculation) return;
+  if (!lastCalculation) {
+    return;
+  }
+
 
   const html = [];
 
-  html.push(`
+
+  html.push(
+    `
     <p>
       <strong>
         Quote ${$("projectNumber").value}
@@ -2902,7 +3968,8 @@ function buildQuote() {
       <br>
       ${$("siteAddress").value}
     </p>
-  `);
+    `
+  );
 
 
   lastCalculation.gates
@@ -2910,97 +3977,130 @@ function buildQuote() {
 
       const latch =
         gate.latch === "other"
-          ? gate.otherLatch
-          : PRICES.hardware
-              .latches[
-                gate.latch
-              ]?.label;
+        ?
+        gate.otherLatch
+        :
+        PRICES.hardware
+          .latches[
+            gate.latch
+          ]?.label;
 
-      html.push(`
+
+      html.push(
+        `
         <p>
           <strong>
-            ${gate.label}
+            ${gate.label}:
           </strong>
-          ${gate.width} ×
-          ${gate.height}mm.
+
+          ${gate.width}
+          ×
+          ${gate.height} mm.
+
           Hinge ${gate.hinge},
           open ${gate.opens}.
+
           ${latch || ""}.
         </p>
-      `);
+        `
+      );
     });
 
 
-  if (
-    includeState.cladding
-  ) {
+  if (includeState.cladding) {
 
-    html.push(`
+    html.push(
+      `
       <p>
         <strong>
           Cladding:
         </strong>
+
         ${claddingDescription()}
       </p>
-    `);
+      `
+    );
   }
 
 
   lastCalculation.panels
     .forEach(panel => {
 
-      html.push(`
+      html.push(
+        `
         <p>
           <strong>
-            ${panel.label}
+            ${panel.label}:
           </strong>
+
           ${panel.width}
           ×
-          ${panel.height}mm
+          ${panel.height} mm
           fixed panel.
         </p>
-      `);
+        `
+      );
     });
 
 
+  /*
+     POWDER COATING
+
+     Show colour and processing time only.
+     No component prices.
+  */
+
   if (
-    $("powderEnabled").checked &&
-    powderCostIncGST() > 0
+    $("powderEnabled").checked
+    &&
+    lastCalculation
+      .powderIncGST > 0
   ) {
 
-    html.push(`
+    html.push(
+      `
       <p>
         <strong>
-          Powder coated:
+          Powder coating:
         </strong>
+
         ${$("powderColour").value}.
+
         Allow approximately 2 weeks
         for processing.
       </p>
-    `);
+      `
+    );
   }
 
-  else {
 
-    html.push(`
+  else if (
+    includeState.frame
+    ||
+    includeState.posts
+  ) {
+
+    html.push(
+      `
       <p>
-        Duragalv steel with exposed
-        fabrication areas treated
-        with etch primer and silver
-        galvanising spray.
+        ${PRICES.quote.standardSteelFinish}
       </p>
-    `);
+      `
+    );
   }
 
 
-  html.push(`
+  html.push(
+    `
     <p>
       <strong>
         50% deposit required on acceptance.
       </strong>
+
       Balance payable on completion.
     </p>
-  `);
+    `
+  );
 
 
   $("quoteDescription")
@@ -3009,13 +4109,37 @@ function buildQuote() {
 }
 
 
-// ============================================================
-// SAVE CURRENT WORKING JOB
-// ============================================================
+/* ==========================================================
+   TOP BAR
+========================================================== */
 
-function getJobData() {
+function updateTopBar() {
 
-  return {
+  $("topCustomerName")
+    .textContent =
+      $("customerName").value ||
+      "New Job";
+
+
+  $("topCustomerPhone")
+    .textContent =
+      $("customerPhone").value;
+
+
+  $("topProjectNumber")
+    .textContent =
+      $("projectNumber").value;
+}
+
+
+/* ==========================================================
+   SAVE CURRENT JOB
+========================================================== */
+
+function saveCurrentJob() {
+
+  const job = {
+
     project:
       $("projectNumber").value,
 
@@ -3037,175 +4161,87 @@ function getJobData() {
     cavityHeight:
       $("cavityHeight").value,
 
-    cladding: {
-      type:
-        $("claddingType").value,
+    claddingType:
+      $("claddingType").value,
 
-      direction:
-        $("claddingDirection").value,
-
-      ekodeckColour:
-        $("ekodeckColour").value,
-
-      cypressFinish:
-        $("cypressFinish").value,
-
-      cypressColour:
-        $("cypressColour").value,
-
-      lospFinish:
-        $("lospFinish").value,
-
-      lospColour:
-        $("lospColour").value,
-
-      merbauFinish:
-        $("merbauFinish").value,
-
-      colorbondProfile:
-        $("colorbondProfile").value,
-
-      colorbondColour:
-        $("colorbondColour").value
-    },
+    claddingDirection:
+      $("claddingDirection").value,
 
     includeState,
 
-    components:
-      components.map(component => {
-
-        if (
-          component.type === "post"
-        ) {
-          return {
-            type: "post",
-            data:
-              readPosts()
-                .find(
-                  p =>
-                    p.id ===
-                    component.id
-                )
-          };
-        }
-
-        if (
-          component.type === "gate"
-        ) {
-          return {
-            type: "gate",
-            data:
-              readGates()
-                .find(
-                  g =>
-                    g.id ===
-                    component.id
-                )
-          };
-        }
-
-        return {
-          type: "panel",
-          data:
-            readPanels()
-              .find(
-                p =>
-                  p.id ===
-                  component.id
-              )
-        };
-      }),
-
     finalPrice:
-      $("finalPrice").value,
-
-    travelKm:
-      $("travelKm").value,
-
-    extraHardware:
-      $("extraHardware").value,
-
-    otherCosts:
-      $("otherCosts").value
+      $("finalPrice").value
   };
-}
 
-function saveCurrentJob() {
 
   localStorage.setItem(
     "jtlaCurrentJob",
-    JSON.stringify(
-      getJobData()
-    )
+    JSON.stringify(job)
   );
 }
 
 
-// ============================================================
-// UPDATE BUTTON
-// ============================================================
+/* ==========================================================
+   UPDATE BUTTON
+========================================================== */
 
 function updateJob() {
-
-  propagatePostHeight();
 
   refreshEverything();
 
   saveCurrentJob();
 
-  updateTopBar();
-
-  flashUpdateButton();
-}
-
-function flashUpdateButton() {
 
   const button =
     $("updateBtn");
 
-  const original =
-    button.textContent;
 
   button.textContent =
     "UPDATED";
+
 
   button.classList.add(
     "updated"
   );
 
+
   setTimeout(
     () => {
 
       button.textContent =
-        original;
+        "UPDATE";
 
       button.classList.remove(
         "updated"
       );
     },
-    900
+    800
   );
 }
 
 
-// ============================================================
-// REFRESH EVERYTHING
-// ============================================================
+/* ==========================================================
+   REFRESH EVERYTHING
+========================================================== */
 
 function refreshEverything() {
 
   propagatePostHeight();
 
-  calculateGateWidths();
+  calculateGateDimensions();
+
 
   getCards("post")
     .forEach(
       updatePostConditional
     );
 
-  updateCladdingUI();
+
+  updateIncludeVisibility();
+
 
   renumberComponents();
+
 
   components.forEach(component => {
 
@@ -3214,197 +4250,165 @@ function refreshEverything() {
         `[data-component-id="${component.id}"]`
       );
 
-    const complete =
-      componentComplete(component);
 
-    card?.classList.toggle(
+    if (!card) {
+      return;
+    }
+
+
+    const complete =
+      componentComplete(
+        component
+      );
+
+
+    card.classList.toggle(
       "complete",
       complete
     );
 
-    card?.classList.toggle(
+
+    card.classList.toggle(
       "incomplete",
       !complete
     );
 
+
     const status =
-      card?.querySelector(
+      card.querySelector(
         ".component-status"
       );
+
 
     if (status) {
 
       status.textContent =
         complete
-          ? "COMPLETE"
-          : "INCOMPLETE";
+        ?
+        "COMPLETE"
+        :
+        "INCOMPLETE";
     }
   });
 
+
   renderMudMap();
+
   renderPowderComponents();
+
   calculateQuote();
+
   updateTopBar();
 }
 
 
-// ============================================================
-// TOP BAR
-// ============================================================
-
-function updateTopBar() {
-
-  $("topCustomerName")
-    .textContent =
-      $("customerName").value ||
-      "New Job";
-
-  $("topCustomerPhone")
-    .textContent =
-      $("customerPhone").value;
-
-  $("topProjectNumber")
-    .textContent =
-      $("projectNumber").value;
-}
-
-
-// ============================================================
-// NEW JOB
-// ============================================================
+/* ==========================================================
+   NEW JOB
+========================================================== */
 
 function newJob() {
 
-  if (
-    !confirm(
-      "Start a new job? This will clear the current working job."
-    )
-  ) return;
+  const okay =
+    confirm(
+      "Start a new job? This clears the current working job."
+    );
+
+
+  if (!okay) {
+    return;
+  }
+
 
   localStorage.removeItem(
     "jtlaCurrentJob"
   );
 
-  const project =
-    createNextProjectNumber();
+
+  nextProjectNumber();
+
 
   location.reload();
 }
 
 
-// ============================================================
-// SMS
-// ============================================================
+/* ==========================================================
+   SMS
+========================================================== */
 
 function sendSMS() {
 
   updateJob();
 
-  const phone =
-    $("customerPhone").value;
 
-  const name =
-    $("customerName").value;
+  const message =
 
-  const total =
-    money(
-      $("finalPrice").value
-    );
+    `Hi ${$("customerName").value}, ` +
 
-  const text =
-    `Hi ${name}, JTLA Gates quote ` +
-    `${$("projectNumber").value}: ` +
-    `${total} incl GST. ` +
-    `50% deposit on acceptance, ` +
-    `balance on completion. ` +
+    `JTLA Gates quote ${$("projectNumber").value}: ` +
+
+    `${$("quoteTotalDisplay").textContent} incl GST. ` +
+
+    `50% deposit on acceptance, balance on completion. ` +
+
     `Regards, Jody Tuuta 0439 517 783`;
 
+
   location.href =
-    `sms:${phone}?body=` +
-    encodeURIComponent(text);
+
+    `sms:${$("customerPhone").value}` +
+
+    `?body=${encodeURIComponent(message)}`;
 }
 
 
-// ============================================================
-// EMAIL
-// ============================================================
+/* ==========================================================
+   EMAIL
+========================================================== */
 
 function sendEmail() {
 
   updateJob();
 
-  const email =
-    $("customerEmail").value;
 
   const subject =
     `JTLA Gates Quote ${$("projectNumber").value}`;
 
+
   const body =
-    document
-      .getElementById(
-        "quoteDescription"
-      )
+
+    $("quoteDescription")
       .innerText +
-    `\n\nTOTAL INC GST: ` +
-    `${$("quoteTotalDisplay").innerText}` +
+
+    `\n\nPrice ex GST: ` +
+    $("quoteExGstDisplay")
+      .textContent +
+
+    `\nGST: ` +
+    $("quoteGstDisplay")
+      .textContent +
+
+    `\nTOTAL INC GST: ` +
+    $("quoteTotalDisplay")
+      .textContent +
+
     `\n\nRegards,\nJody Tuuta\nJTLA Gates\n0439 517 783`;
 
+
   location.href =
-    `mailto:${email}` +
-    `?bcc=${encodeURIComponent(PRICES.quote.bccEmail)}` +
+
+    `mailto:${$("customerEmail").value}` +
+
+    `?bcc=${encodeURIComponent("jtladesign@gmail.com")}` +
+
     `&subject=${encodeURIComponent(subject)}` +
+
     `&body=${encodeURIComponent(body)}`;
 }
 
 
-// ============================================================
-// PRINT
-// ============================================================
-
-function printQuote() {
-  updateJob();
-  window.print();
-}
-
-
-// ============================================================
-// POPULATE COLOURS
-// ============================================================
-
-function populateColours() {
-
-  [
-    $("colorbondColour"),
-    $("powderColour")
-  ].forEach(select => {
-
-    select.innerHTML = "";
-
-    PRICES.colours
-      .slice()
-      .sort()
-      .forEach(colour => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value = colour;
-        option.textContent =
-          colour;
-
-        select.appendChild(
-          option
-        );
-      });
-  });
-}
-
-
-// ============================================================
-// INITIALISE
-// ============================================================
+/* ==========================================================
+   INIT
+========================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -3412,75 +4416,78 @@ document.addEventListener(
 
     populateColours();
 
+
     $("projectNumber").value =
       getCurrentProjectNumber();
 
 
-    // ADD COMPONENTS
+    /* ADD PARTS */
 
     $("addPostBtn")
       .addEventListener(
         "click",
-        () =>
-          addComponent("post")
+        () => addComponent("post")
       );
+
 
     $("addGateBtn")
       .addEventListener(
         "click",
-        () =>
-          addComponent("gate")
+        () => addComponent("gate")
       );
+
 
     $("addPanelBtn")
       .addEventListener(
         "click",
-        () =>
-          addComponent("panel")
+        () => addComponent("panel")
       );
 
 
-    // INCLUDE
+    /* INCLUDE */
 
     [
-      ["includeFrameBtn","frame"],
-      ["includePostsBtn","posts"],
-      ["includeCladdingBtn","cladding"]
-    ].forEach(
-      ([id,key]) => {
+      ["includeFrameBtn", "frame"],
+      ["includePostsBtn", "posts"],
+      ["includeCladdingBtn", "cladding"]
+    ]
+    .forEach(([id, key]) => {
 
-        $(id).addEventListener(
-          "click",
-          () => {
+      $(id).addEventListener(
+        "click",
+        () => {
 
-            includeState[key] =
-              !includeState[key];
+          includeState[key] =
+            !includeState[key];
 
-            $(id).classList.toggle(
-              "on",
+
+          $(id).classList.toggle(
+            "on",
+            includeState[key]
+          );
+
+
+          $(id).classList.toggle(
+            "off",
+            !includeState[key]
+          );
+
+
+          $(id).textContent =
+            `${key.toUpperCase()} ${
               includeState[key]
-            );
-
-            $(id).classList.toggle(
-              "off",
-              !includeState[key]
-            );
-
-            $(id).textContent =
-              `${key.toUpperCase()} ${
-                includeState[key]
-                  ? "ON"
-                  : "OFF"
-              }`;
-
-            refreshEverything();
-          }
-        );
-      }
-    );
+              ? "ON"
+              : "OFF"
+            }`;
 
 
-    // GLOBAL CLADDING
+          refreshEverything();
+        }
+      );
+    });
+
+
+    /* CLADDING */
 
     [
       "claddingType",
@@ -3494,31 +4501,47 @@ document.addEventListener(
       "colorbondProfile",
       "colorbondColour",
       "customDescription",
-      "customCost",
-      "cavityWidth",
-      "cavityHeight"
-    ].forEach(id => {
+      "customCost"
+    ]
+    .forEach(id => {
 
-      $(id).addEventListener(
+      $(id)?.addEventListener(
         "input",
         refreshEverything
       );
 
-      $(id).addEventListener(
+
+      $(id)?.addEventListener(
         "change",
         refreshEverything
       );
     });
 
 
-    // CUSTOMER
+    /* CAVITY */
+
+    [
+      "cavityWidth",
+      "cavityHeight"
+    ]
+    .forEach(id => {
+
+      $(id).addEventListener(
+        "input",
+        refreshEverything
+      );
+    });
+
+
+    /* CUSTOMER */
 
     [
       "customerName",
       "customerPhone",
       "siteAddress",
       "customerEmail"
-    ].forEach(id => {
+    ]
+    .forEach(id => {
 
       $(id).addEventListener(
         "input",
@@ -3527,7 +4550,7 @@ document.addEventListener(
     });
 
 
-    // POWDER
+    /* POWDER */
 
     $("powderEnabled")
       .addEventListener(
@@ -3541,13 +4564,20 @@ document.addEventListener(
                 .checked
             );
 
-          renderPowderComponents();
+
           refreshEverything();
         }
       );
 
 
-    // LABOUR
+    $("powderColour")
+      .addEventListener(
+        "change",
+        refreshEverything
+      );
+
+
+    /* LABOUR */
 
     $("overrideLabour")
       .addEventListener(
@@ -3561,6 +4591,7 @@ document.addEventListener(
                 .checked
             );
 
+
           refreshEverything();
         }
       );
@@ -3572,7 +4603,8 @@ document.addEventListener(
       "travelKm",
       "extraHardware",
       "otherCosts"
-    ].forEach(id => {
+    ]
+    .forEach(id => {
 
       $(id).addEventListener(
         "input",
@@ -3581,14 +4613,7 @@ document.addEventListener(
     });
 
 
-    $("finalPrice")
-      .addEventListener(
-        "input",
-        updateFinalPriceDisplays
-      );
-
-
-    // MAIN ACTIONS
+    /* ACTIONS */
 
     $("updateBtn")
       .addEventListener(
@@ -3596,11 +4621,13 @@ document.addEventListener(
         updateJob
       );
 
+
     $("saveBtn")
       .addEventListener(
         "click",
         updateJob
       );
+
 
     $("smsBtn")
       .addEventListener(
@@ -3608,17 +4635,23 @@ document.addEventListener(
         sendSMS
       );
 
+
     $("emailBtn")
       .addEventListener(
         "click",
         sendEmail
       );
 
+
     $("printBtn")
       .addEventListener(
         "click",
-        printQuote
+        () => {
+          updateJob();
+          window.print();
+        }
       );
+
 
     $("newJobBtn")
       .addEventListener(
@@ -3627,13 +4660,12 @@ document.addEventListener(
       );
 
 
-    updateCladdingUI();
-
     updateTopBar();
+
+    updateCladdingUI();
 
     renderMudMap();
 
     calculateQuote();
-
   }
 );
