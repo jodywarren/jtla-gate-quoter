@@ -1,13 +1,13 @@
-/* ============================================================
+/* ==========================================================
    JTLA GATE QUOTER
-   V1.5
+   V1.5 - CORRECTED UI
    style.css
-   ============================================================ */
+========================================================== */
 
 
-/* ============================================================
-   GLOBAL
-   ============================================================ */
+/* ==========================================================
+   RESET / BASE
+========================================================== */
 
 * {
   box-sizing: border-box;
@@ -20,10 +20,16 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #343434;
-  color: #f5f5f5;
-  line-height: 1.4;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background: #303234;
+  color: #eeeeee;
+
+  line-height: 1.45;
 }
 
 button,
@@ -34,32 +40,40 @@ textarea {
 }
 
 button {
-  touch-action: manipulation;
+  cursor: pointer;
 }
 
 input,
 select,
 textarea {
   width: 100%;
+
+  min-height: 48px;
+
+  padding: 10px 12px;
+
+  border: 2px solid #c4c4c4;
+  border-radius: 7px;
+
   background: #ffffff;
   color: #111111;
-  border: 2px solid #777777;
-  border-radius: 7px;
-  padding: 11px 12px;
-  min-height: 44px;
+
+  outline: none;
 }
 
 textarea {
-  resize: vertical;
   min-height: 90px;
+  resize: vertical;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  outline: none;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.18);
+  border-color: #6a996d;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(106, 153, 109, 0.18);
 }
 
 input::placeholder,
@@ -68,214 +82,346 @@ textarea::placeholder {
 }
 
 
-/* ============================================================
-   MAIN APP
-   ============================================================ */
-
-.app {
-  width: min(1100px, 100%);
-  margin: 0 auto;
-  padding: 18px;
-}
-
-.main-content {
-  display: grid;
-  gap: 18px;
-}
-
-
-/* ============================================================
-   HEADER
-   ============================================================ */
+/* ==========================================================
+   APP HEADER
+========================================================== */
 
 .app-header {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 18px 0;
-}
-
-.logo-wrap {
-  flex: 0 0 auto;
-}
-
-.logo {
-  display: block;
-  max-width: 150px;
-  max-height: 85px;
-  object-fit: contain;
-}
-
-.brand-text {
-  flex: 1;
-}
-
-.brand-text h1 {
-  margin: 0;
-  font-size: clamp(1.7rem, 4vw, 2.5rem);
-  line-height: 1.05;
-}
-
-.brand-text p {
-  margin: 6px 0 0;
-  color: #cccccc;
-  font-size: 0.95rem;
-}
-
-
-/* ============================================================
-   STICKY CUSTOMER / JOB BAR
-   ============================================================ */
-
-.sticky-job-bar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #202020;
-  border: 1px solid #555555;
-  border-radius: 9px;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-}
-
-.sticky-job-inner {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 15px;
+
+  gap: 20px;
+
+  max-width: 1050px;
+
+  margin: 0 auto;
+
+  padding: 14px 18px;
+
+  background: #303234;
 }
 
-.sticky-customer {
+.header-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
   min-width: 0;
 }
 
-.sticky-customer small,
-.sticky-project small {
+.header-logo {
   display: block;
+
+  width: 95px;
+  max-height: 68px;
+
+  object-fit: contain;
+
+  background: white;
+
+  padding: 4px;
+
+  border-radius: 5px;
+}
+
+.app-header h1 {
+  margin: 0;
+
+  font-size: 24px;
+  line-height: 1.1;
+
+  color: #ffffff;
+}
+
+.app-header p {
+  margin: 4px 0 0;
+
+  color: #bdbdbd;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+button {
+  min-height: 44px;
+
+  padding: 9px 15px;
+
+  border: 1px solid #8a8a8a;
+  border-radius: 7px;
+
+  background: #e3e3e3;
+  color: #171717;
+
+  font-weight: 700;
+}
+
+button:hover {
+  filter: brightness(1.04);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button.primary {
+  background: #5e8c63;
+  border-color: #5e8c63;
+
+  color: white;
+}
+
+button.secondary {
+  background: #505356;
+  border-color: #7b7d7f;
+
+  color: white;
+}
+
+button.danger {
+  background: #a74c4c;
+  border-color: #a74c4c;
+
+  color: white;
+}
+
+button.small {
+  min-height: 35px;
+
+  padding: 6px 10px;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================================
+   STICKY JOB HEADER
+========================================================== */
+
+.sticky-job-header {
+  position: sticky;
+  top: 0;
+
+  z-index: 1000;
+
+  max-width: 1050px;
+
+  margin: 0 auto 12px;
+
+  padding: 8px 12px 10px;
+
+  background: #242628;
+
+  border-top: 1px solid #55585a;
+  border-bottom: 1px solid #55585a;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, 0.28);
+}
+
+
+/* ==========================================================
+   STICKY CUSTOMER / PROJECT
+========================================================== */
+
+.sticky-client-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin-bottom: 7px;
+}
+
+.sticky-client-row > div {
+  min-width: 0;
+}
+
+.sticky-client-row span {
+  display: block;
+
+  margin-bottom: 1px;
+
   color: #aaaaaa;
-  font-size: 0.72rem;
+
+  font-size: 10px;
+
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
+}
+
+.sticky-client-row strong {
+  display: block;
+
+  color: white;
+
+  font-size: 15px;
 }
 
 #stickyCustomerName {
-  display: block;
-  font-size: 1.15rem;
-  font-weight: 800;
-  white-space: nowrap;
   overflow: hidden;
+
+  white-space: nowrap;
+
   text-overflow: ellipsis;
 }
 
 #stickyProjectNumber {
-  font-size: 1.05rem;
-  font-weight: 800;
+  text-align: right;
 }
 
 
-/* ============================================================
-   MUD MAP
-   ============================================================ */
+/* ==========================================================
+   STICKY MUD MAP
+========================================================== */
 
-.mud-map-shell {
-  position: sticky;
-  top: 68px;
-  z-index: 900;
-  background: #292929;
-  border: 1px solid #555555;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+.sticky-map-wrap {
+  width: 100%;
+
+  padding: 6px;
+
+  border: 1px solid #515355;
+  border-radius: 7px;
+
+  background: #303234;
 }
 
-.mud-map-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 7px;
-}
+.map-label {
+  margin: 0 0 4px;
 
-.mud-map-heading strong {
-  font-size: 0.9rem;
-}
+  color: #aeb0b1;
 
-.mud-map-heading span {
-  color: #aaaaaa;
-  font-size: 0.75rem;
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
 }
 
 .mud-map {
   display: flex;
   align-items: stretch;
+
   width: 100%;
-  min-height: 68px;
-  gap: 4px;
+
+  min-height: 50px;
+
+  gap: 3px;
+
   overflow: hidden;
 }
 
 .mud-map-empty {
-  width: 100%;
-  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #666666;
-  border-radius: 7px;
-  color: #aaaaaa;
-  font-size: 0.85rem;
+
+  width: 100%;
+
+  min-height: 48px;
+
+  border: 1px dashed #707274;
+  border-radius: 5px;
+
+  color: #a9aaab;
+
+  font-size: 12px;
 }
+
+
+/* ==========================================================
+   MUD MAP COMPONENT
+========================================================== */
 
 .mud-map-component {
   position: relative;
+
   flex: 1 1 0;
+
   min-width: 0;
-  min-height: 60px;
-  padding: 19px 4px 6px;
-  border: 2px solid #111111;
+  min-height: 50px;
+
+  padding:
+    18px 3px
+    7px;
+
+  border: 1px solid #212121;
   border-radius: 5px;
-  color: #111111;
-  font-size: 0.82rem;
-  font-weight: 900;
+
+  color: #141414;
+
+  font-size: 12px;
+  font-weight: 800;
+
   text-align: center;
-  cursor: pointer;
+
+  overflow: hidden;
+
   user-select: none;
   -webkit-user-select: none;
+
   touch-action: none;
-  overflow: hidden;
+
   transition:
-    background 0.15s ease,
-    transform 0.15s ease,
-    opacity 0.15s ease;
+    transform 0.12s ease,
+    opacity 0.12s ease;
 }
 
 .mud-map-component.incomplete {
-  background: #f3a6bb;
+  background: #eba1b5;
 }
 
 .mud-map-component.complete {
-  background: #b7e5b0;
+  background: #b6dfb1;
 }
 
 .mud-map-component.dragging {
-  opacity: 0.75;
-  transform: scale(1.04);
-  z-index: 20;
+  z-index: 30;
+
+  opacity: 0.8;
+
+  transform: scale(1.05);
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, 0.35);
 }
+
+
+/* ==========================================================
+   GATE SYMBOLS
+========================================================== */
 
 .gate-symbol {
   position: absolute;
+
   top: 3px;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #222222;
-  color: #ffffff;
-  font-size: 0.62rem;
+
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+
+  background: #292929;
+  color: white;
+
+  font-size: 9px;
   font-weight: 900;
 }
 
@@ -289,847 +435,1037 @@ textarea::placeholder {
 
 .gate-open-symbol {
   position: absolute;
-  bottom: 2px;
+
   left: 50%;
+  bottom: 1px;
+
   transform: translateX(-50%);
-  font-size: 0.56rem;
+
+  font-size: 8px;
   font-weight: 900;
-  color: #333333;
 }
 
 
-/* ============================================================
-   SECTIONS
-   ============================================================ */
+/* ==========================================================
+   LAYOUT CHECK
+========================================================== */
 
-.section,
-details.section {
-  background: #454545;
-  border: 1px solid #626262;
-  border-radius: 11px;
+.layout-check {
+  margin-top: 6px;
+
+  padding: 6px 10px;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  text-align: center;
+}
+
+.layout-check.incomplete {
+  background: #eed68e;
+  color: #342a08;
+}
+
+.layout-check.complete {
+  background: #a9dca5;
+  color: #123012;
+}
+
+.layout-check.error {
+  background: #df8888;
+  color: #3a0909;
+}
+
+
+/* ==========================================================
+   MAIN APP BODY
+========================================================== */
+
+.app-shell {
+  width: min(100%, 1050px);
+
+  margin: 0 auto;
+
+  padding: 0 16px 30px;
+}
+
+
+/* ==========================================================
+   CARD
+========================================================== */
+
+.card {
+  margin-bottom: 14px;
+
   padding: 18px;
-  box-shadow: 0 3px 9px rgba(0,0,0,0.2);
+
+  background: #44474a;
+
+  border: 1px solid #626568;
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.18);
 }
 
-.section-title {
+.card h2 {
   margin: 0 0 16px;
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: #ffffff;
+
+  font-size: 22px;
+
+  color: white;
 }
 
-details.section {
+.card h3 {
+  margin: 24px 0 12px;
+
+  padding-bottom: 7px;
+
+  border-bottom: 1px solid #676a6c;
+
+  color: white;
+
+  font-size: 17px;
+}
+
+.card h3:first-child {
+  margin-top: 0;
+}
+
+
+/* ==========================================================
+   COLLAPSIBLE CARDS
+========================================================== */
+
+.section-card {
   padding: 0;
+
+  overflow: hidden;
 }
 
-details.section > summary {
+.section-card > summary {
+  position: relative;
+
+  padding:
+    17px 48px
+    17px 18px;
+
   list-style: none;
+
   cursor: pointer;
-  padding: 17px 18px;
-  font-size: 1.25rem;
-  font-weight: 900;
+
+  color: white;
+
+  font-size: 21px;
+  font-weight: 800;
+
   user-select: none;
 }
 
-details.section > summary::-webkit-details-marker {
+.section-card > summary::-webkit-details-marker {
   display: none;
 }
 
-details.section > summary::after {
+.section-card > summary::after {
   content: "+";
-  float: right;
-  font-size: 1.35rem;
+
+  position: absolute;
+
+  right: 18px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 24px;
+
+  color: #c4c4c4;
 }
 
-details.section[open] > summary::after {
+.section-card[open] > summary::after {
   content: "−";
 }
 
-details.section[open] > summary {
-  border-bottom: 1px solid #626262;
+.section-card[open] > summary {
+  border-bottom: 1px solid #626568;
 }
 
-.details-inner {
+.section-content {
   padding: 18px;
 }
 
+.section-help {
+  margin: 0 0 15px;
 
-/* ============================================================
-   FORM GRIDS
-   ============================================================ */
+  color: #d0d0d0;
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 15px;
+  font-size: 13px;
 }
 
-.form-grid.three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 
-.form-grid.four {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
+/* ==========================================================
+   LABELS
+========================================================== */
 
-.field {
-  min-width: 0;
-}
-
-.field.full {
-  grid-column: 1 / -1;
-}
-
-.field label,
-.field-label {
+label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 1rem;
-  font-weight: 900;
-  color: #ffffff;
+
+  margin-bottom: 15px;
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 800;
 }
 
-.field small {
-  display: block;
-  margin-top: 5px;
-  color: #c8c8c8;
-  font-size: 0.76rem;
+label input,
+label select,
+label textarea {
+  margin-top: 6px;
 }
 
 
-/* ============================================================
+/* ==========================================================
    REQUIRED FIELDS
-   Red until complete, then green
-   ============================================================ */
+========================================================== */
 
-.required-field label {
-  color: #ff7d7d;
-  font-size: 1.04rem;
+.required-field {
+  color: #ff8585;
+}
+
+.required-field input {
+  border-color: #cf5252;
 }
 
 .required-field input.field-incomplete {
-  border-color: #d94d4d;
-  box-shadow: inset 5px 0 0 #d94d4d;
+  border-color: #cf5252;
+
+  box-shadow:
+    inset 5px 0 0
+    #cf5252;
 }
 
 .required-field input.field-complete {
-  border-color: #67b86c;
-  box-shadow: inset 5px 0 0 #67b86c;
+  border-color: #6daf73;
+
+  box-shadow:
+    inset 5px 0 0
+    #6daf73;
 }
 
-.required-field:has(input.field-complete) label {
-  color: #9ee3a1;
+.required-field:has(
+  input.field-complete
+) {
+  color: #a6dda9;
 }
 
 
-/* ============================================================
-   BUTTONS
-   ============================================================ */
+/* ==========================================================
+   READ ONLY PROJECT NUMBER
+========================================================== */
 
-button {
-  border: 0;
-  border-radius: 7px;
-  min-height: 44px;
-  padding: 10px 16px;
+#projectNumber[readonly] {
+  background: #eeeeee;
+
+  color: #333333;
+
   font-weight: 800;
-  cursor: pointer;
-  background: #dddddd;
-  color: #111111;
-}
-
-button:hover {
-  filter: brightness(1.06);
-}
-
-button:active {
-  transform: translateY(1px);
-}
-
-button.primary {
-  background: #d9d9d9;
-  color: #111111;
-}
-
-button.secondary {
-  background: #666666;
-  color: #ffffff;
-}
-
-button.success {
-  background: #9dd89e;
-  color: #102410;
-}
-
-button.danger {
-  background: #c85858;
-  color: #ffffff;
-}
-
-button.small {
-  min-height: 34px;
-  padding: 6px 10px;
-  font-size: 0.78rem;
 }
 
 
-/* ============================================================
-   COMPONENT ADD BUTTONS
-   ============================================================ */
+/* ==========================================================
+   GRIDS
+========================================================== */
 
-.component-add-buttons {
+.grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 15px;
+
+  gap: 14px;
 }
 
-.component-add-buttons button {
+.grid.two {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+}
+
+
+/* ==========================================================
+   ADD COMPONENTS
+========================================================== */
+
+.component-add-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+.component-add-btn {
   min-height: 52px;
-  border: 2px solid #777777;
-  background: #292929;
-  color: #ffffff;
-  font-size: 0.92rem;
+
+  background: #303234;
+  border: 1px solid #7a7d7f;
+
+  color: white;
+
+  font-size: 15px;
 }
 
-.component-add-buttons button:hover {
-  background: #555555;
+.component-add-btn:hover {
+  background: #575a5d;
 }
 
 
-/* ============================================================
+/* ==========================================================
    INCLUDE BUTTONS
-   ============================================================ */
+========================================================== */
 
-.include-row {
-  display: flex;
+.include-button-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
   gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 17px;
+
+  margin-bottom: 18px;
 }
 
-.include-toggle {
-  flex: 1;
-  min-width: 110px;
+.include-btn {
+  min-height: 47px;
+
   border: 2px solid transparent;
+
+  font-size: 13px;
 }
 
-.include-toggle.on {
-  background: #9fd79f;
-  color: #122312;
+.include-btn.on {
+  background: #a9d9a5;
+  border-color: #a9d9a5;
+
+  color: #173017;
 }
 
-.include-toggle.off {
-  background: #c85656;
-  color: #ffffff;
+.include-btn.off {
+  background: #bf5555;
+  border-color: #bf5555;
+
+  color: white;
 }
 
 
-/* ============================================================
-   COMPONENT CARDS
-   ============================================================ */
+/* ==========================================================
+   SUB CARDS
+========================================================== */
+
+.sub-card {
+  margin-top: 14px;
+
+  padding: 14px;
+
+  border: 1px solid #696c6e;
+  border-radius: 8px;
+
+  background: #383b3d;
+}
+
+
+/* ==========================================================
+   CHECK ROW
+========================================================== */
+
+.check-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-height: 42px;
+
+  margin-bottom: 12px;
+}
+
+.check-row input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+
+  min-height: 0;
+
+  margin: 0;
+
+  flex: 0 0 auto;
+
+  accent-color: #76aa7a;
+}
+
+
+/* ==========================================================
+   COMPONENTS
+========================================================== */
 
 .components-container {
   display: grid;
+
   gap: 15px;
 }
 
 .component-card {
-  border: 3px solid transparent;
-  border-radius: 10px;
+  border: 3px solid #e59aae;
+  border-radius: 9px;
+
+  background: #35383a;
+
   overflow: hidden;
-  background: #353535;
-  scroll-margin-top: 175px;
+
+  scroll-margin-top: 165px;
+}
+
+.component-card.complete {
+  border-color: #9bd298;
 }
 
 .component-card.incomplete {
   border-color: #e59aae;
 }
 
-.component-card.complete {
-  border-color: #9dd497;
-}
-
 .component-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+
+  gap: 12px;
+
   padding: 11px 13px;
-  background: #292929;
+
+  background: #292b2d;
+
+  border-bottom: 1px solid #57595b;
 }
 
-.component-heading {
+.component-card-header > div:first-child {
   display: flex;
   align-items: center;
+
   gap: 10px;
 }
 
 .component-title {
-  font-size: 1.2rem;
+  color: white;
+
+  font-size: 19px;
   font-weight: 900;
 }
 
 .component-status-text {
   padding: 3px 7px;
+
   border-radius: 4px;
-  font-size: 0.7rem;
+
+  background: #e59aae;
+
+  color: #361018;
+
+  font-size: 10px;
   font-weight: 900;
+
   text-transform: uppercase;
 }
 
-.component-card.incomplete .component-status-text {
-  background: #e59aae;
-  color: #2c0c14;
-}
+.component-card.complete
+.component-status-text {
+  background: #a8dca3;
 
-.component-card.complete .component-status-text {
-  background: #a9dda3;
-  color: #102310;
-}
-
-.remove-component-btn {
-  background: #a84444;
-  color: #ffffff;
-  min-height: 34px;
-  padding: 5px 10px;
+  color: #173017;
 }
 
 .component-fields {
-  padding: 16px;
+  padding: 15px;
 }
 
 
-/* ============================================================
-   COMPONENT SUBSECTIONS
-   ============================================================ */
+/* ==========================================================
+   FIXED INFORMATION
+========================================================== */
 
-.component-subsection {
-  margin-top: 15px;
-  padding: 13px;
-  background: #414141;
-  border: 1px solid #606060;
-  border-radius: 8px;
+.fixed-spec {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  margin: 10px 0;
+
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  background: #292b2d;
 }
 
-.component-subsection:first-child {
-  margin-top: 0;
+.fixed-spec span {
+  color: #bbbbbb;
+
+  font-size: 13px;
 }
 
-.component-subsection h4 {
-  margin: 0 0 12px;
-  font-size: 1rem;
-  font-weight: 900;
+.fixed-spec strong {
+  color: white;
+
+  text-align: right;
 }
 
 
-/* ============================================================
-   HOLE PLACEMENT
-   ============================================================ */
+/* ==========================================================
+   HOLE SECTION
+========================================================== */
+
+.hole-section {
+  margin-top: 13px;
+}
+
+.hole-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 9px;
+}
+
+.hole-heading strong {
+  color: white;
+}
 
 .hole-list {
   display: grid;
+
   gap: 8px;
-  margin: 8px 0;
 }
 
 .hole-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
   gap: 8px;
-  align-items: center;
+
+  align-items: end;
+
+  padding: 9px;
+
+  border: 1px solid #696b6d;
+  border-radius: 6px;
+
+  background: #2f3234;
 }
 
-.hole-row input {
-  min-width: 0;
-}
-
-.hole-row .remove-hole-btn {
-  min-width: 42px;
-  padding: 6px;
-  background: #9c4444;
-  color: #ffffff;
-}
-
-.hole-guide {
-  margin-top: 10px;
-  padding: 11px;
-  border-left: 4px solid #eeeeee;
-  background: #303030;
-  font-size: 0.82rem;
-}
-
-.post-cut-display {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 5px;
-  background: #222222;
-  font-weight: 900;
+.hole-row label {
+  margin: 0;
 }
 
 
-/* ============================================================
-   CHECKBOXES
-   ============================================================ */
+/* ==========================================================
+   NOTICE
+========================================================== */
 
-.checkbox-row {
-  display: flex;
-  align-items: center;
+.notice {
+  margin: 8px 0 12px;
+
+  padding: 10px 12px;
+
+  border-left: 4px solid #d9b85d;
+
+  background: #39362c;
+
+  color: #f0e5c6;
+
+  font-size: 13px;
+}
+
+.muted {
+  color: #b9b9b9;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================================
+   SUMMARY GRID
+========================================================== */
+
+.summary-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 9px;
-  min-height: 44px;
 }
 
-.checkbox-row input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  min-height: 0;
-  flex: 0 0 auto;
-  accent-color: #8ac88b;
-}
+.summary-grid > div {
+  min-height: 70px;
 
-.checkbox-row label {
-  margin: 0;
-}
+  padding: 11px;
 
-
-/* ============================================================
-   CONDITIONAL FIELDS
-   ============================================================ */
-
-.hidden {
-  display: none !important;
-}
-
-
-/* ============================================================
-   CAVITY / LAYOUT CHECK
-   ============================================================ */
-
-.layout-check {
-  margin-top: 13px;
-  padding: 11px 13px;
   border-radius: 7px;
-  font-weight: 900;
-  text-align: center;
+
+  background: #303234;
+
+  border: 1px solid #5b5d5f;
 }
 
-.layout-check.incomplete {
-  background: #f0d48a;
-  color: #382d0b;
-}
-
-.layout-check.complete {
-  background: #a9dda3;
-  color: #102710;
-}
-
-.layout-check.error {
-  background: #e99494;
-  color: #3b0b0b;
-}
-
-
-/* ============================================================
-   LABOUR
-   ============================================================ */
-
-.labour-summary {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 12px 0;
-}
-
-.labour-stat {
-  padding: 12px;
-  background: #303030;
-  border-radius: 7px;
-}
-
-.labour-stat span {
+.summary-grid span {
   display: block;
-  color: #bbbbbb;
-  font-size: 0.75rem;
+
+  color: #b9b9b9;
+
+  font-size: 12px;
 }
 
-.labour-stat strong {
+.summary-grid strong {
   display: block;
-  margin-top: 3px;
-  font-size: 1.15rem;
+
+  margin-top: 4px;
+
+  color: white;
+
+  font-size: 17px;
 }
 
 
-/* ============================================================
-   MATERIAL WORKINGS
-   ============================================================ */
-
-.workings-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.working-card {
-  padding: 12px;
-  background: #303030;
-  border-radius: 7px;
-}
-
-.working-card h4 {
-  margin: 0 0 9px;
-}
-
-.working-card p {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 5px 0;
-  font-size: 0.82rem;
-}
-
-.working-card span {
-  color: #bbbbbb;
-}
-
-.working-card strong {
-  text-align: right;
-}
-
-
-/* ============================================================
-   COST BREAKDOWN
-   ============================================================ */
-
-.cost-breakdown {
-  display: grid;
-  gap: 1px;
-  overflow: hidden;
-  border-radius: 7px;
-  background: #666666;
-}
-
-.cost-breakdown p {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 0;
-  padding: 9px 12px;
-  background: #303030;
-}
-
-.cost-breakdown p span {
-  color: #c5c5c5;
-}
-
-
-/* ============================================================
-   INTERNAL TOTALS
-   ============================================================ */
-
-.internal-totals {
-  display: grid;
-  gap: 7px;
-  margin-top: 15px;
-}
-
-.total-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  padding: 8px 0;
-  border-bottom: 1px solid #606060;
-}
-
-.total-line.major {
-  font-size: 1.08rem;
-  font-weight: 900;
-}
-
-.total-line.profit {
-  margin-top: 6px;
-  padding: 12px;
-  border: 0;
-  border-radius: 7px;
-  background: #292929;
-}
-
-
-/* ============================================================
-   FINAL PRICE
-   ============================================================ */
-
-.final-price-box {
-  margin-top: 17px;
-  padding: 15px;
-  border: 2px solid #8f8f8f;
-  border-radius: 9px;
-  background: #292929;
-}
-
-.final-price-box label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.final-price-box input {
-  font-size: 1.45rem;
-  font-weight: 900;
-}
-
-.effective-rate {
-  margin-top: 9px;
-  color: #cccccc;
-  font-size: 0.85rem;
-}
-
-.effective-rate strong {
-  color: #ffffff;
-}
-
-
-/* ============================================================
+/* ==========================================================
    FABRICATION VIEW
-   ============================================================ */
+========================================================== */
 
 .fabrication-view {
   display: grid;
-  gap: 9px;
+
+  gap: 8px;
 }
 
 .fabrication-item {
   display: grid;
+
   gap: 3px;
+
   padding: 11px 12px;
-  background: #2e2e2e;
-  border-left: 5px solid #aaaaaa;
+
+  border-left: 5px solid #949799;
   border-radius: 6px;
+
+  background: #303234;
 }
 
 .fabrication-item strong {
-  font-size: 1rem;
+  color: white;
+
+  font-size: 16px;
 }
 
 .fabrication-item span {
-  font-size: 0.82rem;
-  color: #d0d0d0;
+  color: #d2d2d2;
+
+  font-size: 13px;
 }
 
 
-/* ============================================================
-   FINISHED QUOTE
-   ============================================================ */
+/* ==========================================================
+   INTERNAL COSTING
+========================================================== */
 
-.quote-preview-shell {
-  background: #efefef;
-  color: #171717;
-  border-radius: 10px;
-  padding: 0;
-  overflow: visible;
+.result-card {
+  border-top: 5px solid #7da680;
 }
 
-.quote-preview {
-  width: 100%;
-  min-height: 0;
-  max-height: none;
-  overflow: visible;
-  background: #ffffff;
-  color: #171717;
-  padding: 24px;
+.result-card hr {
+  margin: 20px 0;
+
+  border: 0;
+
+  border-top: 1px solid #686b6d;
 }
 
-.quote-header {
+#finalPrice {
+  min-height: 56px;
+
+  border-color: #83ad87;
+
+  font-size: 22px;
+  font-weight: 900;
+}
+
+
+/* ==========================================================
+   PROFIT
+========================================================== */
+
+.profit-box {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+
+  gap: 15px;
+
+  margin: 16px 0;
+
+  padding: 13px;
+
+  border-radius: 7px;
+
+  background: #303234;
+}
+
+.profit-box span {
+  color: #c7c7c7;
+
+  font-weight: 800;
+}
+
+.profit-box strong {
+  color: #b8e0b5;
+
+  font-size: 21px;
+}
+
+
+/* ==========================================================
+   COST BREAKDOWN
+========================================================== */
+
+.breakdown {
+  margin-top: 10px;
+}
+
+.breakdown p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   gap: 20px;
-  padding-bottom: 14px;
-  border-bottom: 3px solid #333333;
-}
 
-.quote-brand h2 {
   margin: 0;
-  font-size: 1.6rem;
+
+  padding: 8px 2px;
+
+  border-bottom: 1px solid #65686a;
 }
 
-.quote-brand p {
-  margin: 3px 0 0;
+.breakdown span {
+  color: #c5c5c5;
 }
 
-.quote-number {
+.breakdown strong {
+  color: white;
+
   text-align: right;
 }
 
-.quote-number strong {
+
+/* ==========================================================
+   FINISHED QUOTE
+========================================================== */
+
+.quote-preview {
+  width: 100%;
+
+  padding: 22px;
+
+  overflow: visible;
+
+  border-radius: 8px;
+
+  background: white;
+  color: #171717;
+}
+
+.quote-preview-header {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 3px solid #444444;
+}
+
+.quote-logo {
   display: block;
-  font-size: 1.1rem;
+
+  width: 90px;
+  max-height: 70px;
+
+  object-fit: contain;
 }
 
-.quote-customer {
-  margin: 18px 0;
-  padding: 12px;
-  background: #f2f2f2;
-  border-radius: 6px;
+.quote-preview-header > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
 }
 
-.quote-customer p {
-  margin: 3px 0;
+.quote-preview-header strong {
+  color: #333333;
+
+  font-size: 22px;
 }
+
+.quote-preview-header span {
+  color: #555555;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================================
+   QUOTE META
+========================================================== */
+
+.quote-meta {
+  display: grid;
+
+  grid-template-columns:
+    0.65fr 1fr 1.5fr;
+
+  gap: 8px;
+
+  margin: 16px 0;
+}
+
+.quote-meta > div {
+  padding: 9px;
+
+  border-radius: 5px;
+
+  background: #f1f1f1;
+}
+
+.quote-meta span {
+  display: block;
+
+  color: #777777;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quote-meta strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #222222;
+}
+
+
+/* ==========================================================
+   QUOTE DESCRIPTION
+========================================================== */
 
 .quote-description {
-  margin: 18px 0;
+  margin-top: 14px;
 }
 
 .quote-description p {
   margin: 8px 0;
+
+  color: #222222;
+
+  font-size: 14px;
 }
 
-.quote-pricing {
+
+/* ==========================================================
+   QUOTE PRICES
+========================================================== */
+
+.quote-price-summary {
+  width: min(100%, 390px);
+
   margin-top: 20px;
   margin-left: auto;
-  width: min(360px, 100%);
+
+  border-top: 1px solid #cccccc;
 }
 
-.quote-price-row {
+.quote-price-summary > div {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
-  padding: 8px 0;
-  border-bottom: 1px solid #cccccc;
+
+  gap: 20px;
+
+  padding: 8px 2px;
+
+  border-bottom: 1px solid #dedede;
 }
 
-.quote-price-row.total {
-  padding-top: 12px;
-  border-bottom: 0;
-  font-size: 1.2rem;
-  font-weight: 900;
+.quote-price-summary span,
+.quote-price-summary strong {
+  color: #222222;
 }
 
-.quote-footer {
-  margin-top: 22px;
+.quote-grand-total {
+  margin-top: 4px;
+
+  padding: 12px !important;
+
+  border: 0 !important;
+  border-radius: 5px;
+
+  background: #3e6042;
+}
+
+.quote-grand-total span,
+.quote-grand-total strong {
+  color: white;
+}
+
+.quote-grand-total strong {
+  font-size: 21px;
+}
+
+
+/* ==========================================================
+   QUOTE TERMS
+========================================================== */
+
+.quote-terms {
+  margin-top: 18px;
+
   padding-top: 12px;
-  border-top: 1px solid #cccccc;
-  font-size: 0.8rem;
+
+  border-top: 1px solid #d1d1d1;
+
   color: #555555;
+
+  font-size: 12px;
 }
 
 
-/* ============================================================
-   QUOTE ACTION BUTTONS
-   ============================================================ */
+/* ==========================================================
+   ACTION BUTTONS
+========================================================== */
 
-.quote-actions {
+.actions {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
   gap: 8px;
-  margin-top: 13px;
 }
 
-.quote-actions button {
+.actions button {
+  width: 100%;
+
   min-height: 50px;
 }
 
 
-/* ============================================================
+/* ==========================================================
    SAVED JOBS
-   ============================================================ */
-
-.saved-quotes {
-  display: grid;
-  gap: 8px;
-}
+========================================================== */
 
 .saved-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 15px;
-  padding: 11px 12px;
-  background: #303030;
-  border-radius: 7px;
+
+  gap: 14px;
+
+  padding: 11px 0;
+
+  border-bottom: 1px solid #616466;
+}
+
+.saved-row:last-child {
+  border-bottom: 0;
 }
 
 .saved-row > div:first-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
   min-width: 0;
 }
 
-.saved-row span,
-.saved-row small {
-  display: block;
-  color: #c0c0c0;
+.saved-row span {
+  color: #eeeeee;
 }
 
 .saved-row small {
+  color: #bbbbbb;
+
   overflow: hidden;
+
   white-space: nowrap;
+
   text-overflow: ellipsis;
 }
 
 .saved-actions {
   display: flex;
   align-items: center;
+
   gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 
-/* ============================================================
-   UTILITY
-   ============================================================ */
+/* ==========================================================
+   HIDDEN
+========================================================== */
 
-.muted {
-  color: #b5b5b5;
-}
-
-.note {
-  padding: 10px 12px;
-  border-radius: 6px;
-  background: #303030;
-  color: #d0d0d0;
-  font-size: 0.82rem;
-}
-
-.warning-note {
-  padding: 10px 12px;
-  border-left: 4px solid #e5c267;
-  background: #3b382d;
-  color: #f1e6c6;
-  font-size: 0.82rem;
-}
-
-.success-note {
-  padding: 10px 12px;
-  border-left: 4px solid #94d494;
-  background: #2e3b2e;
-  color: #d8efd8;
-  font-size: 0.82rem;
+.hidden {
+  display: none !important;
 }
 
 
-/* ============================================================
+/* ==========================================================
    TABLET
-   ============================================================ */
+========================================================== */
 
-@media (max-width: 850px) {
+@media (max-width: 800px) {
 
-  .form-grid.three,
-  .form-grid.four {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
-  .workings-grid {
-    grid-template-columns: 1fr;
+  .quote-meta {
+    grid-template-columns:
+      1fr 1fr;
   }
 
-  .quote-actions {
-    grid-template-columns: repeat(2, 1fr);
+  .quote-meta > div:last-child {
+    grid-column: 1 / -1;
   }
 
 }
 
 
-/* ============================================================
+/* ==========================================================
    PHONE
-   ============================================================ */
+========================================================== */
 
 @media (max-width: 600px) {
 
@@ -1137,241 +1473,359 @@ button.small {
     font-size: 15px;
   }
 
-  .app {
-    padding: 8px;
-  }
-
   .app-header {
-    padding: 10px 3px;
+    padding: 9px 10px;
+
     gap: 10px;
   }
 
-  .logo {
-    max-width: 95px;
-    max-height: 60px;
+  .header-logo {
+    width: 68px;
+    max-height: 52px;
   }
 
-  .brand-text h1 {
-    font-size: 1.35rem;
+  .app-header h1 {
+    font-size: 18px;
   }
 
-  .brand-text p {
-    font-size: 0.75rem;
+  .app-header p {
+    display: none;
   }
 
-  .sticky-job-bar {
-    border-radius: 6px;
-    padding: 8px 10px;
+  .app-header .secondary {
+    padding: 7px 10px;
+
+    font-size: 12px;
   }
 
-  #stickyCustomerName {
-    font-size: 1rem;
+
+  /* Sticky top */
+
+  .sticky-job-header {
+    padding: 6px 8px 8px;
+
+    margin-bottom: 8px;
   }
 
-  #stickyProjectNumber {
-    font-size: 0.9rem;
+  .sticky-client-row {
+    margin-bottom: 5px;
   }
 
-  .mud-map-shell {
-    top: 58px;
-    padding: 7px;
-    border-radius: 7px;
+  .sticky-client-row span {
+    font-size: 8px;
+  }
+
+  .sticky-client-row strong {
+    font-size: 13px;
+  }
+
+
+  /* Mud map stays one line */
+
+  .sticky-map-wrap {
+    padding: 4px;
+  }
+
+  .map-label {
+    margin-bottom: 2px;
+
+    font-size: 8px;
   }
 
   .mud-map {
-    min-height: 57px;
+    min-height: 44px;
+
     gap: 2px;
   }
 
   .mud-map-component {
-    min-height: 53px;
-    padding: 17px 2px 5px;
-    border-width: 1px;
-    font-size: 0.7rem;
+    min-height: 44px;
+
+    padding:
+      15px 2px
+      5px;
+
+    font-size: 10px;
   }
 
   .gate-symbol {
-    width: 15px;
-    height: 15px;
-    font-size: 0.55rem;
+    width: 13px;
+    height: 13px;
+
+    font-size: 7px;
   }
 
-  .section,
-  details.section {
+  .gate-open-symbol {
+    font-size: 7px;
+  }
+
+  .layout-check {
+    margin-top: 4px;
+
+    padding: 5px 7px;
+
+    font-size: 10px;
+  }
+
+
+  /* Main */
+
+  .app-shell {
+    padding:
+      0 8px
+      20px;
+  }
+
+  .card {
+    margin-bottom: 9px;
+
+    padding: 13px;
+
     border-radius: 8px;
   }
 
-  .section {
-    padding: 14px;
+  .section-card {
+    padding: 0;
   }
 
-  .section-title {
-    font-size: 1.3rem;
+  .section-card > summary {
+    padding:
+      14px 42px
+      14px 13px;
+
+    font-size: 18px;
   }
 
-  details.section > summary {
-    padding: 14px;
-    font-size: 1.15rem;
-  }
-
-  .details-inner {
+  .section-content {
     padding: 13px;
   }
 
-  .form-grid,
-  .form-grid.three,
-  .form-grid.four {
+  .card h2 {
+    font-size: 19px;
+  }
+
+  .card h3 {
+    margin-top: 20px;
+
+    font-size: 16px;
+  }
+
+
+  /* Inputs */
+
+  .grid.two,
+  .grid.three {
     grid-template-columns: 1fr;
-    gap: 11px;
   }
 
-  .field.full {
-    grid-column: auto;
-  }
+  label {
+    margin-bottom: 13px;
 
-  .field label,
-  .field-label {
-    font-size: 1rem;
-  }
-
-  .required-field label {
-    font-size: 1.05rem;
+    font-size: 15px;
   }
 
   input,
   select,
   textarea {
-    min-height: 46px;
-    padding: 10px;
+    min-height: 48px;
+
     font-size: 16px;
   }
 
-  .component-add-buttons {
-    grid-template-columns: repeat(3, 1fr);
+
+  /* Add parts */
+
+  .component-add-grid {
     gap: 5px;
   }
 
-  .component-add-buttons button {
+  .component-add-btn {
     min-height: 48px;
+
     padding: 7px 4px;
-    font-size: 0.8rem;
+
+    font-size: 12px;
   }
 
-  .include-row {
+
+  /* Include buttons */
+
+  .include-button-grid {
     gap: 5px;
   }
 
-  .include-toggle {
-    min-width: 0;
-    padding: 8px 4px;
-    font-size: 0.72rem;
+  .include-btn {
+    min-height: 42px;
+
+    padding: 6px 3px;
+
+    font-size: 11px;
   }
+
+
+  /* Components */
 
   .component-card {
-    scroll-margin-top: 150px;
+    scroll-margin-top: 140px;
+  }
+
+  .component-card-header {
+    padding: 9px 10px;
+  }
+
+  .component-title {
+    font-size: 17px;
   }
 
   .component-fields {
     padding: 11px;
   }
 
-  .component-subsection {
-    padding: 10px;
+  .hole-row {
+    grid-template-columns: 1fr;
   }
 
-  .labour-summary {
-    grid-template-columns: 1fr 1fr;
+  .hole-row button {
+    width: 100%;
   }
+
+
+  /* Material summaries */
+
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 6px;
+  }
+
+  .summary-grid > div {
+    min-height: 63px;
+
+    padding: 9px;
+  }
+
+  .summary-grid span {
+    font-size: 11px;
+  }
+
+  .summary-grid strong {
+    font-size: 15px;
+  }
+
+
+  /* Quote */
 
   .quote-preview {
-    padding: 16px;
+    padding: 14px;
   }
 
-  .quote-header {
-    display: block;
+  .quote-preview-header {
+    gap: 10px;
   }
 
-  .quote-number {
-    margin-top: 12px;
-    text-align: left;
+  .quote-logo {
+    width: 62px;
   }
 
-  .quote-actions {
-    grid-template-columns: 1fr 1fr;
+  .quote-preview-header strong {
+    font-size: 18px;
   }
+
+  .quote-meta {
+    grid-template-columns: 1fr;
+
+    gap: 5px;
+  }
+
+  .quote-meta > div:last-child {
+    grid-column: auto;
+  }
+
+
+  /* Buttons */
+
+  .actions {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  /* Saved */
 
   .saved-row {
-    display: block;
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 
   .saved-actions {
-    justify-content: flex-start;
-    margin-top: 9px;
+    width: 100%;
+
+    justify-content: space-between;
   }
 
 }
 
 
-/* ============================================================
-   VERY SMALL PHONE
-   ============================================================ */
+/* ==========================================================
+   VERY SMALL PHONES
+========================================================== */
 
 @media (max-width: 390px) {
 
-  .mud-map-heading span {
-    display: none;
-  }
-
-  .component-add-buttons {
+  .component-add-grid {
     grid-template-columns: 1fr;
   }
 
-  .labour-summary {
+  .include-button-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .summary-grid {
     grid-template-columns: 1fr;
   }
 
-  .quote-actions {
-    grid-template-columns: 1fr;
+  .actions {
+    grid-template-columns: 1fr 1fr;
   }
 
 }
 
 
-/* ============================================================
-   PRINT QUOTE
-   ============================================================ */
+/* ==========================================================
+   PRINT / PDF
+========================================================== */
 
 @media print {
 
   body {
-    background: #ffffff;
-    color: #000000;
+    background: white;
   }
 
   body * {
     visibility: hidden;
   }
 
-  .quote-preview-shell,
-  .quote-preview-shell * {
+  .quote-preview,
+  .quote-preview * {
     visibility: visible;
   }
 
-  .quote-preview-shell {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    background: #ffffff;
-    color: #000000;
-  }
-
   .quote-preview {
-    padding: 15mm;
-  }
+    position: absolute;
 
-  .quote-actions {
-    display: none !important;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 15mm;
+
+    color: black;
+
+    background: white;
   }
 
 }
