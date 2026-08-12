@@ -914,3 +914,163 @@ h3,
     padding: 15mm;
   }
 }
+
+/* =========================================================
+   FINAL CONSOLIDATED APP ADDITIONS
+========================================================= */
+
+
+/* Gate auto/manual width */
+
+.gate-width-controls {
+  margin-bottom: 13px;
+}
+
+.gate-width-mode-btn {
+  width: 100%;
+  min-height: 40px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #a9dba6;
+  color: #173017;
+
+  font-weight: 900;
+}
+
+.gate-width-mode-btn.manual {
+  background: #e1bd73;
+  color: #302408;
+}
+
+.gate-manual-width-wrap {
+  margin-top: 9px;
+}
+
+
+/* Whole-job powder coating */
+
+.powder-job-toggle {
+  width: 100%;
+  min-height: 45px;
+
+  margin-bottom: 12px;
+
+  border: 0;
+  border-radius: 6px;
+
+  font-weight: 900;
+}
+
+.powder-job-toggle.on {
+  background: #a9dba6;
+  color: #173017;
+}
+
+.powder-job-toggle.off {
+  background: #bd5555;
+  color: white;
+}
+
+
+/* Additional labour */
+
+.labour-totals-panel {
+  display: grid;
+  gap: 4px;
+
+  margin: 12px 0;
+}
+
+.labour-totals-panel > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 7px 9px;
+
+  border-radius: 5px;
+
+  background: #303234;
+}
+
+.labour-totals-panel span {
+  color: #bbbbbb;
+}
+
+.labour-subtotal {
+  border-top: 1px solid #686868;
+}
+
+.labour-grand-total {
+  margin-top: 5px;
+
+  background: #3d6041 !important;
+}
+
+.labour-grand-total span,
+.labour-grand-total strong {
+  color: white;
+}
+
+
+/* Saved job library */
+
+.saved-jobs-list {
+  display: grid;
+  gap: 6px;
+}
+
+.saved-job-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  background: #303234;
+}
+
+.saved-job-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.saved-job-info span {
+  color: #dddddd;
+}
+
+.saved-job-info small {
+  color: #aaaaaa;
+}
+
+.saved-job-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.saved-job-actions button {
+  min-height: 34px;
+
+  border: 0;
+  border-radius: 4px;
+
+  font-weight: 800;
+}
+
+.delete-saved-job {
+  background: #a94f4f;
+  color: white;
+}
+
+.open-saved-job {
+  background: #a9dba6;
+  color: #173017;
+}
