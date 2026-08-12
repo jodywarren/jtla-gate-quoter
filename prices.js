@@ -1,33 +1,78 @@
 const PRICES = {
 
   // ==========================================================
-  // BRAND
+  // JTLA GATES
   // ==========================================================
 
   company: {
     name: "JTLA Gates",
     contactName: "Jody Tuuta",
-    phone: "0439 517 783"
+    phone: "0439 517 783",
+    recordEmail: "jtladesign@gmail.com"
   },
 
 
   // ==========================================================
-  // BUSINESS
+  // PROJECT NUMBERING
+  // ==========================================================
+
+  projectNumbers: {
+    startingNumber: 1246,
+    digits: 6
+  },
+
+
+  // ==========================================================
+  // BUSINESS SETTINGS
   // ==========================================================
 
   business: {
-    labourRateExGST: 60,
-    materialMarkup: 0.20,
+
     gst: 0.10,
 
-    includedTravelKm: 20,
+    labourRateExGST: 60,
+
+    materialMarkup: 0.20,
+
+    // Distance entered into app is ONE WAY.
+    travelFreeOneWayKm: 20,
+
     travelRatePerKm: 1.50,
 
+    // Final customer price always rounds UP.
     roundTo: 10,
 
-    defaultPostEmbedMm: 600,
-    defaultBottomGapMm: 40,
-    defaultSideGapMm: 10
+    depositPercent: 0.50,
+
+    depositText:
+      "50% deposit required on acceptance. Balance payable on completion."
+  },
+
+
+  // ==========================================================
+  // STANDARD SITE / FABRICATION RULES
+  // ==========================================================
+
+  rules: {
+
+    // All layout gaps are automatic.
+    componentGapMm: 12,
+
+    // Standard clearance under swing gates.
+    gateBottomGapMm: 40,
+
+    // Automatically added to concreted post cut lengths.
+    concreteEmbedMm: 650,
+
+    // Standard cladding spacing used for quoting quantities.
+    claddingGapMm: 5,
+
+    // All post bolts are fixed at this size.
+    dynaboltDiameterMm: 10,
+    dynaboltLengthMm: 75,
+
+    // Maximum mid rails selectable.
+    maxMidRails: 3
   },
 
 
@@ -41,48 +86,52 @@ const PRICES = {
 
       "50x25_rhs": {
         label: "50x25 RHS Duragalv",
+
         faceMm: 50,
         depthMm: 25,
 
         stockLengthM: 8,
 
-        price: 55,
+        pricePerStockLength: 55,
         priceIncludesGST: true
       },
 
 
       "25x25_rhs": {
         label: "25x25 RHS Duragalv",
+
         faceMm: 25,
         depthMm: 25,
 
         stockLengthM: 8,
 
-        price: 0,
+        pricePerStockLength: 0,
         priceIncludesGST: true
       },
 
 
       "40x40_rhs": {
         label: "40x40 RHS Duragalv",
+
         faceMm: 40,
         depthMm: 40,
 
         stockLengthM: 8,
 
-        price: 0,
+        pricePerStockLength: 0,
         priceIncludesGST: true
       },
 
 
       "50x50_rhs": {
         label: "50x50 RHS Duragalv",
+
         faceMm: 50,
         depthMm: 50,
 
         stockLengthM: 8,
 
-        price: 0,
+        pricePerStockLength: 0,
         priceIncludesGST: true
       }
 
@@ -93,44 +142,49 @@ const PRICES = {
 
       "65x65_shs": {
         label: "65x65 SHS Duragalv",
+
         widthMm: 65,
 
         stockLengthM: 8,
 
-        price: 105,
+        pricePerStockLength: 105,
         priceIncludesGST: true
       },
 
 
       "50x50_shs": {
         label: "50x50 SHS Duragalv",
+
         widthMm: 50,
 
         stockLengthM: 8,
 
-        price: 0,
+        // Fill this price in later.
+        pricePerStockLength: 0,
         priceIncludesGST: true
       },
 
 
       "90x90_shs": {
         label: "90x90 SHS Duragalv",
+
         widthMm: 90,
 
         stockLengthM: 8,
 
-        price: 0,
+        pricePerStockLength: 0,
         priceIncludesGST: true
       },
 
 
       "100x100_shs": {
         label: "100x100 SHS Duragalv",
+
         widthMm: 100,
 
         stockLengthM: 8,
 
-        price: 0,
+        pricePerStockLength: 0,
         priceIncludesGST: true
       }
 
@@ -162,12 +216,7 @@ const PRICES = {
         "Alpine Ash",
         "Leatherwood",
         "Riverbank Red"
-      ],
-
-      finishOptions: [
-        "Standard"
       ]
-
     },
 
 
@@ -184,15 +233,14 @@ const PRICES = {
         1800
       ],
 
-      pricePerStockLength: 0,
+      pricePerLinealM: 4.20,
       priceIncludesGST: true,
 
-      finishOptions: [
+      finishes: [
         "Raw",
         "Oil",
         "Paint"
       ]
-
     },
 
 
@@ -208,12 +256,11 @@ const PRICES = {
       pricePerLinealM: 9,
       priceIncludesGST: true,
 
-      finishOptions: [
+      finishes: [
         "Plain",
         "Prime",
         "Paint"
       ]
-
     },
 
 
@@ -229,12 +276,11 @@ const PRICES = {
       pricePerLinealM: 9,
       priceIncludesGST: true,
 
-      finishOptions: [
+      finishes: [
         "Plain",
         "Prime",
         "Paint"
       ]
-
     },
 
 
@@ -249,11 +295,10 @@ const PRICES = {
       pricePerLinealM: 0,
       priceIncludesGST: true,
 
-      finishOptions: [
+      finishes: [
         "Raw",
         "Oil"
       ]
-
     },
 
 
@@ -268,11 +313,10 @@ const PRICES = {
       pricePerLinealM: 0,
       priceIncludesGST: true,
 
-      finishOptions: [
+      finishes: [
         "Raw",
         "Oil"
       ]
-
     },
 
 
@@ -289,19 +333,71 @@ const PRICES = {
         "Trimdek",
         "Other"
       ]
-
     },
 
 
     custom: {
-
       label: "Custom / Other",
-
       priceIncludesGST: true
-
     }
 
   },
+
+
+  // ==========================================================
+  // COLOUR PALETTE
+  //
+  // Shared by Colorbond and powder coating.
+  // Alphabetical.
+  // ==========================================================
+
+  colours: [
+
+    "Basalt",
+
+    "Bluegum",
+
+    "Classic Cream",
+
+    "Cottage Green",
+
+    "Deep Ocean",
+
+    "Dover White",
+
+    "Dune",
+
+    "Evening Haze",
+
+    "Gully",
+
+    "Ironstone",
+
+    "Jasper",
+
+    "Manor Red",
+
+    "Monument",
+
+    "Night Sky",
+
+    "Pale Eucalypt",
+
+    "Paperbark",
+
+    "Shale Grey",
+
+    "Southerly",
+
+    "Surfmist",
+
+    "Wallaby",
+
+    "Windspray",
+
+    "Woodland Grey"
+
+  ],
 
 
   // ==========================================================
@@ -312,11 +408,12 @@ const PRICES = {
 
     hinges: {
 
-      label: "Lock-out galvanised hinges",
+      label:
+        "Lock-out galvanised hinges",
 
       pricePerSet: 18,
-      priceIncludesGST: true
 
+      priceIncludesGST: true
     },
 
 
@@ -324,41 +421,57 @@ const PRICES = {
 
       ddDualKey: {
 
-        label: "D&D dual-way key-lockable latch",
+        label:
+          "D&D dual-way key-lockable latch",
 
         price: 82,
-        priceIncludesGST: false
 
+        priceIncludesGST: false
       },
 
 
       dLatch: {
 
-        label: "Standard D latch",
+        label:
+          "Standard D latch",
 
         price: 11,
-        priceIncludesGST: true
 
+        priceIncludesGST: true
       },
 
 
       snapLatch: {
 
-        label: "Standard Snap latch",
+        label:
+          "Standard Snap latch",
 
         price: 11,
-        priceIncludesGST: true
 
+        priceIncludesGST: true
+      },
+
+
+      other: {
+
+        label:
+          "Other",
+
+        // User enters description and cost.
+        price: 0,
+
+        priceIncludesGST: true
       },
 
 
       none: {
 
-        label: "No latch",
+        label:
+          "No latch",
 
         price: 0,
-        priceIncludesGST: true
 
+        priceIncludesGST: true
       }
 
     },
@@ -368,11 +481,7 @@ const PRICES = {
 
       defaultPerGate: 7.50,
 
-      minimumPerGate: 5,
-      maximumPerGate: 10,
-
       priceIncludesGST: true
-
     }
 
   },
@@ -384,22 +493,53 @@ const PRICES = {
 
   postFixing: {
 
-    types: {
-
-      concreted: {
-        label: "Concreted"
-      },
+    methods: {
 
       brick: {
-        label: "Fixed to brickwork"
+        label:
+          "Fixed to brick"
       },
 
-      fixedPanel: {
-        label: "Fixed panel post"
+
+      concreteHouse: {
+        label:
+          "Concreted next to house"
       },
+
+
+      concreteFloating: {
+        label:
+          "Concreted floating"
+      },
+
+
+      fixedPanelLeft: {
+        label:
+          "Fixed panel - left post"
+      },
+
+
+      fixedPanelCentre: {
+        label:
+          "Fixed panel - centre post"
+      },
+
+
+      fixedPanelRight: {
+        label:
+          "Fixed panel - right post"
+      },
+
+
+      baseplate: {
+        label:
+          "Baseplated"
+      },
+
 
       existing: {
-        label: "Existing structure / no new post"
+        label:
+          "Existing structure / no new post"
       }
 
     },
@@ -412,7 +552,6 @@ const PRICES = {
       priceIncludesGST: true,
 
       defaultBagsPerPost: 2
-
     },
 
 
@@ -420,52 +559,131 @@ const PRICES = {
 
       diameterMm: 10,
 
+      lengthMm: 75,
+
       priceEach: 2,
+
+      priceIncludesGST: true
+    },
+
+
+    baseplate: {
+
+      // Includes:
+      // steel
+      // drilling
+      // welding
+      // 4 x Dynabolts
+
+      allowanceEach: 25,
 
       priceIncludesGST: true,
 
-      lengthsMm: [
-        50,
-        75,
-        90
-      ],
-
-      defaultLengthMm: 75
-
+      dynaboltCount: 4
     }
 
   },
 
 
   // ==========================================================
-  // FINISHING
+  // POWDER COATING
   // ==========================================================
 
-  finishing: {
+  powderCoating: {
 
-    powderCoat: {
+    // All values INC GST.
+    // Travel to/from powder coater is already included.
 
-      typicalCost: 250,
+    gateEach: 180,
 
-      priceIncludesGST: true,
+    postEach: 40,
 
-      quoteNote:
-        "Allow approximately 2 weeks for powder-coat processing."
+    verticalFixedPanelEach: 150,
 
-    },
+    priceIncludesGST: true,
+
+    quoteNote:
+      "Allow approximately 2 weeks for powder-coat processing."
+  },
 
 
-    galvanisedTouchUp: {
+  // ==========================================================
+  // NON-POWDER-COATED STEEL
+  // ==========================================================
 
-      label:
-        "Etch primer and silver galv spray",
+  galvanisedFinish: {
 
-      pricePerM2: 5,
+    label:
+      "Duragalv",
 
-      priceIncludesGST: true
+    touchUpLabel:
+      "Etch primer and silver galvanising spray",
 
-    }
+    pricePerM2: 5,
 
+    priceIncludesGST: true,
+
+    quoteText:
+      "Duragalv steel with exposed fabrication areas treated with etch primer and silver galvanising spray."
+  },
+
+
+  // ==========================================================
+  // LABOUR ESTIMATION
+  // ==========================================================
+
+  labour: {
+
+    // Fabrication of each gate leaf.
+    // Based on approx 1800 x 1200 gate.
+    gateFabricationHoursEach: 1.5,
+
+
+    // Fabricating each new post.
+    postFabricationHoursEach:
+      20 / 60,
+
+
+    // Drilling each bolt hole through post.
+    boltHoleFabricationHoursEach:
+      5 / 60,
+
+
+    // Additional fabrication allowance
+    // for each fixed panel.
+    fixedPanelFabricationHoursEach: 1,
+
+
+    // Installation of each concreted post.
+    concretePostInstallHoursEach: 0.5,
+
+
+    // Installation of each baseplated post.
+    baseplatePostInstallHoursEach:
+      20 / 60,
+
+
+    // Hang each gate and install latch.
+    gateInstallHoursEach: 1
+  },
+
+
+  // ==========================================================
+  // QUOTE
+  // ==========================================================
+
+  quote: {
+
+    depositPercent: 0.50,
+
+    depositText:
+      "50% deposit required on acceptance. Balance payable on completion.",
+
+    powderCoatLeadTime:
+      "Allow approximately 2 weeks for powder-coat processing.",
+
+    bccEmail:
+      "jtladesign@gmail.com"
   },
 
 
@@ -475,7 +693,8 @@ const PRICES = {
 
   defaults: {
 
-    gateType: "single",
+    // The layout itself defines the job.
+    // No single/double gate selection.
 
     includeFrame: true,
     includePosts: true,
@@ -491,20 +710,23 @@ const PRICES = {
 
     latch: "ddDualKey",
 
-    leftGapMm: 10,
-
-    rightGapMm: 10,
-
-    bottomGapMm: 40,
-
-    postEmbedMm: 600,
-
-    dynaboltLengthMm: 75,
+    powderCoat: false,
 
     horizontalMidRails: 0,
 
-    verticalMidRails: 0
+    verticalMidRails: 0,
 
+    componentGapMm: 12,
+
+    gateBottomGapMm: 40,
+
+    concreteEmbedMm: 650,
+
+    claddingGapMm: 5,
+
+    dynaboltLengthMm: 75,
+
+    startingProjectNumber: 1246
   }
 
 };
