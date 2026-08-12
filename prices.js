@@ -413,54 +413,48 @@ const PRICES = {
      LABOUR
      ======================================================= */
 
-  labour: {
+ labour: {
 
-    /*
-      Typical gate leaf around 1800 x 1200mm.
-      Includes cutting, welding, grinding and painting.
-    */
+  /*
+    Typical gate fabrication.
+    Cutting, welding, grinding and finishing.
+  */
+  gateBaseHours: 2.0,
 
-    gateBaseHours: 1.5,
+  /*
+    Fabricate each new post.
+    Includes cutting, custom cap and fully welding.
+  */
+  postHours: 0.5,
 
-    /*
-      Fabricate each new post.
-    */
+  /*
+    Additional fabrication allowance
+    for each fixed panel.
+  */
+  fixedPanelHours: 1.0,
 
-    postHours: 20 / 60,
+  /*
+    Drill each fixing hole through the post.
+    10 minutes per hole.
+  */
+  holeHours: 10 / 60,
 
-    /*
-      Additional fabrication allowance
-      for each fixed panel.
-    */
+  /*
+    Install each concreted post.
+  */
+  concretePostHours: 0.5,
 
-    fixedPanelHours: 1.0,
+  /*
+    Install each baseplated post.
+  */
+  baseplateHours: 20 / 60,
 
-    /*
-      Drilling each bolt hole through both sides
-      and enlarging one side.
-    */
-
-    holeHours: 5 / 60,
-
-    /*
-      Install each concreted post.
-    */
-
-    concretePostHours: 0.5,
-
-    /*
-      Install each baseplated post.
-    */
-
-    baseplateHours: 20 / 60,
-
-    /*
-      Hang each gate and fit latch.
-    */
-
-    hangGateHours: 1.0
-  },
-
+  /*
+    Hang gate and fit latch.
+    Includes handling/loading and some associated travel time.
+  */
+  hangGateHours: 1.5
+},
 
   /* =======================================================
      DESIGN / FABRICATION DEFAULTS
