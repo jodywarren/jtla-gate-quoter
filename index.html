@@ -10,35 +10,39 @@
 
   <meta name="theme-color" content="#303234">
 
-  <title>JTLA Gate Quoter</title>
+  <title>JTLA Gates Quote</title>
 
-  <link rel="stylesheet" href="style.css?v=170">
+  <link rel="stylesheet" href="style.css?v=180">
   <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
   <!-- =====================================================
-       SKINNY FIXED TOP BAR
+       FIXED HEADER
   ====================================================== -->
 
   <div class="top-bar">
 
-    <div class="top-customer">
+    <div class="top-title">
 
-      <strong id="topCustomerName">
-        New Job
+      <strong>
+        JTLA Gates Quote
       </strong>
 
-      <span id="topCustomerPhone">
+      <span id="topClientName">
+        New Client
       </span>
+
+      <small id="topClientPhone">
+      </small>
 
     </div>
 
     <button
       id="updateBtn"
-      type="button"
       class="update-btn"
+      type="button"
     >
       UPDATE
     </button>
@@ -87,23 +91,24 @@
 
 
     <!-- =====================================================
-         CUSTOMER
+         CLIENT DETAILS
     ====================================================== -->
 
     <details class="card" open>
 
       <summary>
-        Customer Details
+        Client Details
       </summary>
 
       <div class="card-content">
 
         <label class="required-field">
-          Customer name
+          Client name
 
           <input
-            id="customerName"
+            id="clientName"
             type="text"
+            autocomplete="name"
           >
         </label>
 
@@ -113,6 +118,7 @@
           <input
             id="siteAddress"
             type="text"
+            autocomplete="street-address"
           >
         </label>
 
@@ -129,12 +135,24 @@
           </label>
 
           <label class="required-field">
-            Phone
+            Mobile number
 
-            <input
-              id="customerPhone"
-              type="tel"
-            >
+            <div class="phone-entry">
+
+              <span>
+                04
+              </span>
+
+              <input
+                id="clientPhoneDigits"
+                type="text"
+                inputmode="numeric"
+                maxlength="8"
+                placeholder="12345678"
+              >
+
+            </div>
+
           </label>
 
         </div>
@@ -143,8 +161,9 @@
           Email
 
           <input
-            id="customerEmail"
+            id="clientEmail"
             type="email"
+            autocomplete="email"
           >
         </label>
 
@@ -154,7 +173,7 @@
 
 
     <!-- =====================================================
-         SITE / CLADDING / COMPONENTS
+         SITE LAYOUT
     ====================================================== -->
 
     <details class="card" open>
@@ -165,7 +184,9 @@
 
       <div class="card-content">
 
-        <h3>Overall Cavity</h3>
+        <h3>
+          Overall Measurements
+        </h3>
 
         <div class="grid two">
 
@@ -180,10 +201,10 @@
           </label>
 
           <label class="required-field">
-            Overall cavity height (mm)
+            Height above finished surface (mm)
 
             <input
-              id="cavityHeight"
+              id="overallHeight"
               type="number"
               placeholder="Enter height"
             >
@@ -194,242 +215,290 @@
 
         <!-- GLOBAL CLADDING -->
 
-        <h3>Cladding</h3>
+        <div id="claddingSection">
 
-        <label>
-          Material
-
-          <select id="claddingType">
-
-            <option value="ekodeck">
-              Ekodeck screening 67x15mm
-            </option>
-
-            <option value="cypressPickets">
-              Cypress 67x15mm
-            </option>
-
-            <option value="losp50">
-              LOSP 50x18mm
-            </option>
-
-            <option value="losp90">
-              LOSP 90x18mm
-            </option>
-
-            <option value="merbau90">
-              Merbau 90mm
-            </option>
-
-            <option value="merbau140">
-              Merbau 140mm
-            </option>
-
-            <option value="colorbond">
-              Colorbond
-            </option>
-
-            <option value="custom">
-              Other
-            </option>
-
-          </select>
-        </label>
-
-
-        <label>
-          Direction
-
-          <select id="claddingDirection">
-
-            <option value="">
-              Select direction
-            </option>
-
-            <option value="vertical">
-              Vertical
-            </option>
-
-            <option value="horizontal">
-              Horizontal
-            </option>
-
-          </select>
-        </label>
-
-
-        <!-- EKODECK -->
-
-        <div id="ekodeckOptions">
+          <h3>
+            Cladding
+          </h3>
 
           <label>
-            Ekodeck colour
+            Material
 
-            <select id="ekodeckColour">
+            <select id="claddingType">
 
-              <option>Greystone</option>
-              <option>Alpine Ash</option>
-              <option>Leatherwood</option>
-              <option>Riverbank Red</option>
+              <option value="ekodeck">
+                Ekodeck screening 67x15mm
+              </option>
+
+              <option value="cypressPickets">
+                Cypress 67x15mm
+              </option>
+
+              <option value="losp90">
+                LOSP 92x18mm Primed H3
+              </option>
+
+              <option value="losp140">
+                LOSP 138x18mm Primed H3
+              </option>
+
+              <option value="merbau90">
+                Merbau 90mm
+              </option>
+
+              <option value="merbau140">
+                Merbau 140mm
+              </option>
+
+              <option value="colorbond">
+                Colorbond
+              </option>
+
+              <option value="custom">
+                Other
+              </option>
 
             </select>
           </label>
 
-        </div>
-
-
-        <!-- CYPRESS -->
-
-        <div id="cypressOptions" class="hidden">
-
           <label>
-            Finish
+            Direction
 
-            <select id="cypressFinish">
+            <select id="claddingDirection">
 
-              <option value="Raw">Raw</option>
-              <option value="Oil">Oil</option>
-              <option value="Paint">Paint</option>
+              <option value="">
+                Select direction
+              </option>
+
+              <option value="vertical">
+                Vertical
+              </option>
+
+              <option value="horizontal">
+                Horizontal
+              </option>
 
             </select>
           </label>
 
-          <div
-            id="cypressColourWrap"
-            class="hidden"
-          >
+
+          <!-- EKODECK -->
+
+          <div id="ekodeckOptions">
 
             <label>
-              Paint colour
+              Ekodeck colour
 
-              <input
-                id="cypressColour"
-                type="text"
-                placeholder="Enter colour"
-              >
+              <select id="ekodeckColour">
+
+                <option>Greystone</option>
+                <option>Alpine Ash</option>
+                <option>Leatherwood</option>
+                <option>Riverbank Red</option>
+
+              </select>
             </label>
 
           </div>
 
-        </div>
 
-
-        <!-- LOSP -->
-
-        <div id="lospOptions" class="hidden">
-
-          <label>
-            Finish
-
-            <select id="lospFinish">
-
-              <option value="Plain">Plain</option>
-              <option value="Prime">Prime</option>
-              <option value="Paint">Paint</option>
-
-            </select>
-          </label>
+          <!-- CYPRESS -->
 
           <div
-            id="lospColourWrap"
+            id="cypressOptions"
             class="hidden"
           >
 
             <label>
-              Paint colour
+              Finish
 
-              <input
-                id="lospColour"
-                type="text"
-                placeholder="Enter colour"
-              >
+              <select id="cypressFinish">
+
+                <option value="Raw">
+                  Raw
+                </option>
+
+                <option value="Oil">
+                  Oil
+                </option>
+
+                <option value="Paint">
+                  Paint
+                </option>
+
+              </select>
+            </label>
+
+            <div
+              id="cypressColourWrap"
+              class="hidden"
+            >
+
+              <label>
+                Paint colour
+
+                <input
+                  id="cypressColour"
+                  type="text"
+                >
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- LOSP -->
+
+          <div
+            id="lospOptions"
+            class="hidden"
+          >
+
+            <label>
+              Finish
+
+              <select id="lospFinish">
+
+                <option value="Primed">
+                  Primed
+                </option>
+
+                <option value="Paint">
+                  Paint
+                </option>
+
+              </select>
+            </label>
+
+            <div
+              id="lospColourWrap"
+              class="hidden"
+            >
+
+              <label>
+                Paint colour
+
+                <input
+                  id="lospColour"
+                  type="text"
+                >
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- MERBAU -->
+
+          <div
+            id="merbauOptions"
+            class="hidden"
+          >
+
+            <label>
+              Finish
+
+              <select id="merbauFinish">
+
+                <option value="Raw">
+                  Raw
+                </option>
+
+                <option value="Oil">
+                  Oil
+                </option>
+
+              </select>
             </label>
 
           </div>
 
-        </div>
+
+          <!-- COLORBOND -->
+
+          <div
+            id="colorbondOptions"
+            class="hidden"
+          >
+
+            <label>
+              Profile
+
+              <select id="colorbondProfile">
+
+                <option>
+                  Good Neighbour
+                </option>
+
+                <option>
+                  Corrugated
+                </option>
+
+                <option>
+                  Trimdek
+                </option>
+
+                <option>
+                  Other
+                </option>
+
+              </select>
+            </label>
+
+            <label>
+              Colour
+
+              <select id="colorbondColour">
+              </select>
+            </label>
+
+          </div>
 
 
-        <!-- MERBAU -->
+          <!-- OTHER -->
 
-        <div id="merbauOptions" class="hidden">
+          <div
+            id="customOptions"
+            class="hidden"
+          >
 
-          <label>
-            Finish
+            <label>
+              Description
 
-            <select id="merbauFinish">
+              <input
+                id="customDescription"
+                type="text"
+              >
+            </label>
 
-              <option value="Raw">Raw</option>
-              <option value="Oil">Oil</option>
+            <label>
+              Material cost inc GST
 
-            </select>
-          </label>
+              <input
+                id="customCost"
+                type="number"
+              >
+            </label>
 
-        </div>
-
-
-        <!-- COLORBOND -->
-
-        <div id="colorbondOptions" class="hidden">
-
-          <label>
-            Profile
-
-            <select id="colorbondProfile">
-
-              <option>Good Neighbour</option>
-              <option>Corrugated</option>
-              <option>Trimdek</option>
-              <option>Other</option>
-
-            </select>
-          </label>
-
-          <label>
-            Colour
-
-            <select id="colorbondColour">
-            </select>
-          </label>
-
-        </div>
-
-
-        <!-- CUSTOM -->
-
-        <div id="customOptions" class="hidden">
-
-          <label>
-            Description
-
-            <input
-              id="customDescription"
-              type="text"
-            >
-          </label>
-
-          <label>
-            Material cost inc GST
-
-            <input
-              id="customCost"
-              type="number"
-              placeholder="Enter cost"
-            >
-          </label>
+          </div>
 
         </div>
 
 
         <!-- INCLUDE -->
 
-        <h3>Costing</h3>
+        <h3>
+          Include
+        </h3>
 
         <div class="include-grid">
 
           <button
             id="includeFrameBtn"
             class="include-btn on"
+            type="button"
           >
             FRAME ON
           </button>
@@ -437,6 +506,7 @@
           <button
             id="includePostsBtn"
             class="include-btn on"
+            type="button"
           >
             POSTS ON
           </button>
@@ -444,6 +514,7 @@
           <button
             id="includeCladdingBtn"
             class="include-btn on"
+            type="button"
           >
             CLADDING ON
           </button>
@@ -451,21 +522,32 @@
         </div>
 
 
-        <!-- ADD COMPONENT -->
+        <!-- ADD PARTS -->
 
-        <h3>Add Components</h3>
+        <h3>
+          Add Components
+        </h3>
 
         <div class="add-grid">
 
-          <button id="addPostBtn">
+          <button
+            id="addPostBtn"
+            type="button"
+          >
             + Post
           </button>
 
-          <button id="addGateBtn">
+          <button
+            id="addGateBtn"
+            type="button"
+          >
             + Gate
           </button>
 
-          <button id="addPanelBtn">
+          <button
+            id="addPanelBtn"
+            type="button"
+          >
             + Fixed Panel
           </button>
 
@@ -477,7 +559,7 @@
 
 
     <!-- =====================================================
-         COMPONENT EDITORS
+         COMPONENTS
     ====================================================== -->
 
     <section class="card">
@@ -495,7 +577,7 @@
           id="noComponentsMessage"
           class="muted"
         >
-          Add a component above.
+          Add the job components above, then use the sticky map to jump to each one.
         </p>
 
       </div>
@@ -522,8 +604,7 @@
             type="checkbox"
           >
 
-          Powder coat job components
-
+          Include powder coating
         </label>
 
         <div
@@ -540,14 +621,14 @@
 
           <div
             id="powderComponentList"
-            class="powder-list"
+            class="powder-buttons"
           >
           </div>
 
-          <div class="info-row">
+          <div class="info-row powder-total-row">
 
             <span>
-              Powder coating allowance
+              Powder coating subtotal
             </span>
 
             <strong id="powderTotalDisplay">
@@ -568,7 +649,7 @@
 
 
     <!-- =====================================================
-         FABRICATION
+         MATERIALS AND FABRICATION
     ====================================================== -->
 
     <details class="card" open>
@@ -579,48 +660,101 @@
 
       <div class="card-content">
 
-        <div class="summary-grid">
+        <div class="materials-three">
 
-          <div>
-            <span>Frame steel</span>
-            <strong id="frameMetres">0.00 m</strong>
+          <div
+            id="frameMaterialsCard"
+            class="material-column"
+          >
+
+            <strong>
+              FRAME
+            </strong>
+
+            <div>
+              <span>Required</span>
+              <b id="frameMetres">0.00 m</b>
+            </div>
+
+            <div>
+              <span>8m lengths</span>
+              <b id="frameLengths">0</b>
+            </div>
+
+            <div>
+              <span>Waste</span>
+              <b id="frameWaste">0.00 m</b>
+            </div>
+
           </div>
 
-          <div>
-            <span>Frame 8m lengths</span>
-            <strong id="frameLengths">0</strong>
+
+          <div
+            id="postMaterialsCard"
+            class="material-column"
+          >
+
+            <strong>
+              POSTS
+            </strong>
+
+            <div>
+              <span>Required</span>
+              <b id="postMetres">0.00 m</b>
+            </div>
+
+            <div>
+              <span>8m lengths</span>
+              <b id="postLengths">0</b>
+            </div>
+
+            <div>
+              <span>Waste</span>
+              <b id="postWaste">0.00 m</b>
+            </div>
+
           </div>
 
-          <div>
-            <span>Frame waste</span>
-            <strong id="frameWaste">0.00 m</strong>
+
+          <div
+            id="claddingMaterialsCard"
+            class="material-column"
+          >
+
+            <strong>
+              CLADDING
+            </strong>
+
+            <div>
+              <span>Pieces</span>
+              <b id="claddingBoards">0</b>
+            </div>
+
+            <div>
+              <span>Required</span>
+              <b id="claddingMetres">0.00 m</b>
+            </div>
+
+            <div>
+              <span>Stock</span>
+              <b id="claddingStockLengths">0</b>
+            </div>
+
           </div>
 
-          <div>
-            <span>Post steel</span>
-            <strong id="postMetres">0.00 m</strong>
-          </div>
+        </div>
 
-          <div>
-            <span>Post 8m lengths</span>
-            <strong id="postLengths">0</strong>
-          </div>
 
-          <div>
-            <span>Post waste</span>
-            <strong id="postWaste">0.00 m</strong>
-          </div>
+        <!-- CONSUMABLES -->
 
-          <div>
-            <span>Cladding pieces</span>
-            <strong id="claddingBoards">0</strong>
-          </div>
+        <h3>
+          Consumables / Hardware
+        </h3>
 
-          <div>
-            <span>Cladding metres</span>
-            <strong id="claddingMetres">0.00 m</strong>
-          </div>
-
+        <div
+          id="consumablesList"
+          class="consumables-list"
+        >
         </div>
 
 
@@ -654,7 +788,9 @@
         <div class="summary-grid">
 
           <div>
-            <span>Fabrication estimate</span>
+            <span>
+              Fabrication estimate
+            </span>
 
             <strong id="estimatedFabricationHours">
               0.00 hrs
@@ -662,7 +798,9 @@
           </div>
 
           <div>
-            <span>Installation estimate</span>
+            <span>
+              Installation estimate
+            </span>
 
             <strong id="estimatedInstallationHours">
               0.00 hrs
@@ -670,7 +808,6 @@
           </div>
 
         </div>
-
 
         <label class="check-line">
 
@@ -681,7 +818,6 @@
 
           Override labour
         </label>
-
 
         <div
           id="labourOverride"
@@ -714,14 +850,12 @@
 
         </div>
 
-
         <label>
           One-way travel distance (km)
 
           <input
             id="travelKm"
             type="number"
-            placeholder="Enter km"
           >
         </label>
 
@@ -731,7 +865,6 @@
           <input
             id="extraHardware"
             type="number"
-            placeholder="Enter cost"
           >
         </label>
 
@@ -741,7 +874,6 @@
           <input
             id="otherCosts"
             type="number"
-            placeholder="Enter cost"
           >
         </label>
 
@@ -760,61 +892,63 @@
         Internal Costing
       </div>
 
-      <div class="summary-grid">
+      <div class="card-content">
 
-        <div>
-          <span>Materials ex GST</span>
-          <strong id="materialsTotal">$0.00</strong>
+        <div class="summary-grid">
+
+          <div>
+            <span>Materials ex GST</span>
+            <strong id="materialsTotal">$0.00</strong>
+          </div>
+
+          <div>
+            <span>Labour</span>
+            <strong id="labourTotal">$0.00</strong>
+          </div>
+
+          <div>
+            <span>Travel</span>
+            <strong id="travelTotal">$0.00</strong>
+          </div>
+
+          <div>
+            <span>Markup</span>
+            <strong id="markupTotal">$0.00</strong>
+          </div>
+
+          <div>
+            <span>GST</span>
+            <strong id="gstTotal">$0.00</strong>
+          </div>
+
+          <div>
+            <span>Effective rate</span>
+            <strong id="effectiveRate">N/A</strong>
+          </div>
+
         </div>
 
-        <div>
-          <span>Labour</span>
-          <strong id="labourTotal">$0.00</strong>
+        <label class="final-price-label">
+          Calculated quote incl GST
+
+          <input
+            id="finalPrice"
+            type="number"
+            readonly
+          >
+        </label>
+
+        <div class="info-row">
+
+          <span>
+            Profit
+          </span>
+
+          <strong id="profitTotal">
+            $0.00
+          </strong>
+
         </div>
-
-        <div>
-          <span>Travel</span>
-          <strong id="travelTotal">$0.00</strong>
-        </div>
-
-        <div>
-          <span>Markup</span>
-          <strong id="markupTotal">$0.00</strong>
-        </div>
-
-        <div>
-          <span>GST</span>
-          <strong id="gstTotal">$0.00</strong>
-        </div>
-
-        <div>
-          <span>Effective rate</span>
-          <strong id="effectiveRate">N/A</strong>
-        </div>
-
-      </div>
-
-
-      <label>
-        Final quote incl GST
-
-        <input
-          id="finalPrice"
-          type="number"
-          step="10"
-        >
-      </label>
-
-
-      <div class="info-row">
-
-        <span>
-          Profit
-        </span>
-
-        <strong id="profitTotal">
-          $0.00
-        </strong>
 
       </div>
 
@@ -822,7 +956,7 @@
 
 
     <!-- =====================================================
-         FINISHED QUOTE
+         FINAL QUOTE
     ====================================================== -->
 
     <section class="card">
@@ -906,25 +1040,36 @@
       <button
         id="saveBtn"
         class="green"
+        type="button"
       >
         Save
       </button>
 
-      <button id="smsBtn">
+      <button
+        id="smsBtn"
+        type="button"
+      >
         SMS
       </button>
 
-      <button id="emailBtn">
+      <button
+        id="emailBtn"
+        type="button"
+      >
         Email
       </button>
 
-      <button id="printBtn">
+      <button
+        id="printBtn"
+        type="button"
+      >
         PDF / Print
       </button>
 
       <button
         id="newJobBtn"
         class="red"
+        type="button"
       >
         New Job
       </button>
@@ -935,7 +1080,7 @@
 
 
   <!-- =====================================================
-       COMPONENT TEMPLATE
+       COMPONENT SHELL
   ====================================================== -->
 
   <template id="componentTemplate">
@@ -1034,18 +1179,34 @@
         </select>
       </label>
 
-      <label>
-        Height above finished surface (mm)
+
+      <!-- HEIGHT -->
+
+      <label class="check-line">
 
         <input
-          class="post-height"
-          type="number"
-          placeholder="Enter height"
+          class="post-height-override-enabled"
+          type="checkbox"
         >
+
+        Different height to overall site height
       </label>
 
+      <div class="post-height-override-wrap hidden">
 
-      <!-- BRICK HOLES -->
+        <label>
+          Post height above finished surface (mm)
+
+          <input
+            class="post-height-override"
+            type="number"
+          >
+        </label>
+
+      </div>
+
+
+      <!-- BRICK -->
 
       <div class="brick-holes hidden">
 
@@ -1066,7 +1227,7 @@
       </div>
 
 
-      <!-- HOUSE TOP BOLT -->
+      <!-- NEXT TO HOUSE -->
 
       <div class="house-bolt hidden">
 
@@ -1077,7 +1238,7 @@
             type="checkbox"
           >
 
-          Top bolt into house / garage
+          Add top bolt into house / garage
         </label>
 
         <div class="house-bolt-position hidden">
@@ -1088,7 +1249,6 @@
             <input
               class="top-hole-position"
               type="number"
-              placeholder="Enter position"
             >
           </label>
 
@@ -1097,22 +1257,33 @@
       </div>
 
 
-      <!-- FLOAT OFFSET -->
+      <!-- FLOATING -->
 
       <div class="floating-offset hidden">
 
         <label>
-          Offset from house (mm)
+          Offset from house / structure (mm)
 
           <input
             class="post-offset"
             type="number"
-            placeholder="Enter offset"
           >
         </label>
 
       </div>
 
+
+      <div class="calculated-line">
+
+        <span>
+          Height above finished surface
+        </span>
+
+        <strong class="post-visible-height">
+          -
+        </strong>
+
+      </div>
 
       <div class="calculated-line">
 
@@ -1153,28 +1324,30 @@
 
         </div>
 
-        <label>
-          Gate height (mm)
+        <div class="calculated-box">
 
-          <input
-            class="gate-height"
-            type="number"
-            placeholder="Enter height"
-          >
-        </label>
+          <span>
+            Calculated height
+          </span>
+
+          <strong class="gate-height-display">
+            -
+          </strong>
+
+        </div>
 
       </div>
 
+      <div class="gate-frame-wrap">
 
-      <label>
-        Frame steel
+        <label>
+          Frame steel
 
-        <select class="gate-frame">
-        </select>
-      </label>
+          <select class="gate-frame">
+          </select>
+        </label>
 
-
-      <!-- RAILS DERIVED FROM GLOBAL CLADDING -->
+      </div>
 
       <div class="horizontal-rail-wrap hidden">
 
@@ -1209,7 +1382,6 @@
         </label>
 
       </div>
-
 
       <div class="grid two">
 
@@ -1254,7 +1426,6 @@
         </label>
 
       </div>
-
 
       <label>
         Latch
@@ -1306,7 +1477,6 @@
           <input
             class="panel-width"
             type="number"
-            placeholder="Enter width"
           >
         </label>
 
@@ -1316,7 +1486,6 @@
           <input
             class="panel-height"
             type="number"
-            placeholder="Enter height"
           >
         </label>
 
@@ -1342,6 +1511,10 @@
   </template>
 
 
+  <!-- =====================================================
+       HOLE TEMPLATE
+  ====================================================== -->
+
   <template id="holeTemplate">
 
     <div class="hole-row">
@@ -1364,8 +1537,8 @@
   </template>
 
 
-  <script src="prices.js?v=170"></script>
-  <script src="app.js?v=170"></script>
+  <script src="prices.js?v=180"></script>
+  <script src="app.js?v=180"></script>
 
 </body>
 </html>
