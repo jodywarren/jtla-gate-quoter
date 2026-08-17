@@ -8,18 +8,18 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta name="theme-color" content="#303234">
+  <meta name="theme-color" content="#2f3235">
 
   <title>JTLA Gates Quote</title>
 
-  <link rel="stylesheet" href="style.css?v=180">
+  <link rel="stylesheet" href="style.css?v=220">
   <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
   <!-- =====================================================
-       FIXED HEADER
+       HEADER
   ====================================================== -->
 
   <div class="top-bar">
@@ -40,11 +40,12 @@
     </div>
 
     <button
-      id="updateBtn"
-      class="update-btn"
+      id="undoBtn"
+      class="undo-btn"
       type="button"
+      disabled
     >
-      UPDATE
+      UNDO
     </button>
 
   </div>
@@ -91,76 +92,6 @@
 
 
     <!-- =====================================================
-         CLIENT DETAILS
-    ====================================================== -->
-
-    <details class="card" open>
-
-      <summary>
-        Client Details
-      </summary>
-
-      <div class="card-content">
-
-        <label class="required-field">
-          Client name
-
-          <input
-            id="clientName"
-            type="text"
-            autocomplete="name"
-          >
-        </label>
-
-        <label class="required-field">
-          Address
-
-          <input
-            id="siteAddress"
-            type="text"
-            autocomplete="street-address"
-          >
-        </label>
-
-        <div class="grid two">
-
-          <label>
-            Project number
-
-            <input
-              id="projectNumber"
-              type="text"
-              readonly
-            >
-          </label>
-
-<label class="field-label" for="clientPhone">Mobile number</label>
-
-<input
-  id="clientPhone"
-  type="tel"
-  inputmode="numeric"
-  maxlength="10"
-  value="04"
-  autocomplete="tel"
->
-
-        <label class="required-field">
-          Email
-
-          <input
-            id="clientEmail"
-            type="email"
-            autocomplete="email"
-          >
-        </label>
-
-      </div>
-
-    </details>
-
-
-    <!-- =====================================================
          SITE LAYOUT
     ====================================================== -->
 
@@ -172,13 +103,12 @@
 
       <div class="card-content">
 
-        <h3>
-          Overall Measurements
-        </h3>
-
         <div class="grid two">
 
-          <label class="required-field">
+          <label
+            class="field-status required"
+            data-required-field="cavityWidth"
+          >
             Overall cavity width (mm)
 
             <input
@@ -188,7 +118,10 @@
             >
           </label>
 
-          <label class="required-field">
+          <label
+            class="field-status required"
+            data-required-field="overallHeight"
+          >
             Height above finished surface (mm)
 
             <input
@@ -201,7 +134,108 @@
         </div>
 
 
-        <!-- GLOBAL CLADDING -->
+        <!-- VIEW / REFERENCE -->
+
+        <h3>
+          View / Reference Direction
+        </h3>
+
+        <label
+          class="field-status required"
+          data-required-field="referenceDirection"
+        >
+          All left / right references are viewed from
+
+          <select id="referenceDirection">
+
+            <option value="streetToProperty">
+              Looking from street toward property
+            </option>
+
+            <option value="propertyToStreet">
+              Looking from property toward street
+            </option>
+
+            <option value="north">
+              Looking North
+            </option>
+
+            <option value="south">
+              Looking South
+            </option>
+
+            <option value="east">
+              Looking East
+            </option>
+
+            <option value="west">
+              Looking West
+            </option>
+
+            <option value="other">
+              Other
+            </option>
+
+          </select>
+        </label>
+
+        <div
+          id="referenceOtherWrap"
+          class="hidden"
+        >
+
+          <label
+            class="field-status required"
+            data-required-field="referenceOther"
+          >
+            Other reference description
+
+            <input
+              id="referenceOther"
+              type="text"
+              placeholder="e.g. Looking toward garage"
+            >
+          </label>
+
+        </div>
+
+
+        <!-- INCLUDE -->
+
+        <h3>
+          Include
+        </h3>
+
+        <div class="include-grid">
+
+          <button
+            id="includeGateBtn"
+            class="include-btn on"
+            type="button"
+          >
+            GATE ON
+          </button>
+
+          <button
+            id="includePostsBtn"
+            class="include-btn on"
+            type="button"
+          >
+            POSTS ON
+          </button>
+
+          <button
+            id="includeCladdingBtn"
+            class="include-btn on"
+            type="button"
+          >
+            CLADDING ON
+          </button>
+
+        </div>
+
+
+        <!-- CLADDING -->
 
         <div id="claddingSection">
 
@@ -209,13 +243,16 @@
             Cladding
           </h3>
 
-          <label>
+          <label
+            class="field-status required"
+            data-required-field="claddingType"
+          >
             Material
 
             <select id="claddingType">
 
               <option value="ekodeck">
-                Ekodeck screening 67x15mm
+                Ekodeck Screening 67x15mm
               </option>
 
               <option value="cypressPickets">
@@ -231,25 +268,32 @@
               </option>
 
               <option value="merbau90">
-                Merbau 90mm
+                Merbau Decking 90mm
               </option>
 
               <option value="merbau140">
-                Merbau 140mm
+                Merbau Decking 140mm
+              </option>
+
+              <option value="treatedPinePalings">
+                Treated Pine Palings
               </option>
 
               <option value="colorbond">
-                Colorbond
+                Colorbond Steel Cladding
               </option>
 
               <option value="custom">
-                Other
+                Custom / Other
               </option>
 
             </select>
           </label>
 
-          <label>
+          <label
+            class="field-status required"
+            data-required-field="claddingDirection"
+          >
             Direction
 
             <select id="claddingDirection">
@@ -274,7 +318,10 @@
 
           <div id="ekodeckOptions">
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="ekodeckColour"
+            >
               Ekodeck colour
 
               <select id="ekodeckColour">
@@ -297,7 +344,10 @@
             class="hidden"
           >
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="cypressFinish"
+            >
               Finish
 
               <select id="cypressFinish">
@@ -322,7 +372,10 @@
               class="hidden"
             >
 
-              <label>
+              <label
+                class="field-status required"
+                data-required-field="cypressColour"
+              >
                 Paint colour
 
                 <input
@@ -343,7 +396,10 @@
             class="hidden"
           >
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="lospFinish"
+            >
               Finish
 
               <select id="lospFinish">
@@ -364,7 +420,10 @@
               class="hidden"
             >
 
-              <label>
+              <label
+                class="field-status required"
+                data-required-field="lospColour"
+              >
                 Paint colour
 
                 <input
@@ -385,7 +444,10 @@
             class="hidden"
           >
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="merbauFinish"
+            >
               Finish
 
               <select id="merbauFinish">
@@ -404,6 +466,118 @@
           </div>
 
 
+          <!-- TREATED PINE PALINGS -->
+
+          <div
+            id="treatedPineOptions"
+            class="hidden"
+          >
+
+            <div class="grid two">
+
+              <label
+                class="field-status required"
+                data-required-field="treatedPineLength"
+              >
+                Paling length
+
+                <select id="treatedPineLength">
+
+                  <option value="1650">
+                    1650mm
+                  </option>
+
+                  <option value="1800">
+                    1800mm
+                  </option>
+
+                  <option value="2100">
+                    2100mm
+                  </option>
+
+                </select>
+              </label>
+
+              <label
+                class="field-status required"
+                data-required-field="treatedPineWidth"
+              >
+                Paling width
+
+                <select id="treatedPineWidth">
+
+                  <option value="100">
+                    100mm
+                  </option>
+
+                  <option value="125">
+                    125mm
+                  </option>
+
+                  <option value="150">
+                    150mm
+                  </option>
+
+                </select>
+              </label>
+
+            </div>
+
+
+            <div class="pine-options-grid">
+
+              <div class="pine-option-card">
+
+                <button
+                  id="pineCappingToggle"
+                  type="button"
+                  class="small-status-btn on"
+                >
+                  CAPPING ON
+                </button>
+
+                <label>
+                  Capping length (m)
+
+                  <input
+                    id="pineCappingMetres"
+                    type="number"
+                    step="0.01"
+                    placeholder="Auto"
+                  >
+                </label>
+
+              </div>
+
+
+              <div class="pine-option-card">
+
+                <button
+                  id="pinePlinthToggle"
+                  type="button"
+                  class="small-status-btn on"
+                >
+                  PLINTH ON
+                </button>
+
+                <label>
+                  Plinth length (m)
+
+                  <input
+                    id="pinePlinthMetres"
+                    type="number"
+                    step="0.01"
+                    placeholder="Auto"
+                  >
+                </label>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
           <!-- COLORBOND -->
 
           <div
@@ -411,7 +585,10 @@
             class="hidden"
           >
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="colorbondProfile"
+            >
               Profile
 
               <select id="colorbondProfile">
@@ -435,7 +612,10 @@
               </select>
             </label>
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="colorbondColour"
+            >
               Colour
 
               <select id="colorbondColour">
@@ -445,14 +625,17 @@
           </div>
 
 
-          <!-- OTHER -->
+          <!-- CUSTOM -->
 
           <div
             id="customOptions"
             class="hidden"
           >
 
-            <label>
+            <label
+              class="field-status required"
+              data-required-field="customDescription"
+            >
               Description
 
               <input
@@ -475,42 +658,7 @@
         </div>
 
 
-        <!-- INCLUDE -->
-
-        <h3>
-          Include
-        </h3>
-
-        <div class="include-grid">
-
-          <button
-            id="includeFrameBtn"
-            class="include-btn on"
-            type="button"
-          >
-            FRAME ON
-          </button>
-
-          <button
-            id="includePostsBtn"
-            class="include-btn on"
-            type="button"
-          >
-            POSTS ON
-          </button>
-
-          <button
-            id="includeCladdingBtn"
-            class="include-btn on"
-            type="button"
-          >
-            CLADDING ON
-          </button>
-
-        </div>
-
-
-        <!-- ADD PARTS -->
+        <!-- ADD COMPONENTS -->
 
         <h3>
           Add Components
@@ -577,7 +725,7 @@
          POWDER COATING
     ====================================================== -->
 
-    <details class="card">
+    <details class="card" open>
 
       <summary>
         Powder Coating
@@ -585,35 +733,48 @@
 
       <div class="card-content">
 
-        <label class="check-line">
+        <div class="powder-choice-grid">
 
-          <input
-            id="powderEnabled"
-            type="checkbox"
+          <button
+            id="powderYesBtn"
+            type="button"
+            class="powder-decision incomplete"
           >
+            POWDER COATED
+          </button>
 
-          Include powder coating
-        </label>
+          <button
+            id="powderNoBtn"
+            type="button"
+            class="powder-decision incomplete"
+          >
+            NOT POWDER COATED
+          </button>
+
+        </div>
+
+        <input
+          id="powderDecision"
+          type="hidden"
+          value=""
+        >
 
         <div
-          id="powderOptions"
+          id="powderYesOptions"
           class="hidden"
         >
 
-          <label>
-            Colour
+          <label
+            class="field-status required"
+            data-required-field="powderColour"
+          >
+            Powder-coat colour
 
             <select id="powderColour">
             </select>
           </label>
 
-          <div
-            id="powderComponentList"
-            class="powder-buttons"
-          >
-          </div>
-
-          <div class="info-row powder-total-row">
+          <div class="info-row">
 
             <span>
               Powder coating subtotal
@@ -625,8 +786,38 @@
 
           </div>
 
+          <div
+            id="powderCalculationDetail"
+            class="cost-detail-box"
+          >
+          </div>
+
           <p class="notice">
             Allow approximately 2 weeks for powder-coat processing.
+          </p>
+
+        </div>
+
+
+        <div
+          id="powderNoOptions"
+          class="hidden"
+        >
+
+          <div class="info-row">
+
+            <span>
+              Protective finishing allowance
+            </span>
+
+            <strong id="nonPowderFinishDisplay">
+              $0.00
+            </strong>
+
+          </div>
+
+          <p class="notice">
+            Duragalv fabrication areas will be treated with etch primer and silver galvanising spray.
           </p>
 
         </div>
@@ -637,7 +828,7 @@
 
 
     <!-- =====================================================
-         MATERIALS AND FABRICATION
+         MATERIALS & FABRICATION
     ====================================================== -->
 
     <details class="card" open>
@@ -651,16 +842,16 @@
         <div class="materials-three">
 
           <div
-            id="frameMaterialsCard"
+            id="gateMaterialsCard"
             class="material-column"
           >
 
             <strong>
-              FRAME
+              GATE
             </strong>
 
             <div>
-              <span>Required</span>
+              <span>Frame required</span>
               <b id="frameMetres">0.00 m</b>
             </div>
 
@@ -733,10 +924,8 @@
         </div>
 
 
-        <!-- CONSUMABLES -->
-
         <h3>
-          Consumables / Hardware
+          Consumables / Order List
         </h3>
 
         <div
@@ -747,7 +936,7 @@
 
 
         <h3>
-          Fabrication View
+          Cut / Fabrication List
         </h3>
 
         <div
@@ -762,7 +951,7 @@
 
 
     <!-- =====================================================
-         COST INPUTS
+         LABOUR / TRAVEL / COSTS
     ====================================================== -->
 
     <details class="card">
@@ -777,7 +966,7 @@
 
           <div>
             <span>
-              Fabrication estimate
+              Auto fabrication
             </span>
 
             <strong id="estimatedFabricationHours">
@@ -787,7 +976,7 @@
 
           <div>
             <span>
-              Installation estimate
+              Auto installation
             </span>
 
             <strong id="estimatedInstallationHours">
@@ -797,38 +986,40 @@
 
         </div>
 
+
         <label class="check-line">
 
           <input
-            id="overrideLabour"
+            id="additionalLabourEnabled"
             type="checkbox"
           >
 
-          Override labour
+          Add additional labour
         </label>
 
+
         <div
-          id="labourOverride"
+          id="additionalLabourFields"
           class="hidden"
         >
 
           <div class="grid two">
 
             <label>
-              Fabrication hours
+              Additional fabrication hours
 
               <input
-                id="fabricationHoursOverride"
+                id="additionalFabricationHours"
                 type="number"
                 step="0.25"
               >
             </label>
 
             <label>
-              Installation hours
+              Additional installation hours
 
               <input
-                id="installationHoursOverride"
+                id="additionalInstallationHours"
                 type="number"
                 step="0.25"
               >
@@ -837,6 +1028,14 @@
           </div>
 
         </div>
+
+
+        <div
+          id="labourTotalsPanel"
+          class="labour-totals-panel"
+        >
+        </div>
+
 
         <label>
           One-way travel distance (km)
@@ -847,6 +1046,7 @@
           >
         </label>
 
+
         <label>
           Extra material / hardware inc GST
 
@@ -855,6 +1055,7 @@
             type="number"
           >
         </label>
+
 
         <label>
           Other direct costs inc GST
@@ -885,36 +1086,67 @@
         <div class="summary-grid">
 
           <div>
-            <span>Materials ex GST</span>
-            <strong id="materialsTotal">$0.00</strong>
+            <span>
+              Materials ex GST
+            </span>
+
+            <strong id="materialsTotal">
+              $0.00
+            </strong>
           </div>
 
           <div>
-            <span>Labour</span>
-            <strong id="labourTotal">$0.00</strong>
+            <span>
+              Labour
+            </span>
+
+            <strong id="labourTotal">
+              $0.00
+            </strong>
           </div>
 
           <div>
-            <span>Travel</span>
-            <strong id="travelTotal">$0.00</strong>
+            <span>
+              Travel
+            </span>
+
+            <strong id="travelTotal">
+              $0.00
+            </strong>
           </div>
 
           <div>
-            <span>Markup</span>
-            <strong id="markupTotal">$0.00</strong>
+            <span>
+              Markup
+            </span>
+
+            <strong id="markupTotal">
+              $0.00
+            </strong>
           </div>
 
           <div>
-            <span>GST</span>
-            <strong id="gstTotal">$0.00</strong>
+            <span>
+              GST
+            </span>
+
+            <strong id="gstTotal">
+              $0.00
+            </strong>
           </div>
 
           <div>
-            <span>Effective rate</span>
-            <strong id="effectiveRate">N/A</strong>
+            <span>
+              Effective rate
+            </span>
+
+            <strong id="effectiveRate">
+              N/A
+            </strong>
           </div>
 
         </div>
+
 
         <label class="final-price-label">
           Calculated quote incl GST
@@ -925,6 +1157,7 @@
             readonly
           >
         </label>
+
 
         <div class="info-row">
 
@@ -944,7 +1177,97 @@
 
 
     <!-- =====================================================
-         FINAL QUOTE
+         CLIENT DETAILS
+    ====================================================== -->
+
+    <details class="card" open>
+
+      <summary>
+        Client Details
+      </summary>
+
+      <div class="card-content">
+
+        <label
+          class="field-status required"
+          data-required-field="clientName"
+        >
+          Client name
+
+          <input
+            id="clientName"
+            type="text"
+            autocomplete="name"
+          >
+        </label>
+
+
+        <label
+          class="field-status required"
+          data-required-field="siteAddress"
+        >
+          Address
+
+          <input
+            id="siteAddress"
+            type="text"
+            autocomplete="street-address"
+          >
+        </label>
+
+
+        <div class="grid two">
+
+          <label>
+            Project number
+
+            <input
+              id="projectNumber"
+              type="text"
+              readonly
+            >
+          </label>
+
+
+          <label
+            id="phoneLabel"
+            class="field-status optional"
+          >
+            Mobile number
+
+            <input
+              id="clientPhone"
+              type="tel"
+              inputmode="numeric"
+              maxlength="10"
+              value="04"
+              autocomplete="tel"
+            >
+          </label>
+
+        </div>
+
+
+        <label
+          id="emailLabel"
+          class="field-status optional"
+        >
+          Email
+
+          <input
+            id="clientEmail"
+            type="email"
+            autocomplete="email"
+          >
+        </label>
+
+      </div>
+
+    </details>
+
+
+    <!-- =====================================================
+         FINISHED QUOTE
     ====================================================== -->
 
     <section class="card">
@@ -965,55 +1288,129 @@
           </strong>
 
           <span>
-            Jody Tuuta | 0439 517 783
+            Jody Tuuta
+          </span>
+
+          <span>
+            0439 517 783
           </span>
 
         </div>
+
 
         <div id="quoteDescription">
         </div>
 
-        <div class="quote-total-row">
 
-          <span>
-            Price ex GST
-          </span>
+        <div class="quote-price-block">
 
-          <strong id="quoteExGstDisplay">
-            $0.00
-          </strong>
+          <div class="quote-total-row">
+
+            <span>
+              Price ex GST
+            </span>
+
+            <strong id="quoteExGstDisplay">
+              $0.00
+            </strong>
+
+          </div>
+
+          <div class="quote-total-row">
+
+            <span>
+              GST
+            </span>
+
+            <strong id="quoteGstDisplay">
+              $0.00
+            </strong>
+
+          </div>
+
+          <div class="quote-total-row grand">
+
+            <span>
+              TOTAL INC GST
+            </span>
+
+            <strong id="quoteTotalDisplay">
+              $0.00
+            </strong>
+
+          </div>
 
         </div>
 
-        <div class="quote-total-row">
 
-          <span>
-            GST
-          </span>
+        <div class="quote-section">
 
-          <strong id="quoteGstDisplay">
-            $0.00
-          </strong>
+          <h4>
+            TERMS
+          </h4>
 
-        </div>
-
-        <div class="quote-total-row grand">
-
-          <span>
-            TOTAL INC GST
-          </span>
-
-          <strong id="quoteTotalDisplay">
-            $0.00
-          </strong>
+          <p>
+            50% deposit required on acceptance.
+            Balance payable on completion.
+          </p>
 
         </div>
 
-        <p class="quote-terms">
-          50% deposit required on acceptance.
-          Balance payable on completion.
+
+        <div class="quote-section">
+
+          <h4>
+            BANK TRANSFER
+          </h4>
+
+          <p>
+            <strong>Name:</strong>
+            JW and GF Tuuta
+            <br>
+
+            <strong>BSB:</strong>
+            306 089
+            <br>
+
+            <strong>Account:</strong>
+            3406851
+            <br>
+
+            <strong>Reference:</strong>
+            <span id="bankReference">
+              001246
+            </span>
+          </p>
+
+        </div>
+
+
+        <p class="quote-acceptance">
+          To proceed, please reply confirming acceptance of this quote.
         </p>
 
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WARNINGS
+    ====================================================== -->
+
+    <section
+      id="warningSection"
+      class="card warning-card hidden"
+    >
+
+      <div class="static-title">
+        Check Before Sending
+      </div>
+
+      <div
+        id="warningList"
+        class="card-content warning-list"
+      >
       </div>
 
     </section>
@@ -1044,7 +1441,7 @@
         id="emailBtn"
         type="button"
       >
-        Email
+        Email Quote
       </button>
 
       <button
@@ -1063,6 +1460,25 @@
       </button>
 
     </section>
+
+
+    <!-- =====================================================
+         SAVED JOBS
+    ====================================================== -->
+
+    <details class="card saved-jobs-card">
+
+      <summary>
+        Saved Jobs
+      </summary>
+
+      <div
+        id="savedJobsList"
+        class="card-content saved-jobs-list"
+      >
+      </div>
+
+    </details>
 
   </main>
 
@@ -1116,14 +1532,19 @@
 
     <div>
 
-      <label>
+      <label
+        class="field-status required post-steel-label"
+      >
         Post steel
 
         <select class="post-size">
         </select>
       </label>
 
-      <label>
+
+      <label
+        class="field-status required post-fixing-label"
+      >
         Fixing / position
 
         <select class="post-fixing">
@@ -1170,26 +1591,50 @@
 
       <!-- HEIGHT -->
 
-      <label class="check-line">
+      <div class="post-height-summary">
 
-        <input
-          class="post-height-override-enabled"
-          type="checkbox"
+        <div>
+
+          <span>
+            Finished height
+          </span>
+
+          <strong class="post-visible-height">
+            -
+          </strong>
+
+          <small class="post-height-status">
+          </small>
+
+        </div>
+
+        <button
+          type="button"
+          class="change-post-height-btn"
         >
+          CHANGE
+        </button>
 
-        Different height to overall site height
-      </label>
+      </div>
+
 
       <div class="post-height-override-wrap hidden">
 
         <label>
-          Post height above finished surface (mm)
+          Custom finished height (mm)
 
           <input
             class="post-height-override"
             type="number"
           >
         </label>
+
+        <button
+          type="button"
+          class="reset-post-height-btn"
+        >
+          Reset to job height
+        </button>
 
       </div>
 
@@ -1229,9 +1674,14 @@
           Add top bolt into house / garage
         </label>
 
-        <div class="house-bolt-position hidden">
 
-          <label>
+        <div
+          class="house-bolt-position hidden"
+        >
+
+          <label
+            class="field-status required top-hole-label"
+          >
             Hole position from top (mm)
 
             <input
@@ -1260,18 +1710,6 @@
 
       </div>
 
-
-      <div class="calculated-line">
-
-        <span>
-          Height above finished surface
-        </span>
-
-        <strong class="post-visible-height">
-          -
-        </strong>
-
-      </div>
 
       <div class="calculated-line">
 
@@ -1326,21 +1764,51 @@
 
       </div>
 
-      <div class="gate-frame-wrap">
 
-        <label>
-          Frame steel
+      <div class="gate-height-basis">
+      </div>
 
-          <select class="gate-frame">
-          </select>
-        </label>
+
+      <div class="gate-width-controls">
+
+        <button
+          type="button"
+          class="gate-width-mode-btn"
+        >
+          AUTO WIDTH
+        </button>
+
+
+        <div class="gate-manual-width-wrap hidden">
+
+          <label
+            class="field-status required gate-manual-width-label"
+          >
+            Manual gate width (mm)
+
+            <input
+              class="gate-manual-width"
+              type="number"
+            >
+          </label>
+
+        </div>
 
       </div>
+
+
+      <label class="gate-frame-wrap">
+        Frame steel
+
+        <select class="gate-frame">
+        </select>
+      </label>
+
 
       <div class="horizontal-rail-wrap hidden">
 
         <label>
-          Horizontal mid rails
+          Hori mid rails
 
           <select class="horizontal-rails">
 
@@ -1354,10 +1822,11 @@
 
       </div>
 
+
       <div class="vertical-rail-wrap hidden">
 
         <label>
-          Vertical mid rails
+          Vert mid rails
 
           <select class="vertical-rails">
 
@@ -1371,16 +1840,15 @@
 
       </div>
 
-      <div class="grid two">
 
-        <label>
+      <div class="gate-orientation-row">
+
+        <label
+          class="field-status required hinge-side-label"
+        >
           Hinge side
 
           <select class="hinge-side">
-
-            <option value="">
-              Select
-            </option>
 
             <option value="left">
               Left
@@ -1393,14 +1861,13 @@
           </select>
         </label>
 
-        <label>
+
+        <label
+          class="field-status required open-direction-label"
+        >
           Opens
 
           <select class="open-direction">
-
-            <option value="">
-              Select
-            </option>
 
             <option value="in">
               In
@@ -1415,16 +1882,22 @@
 
       </div>
 
-      <label>
+
+      <label
+        class="field-status required gate-latch-label"
+      >
         Latch
 
         <select class="gate-latch">
         </select>
       </label>
 
+
       <div class="other-latch hidden">
 
-        <label>
+        <label
+          class="field-status required other-latch-description-label"
+        >
           Other latch description
 
           <input
@@ -1450,7 +1923,7 @@
 
 
   <!-- =====================================================
-       PANEL TEMPLATE
+       FIXED PANEL TEMPLATE
   ====================================================== -->
 
   <template id="panelTemplate">
@@ -1459,7 +1932,9 @@
 
       <div class="grid two">
 
-        <label>
+        <label
+          class="field-status required panel-width-label"
+        >
           Overall width (mm)
 
           <input
@@ -1468,7 +1943,10 @@
           >
         </label>
 
-        <label>
+
+        <label
+          class="field-status required panel-height-label"
+        >
           Overall height (mm)
 
           <input
@@ -1478,6 +1956,7 @@
         </label>
 
       </div>
+
 
       <div class="calculated-line">
 
@@ -1490,6 +1969,28 @@
         </strong>
 
       </div>
+
+
+      <div class="panel-rail-controls hidden">
+
+        <label>
+          Vertical panel rails
+
+          <select class="panel-rail-count">
+
+            <option value="3">
+              Top + Mid + Lower
+            </option>
+
+            <option value="4">
+              Top + Mid + Lower + Extra
+            </option>
+
+          </select>
+        </label>
+
+      </div>
+
 
       <div class="panel-rail-info">
       </div>
@@ -1525,8 +2026,8 @@
   </template>
 
 
-  <script src="prices.js?v=180"></script>
-  <script src="app.js?v=180"></script>
+  <script src="prices.js?v=220"></script>
+  <script src="app.js?v=220"></script>
 
 </body>
 </html>
