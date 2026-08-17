@@ -1,3 +1,13 @@
+/* =========================================================
+   JTLA GATES
+   MAIN STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -8,10 +18,87 @@ html {
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #303234;
-  color: #eee;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background: #2f3235;
+  color: #eeeeee;
 }
+
+
+/* =========================================================
+   COLOUR SYSTEM
+   ========================================================= */
+
+:root {
+
+  --bg:
+    #2f3235;
+
+  --panel:
+    #44484b;
+
+  --panel-dark:
+    #292c2f;
+
+  --panel-deeper:
+    #232629;
+
+  --border:
+    #64696c;
+
+  --text:
+    #f1f1f1;
+
+  --muted:
+    #b8b8b8;
+
+
+  /*
+    Industrial green.
+  */
+
+  --green:
+    #4f7557;
+
+  --green-dark:
+    #36533c;
+
+  --green-light:
+    #b9d3be;
+
+
+  /*
+    Dark fabrication red.
+  */
+
+  --red:
+    #854849;
+
+  --red-dark:
+    #663536;
+
+  --red-light:
+    #e0b3b3;
+
+
+  --amber:
+    #c59b54;
+
+  --white:
+    #ffffff;
+
+  --input-border:
+    #a5a5a5;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
 
 button,
 input,
@@ -24,17 +111,28 @@ input,
 select,
 textarea {
   width: 100%;
+
   min-height: 47px;
+
   padding: 10px 12px;
-  background: white;
-  color: #111;
-  border: 2px solid #aaa;
+
+  background: #ffffff;
+  color: #111111;
+
+  border: 2px solid var(--input-border);
   border-radius: 7px;
+
+  outline: none;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #999;
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #7d9c84;
+}
+
+input[readonly] {
+  background: #e8e8e8;
 }
 
 textarea {
@@ -42,121 +140,159 @@ textarea {
 }
 
 
-/* ==========================================================
-   SKINNY TOP BAR
-========================================================== */
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .top-bar {
   position: sticky;
+
   top: 0;
-  z-index: 1200;
+
+  z-index: 1400;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  min-height: 42px;
-  padding: 5px 10px;
+  gap: 12px;
 
-  background: #202224;
+  min-height: 58px;
 
-  border-bottom: 1px solid #555;
+  padding: 7px 10px;
+
+  background: var(--panel-deeper);
+
+  border-bottom: 1px solid #54595c;
 }
 
-.top-customer {
-  min-width: 0;
+.top-title {
   display: flex;
-  align-items: baseline;
-  gap: 9px;
+  flex-direction: column;
+
+  min-width: 0;
 }
 
-.top-customer strong {
-  font-size: 15px;
+.top-title > strong {
+  color: white;
+
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.top-title > span {
+  margin-top: 3px;
+
+  color: #dddddd;
+
+  font-size: 13px;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.top-customer span {
-  color: #bbb;
-  font-size: 12px;
+.top-title > small {
+  color: #aaaaaa;
+
+  font-size: 10px;
 }
 
-.update-btn {
-  min-height: 31px;
 
-  padding: 5px 13px;
+/* =========================================================
+   UNDO
+   ========================================================= */
 
-  border: 0;
+.undo-btn {
+  min-width: 82px;
+  min-height: 40px;
+
+  padding: 7px 12px;
+
+  border: 1px solid #777777;
   border-radius: 5px;
 
-  background: #ddd;
-  color: #111;
+  background: #d9d9d9;
+  color: #1c1c1c;
 
   font-size: 12px;
   font-weight: 900;
 }
 
-.update-btn.updated {
-  background: #a9dba6;
+.undo-btn:disabled {
+  opacity: 0.35;
+
+  cursor: default;
 }
 
 
-/* ==========================================================
-   STICKY MAP
-========================================================== */
+/* =========================================================
+   STICKY MUD MAP
+   ========================================================= */
 
 .mud-map-shell {
   position: sticky;
-  top: 42px;
-  z-index: 1100;
+
+  top: 58px;
+
+  z-index: 1300;
 
   padding: 5px 8px 7px;
 
-  background: #27292b;
+  background: #272a2d;
 
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #555a5d;
 
   box-shadow:
-    0 4px 10px
-    rgba(0,0,0,.25);
+    0 3px 10px
+    rgba(0, 0, 0, 0.30);
 }
 
 .mud-map-top {
   display: flex;
   justify-content: space-between;
 
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 
-  color: #aaa;
+  color: #b3b3b3;
 
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .mud-map {
   display: flex;
+
   width: 100%;
+
   gap: 3px;
+
   overflow: hidden;
 }
 
 .mud-empty {
   width: 100%;
-  padding: 9px;
 
-  border: 1px dashed #666;
+  padding: 8px;
+
+  border: 1px dashed #686868;
   border-radius: 5px;
 
+  color: #999999;
+
   text-align: center;
-  color: #999;
 
   font-size: 11px;
 }
 
+
+/* =========================================================
+   MUD COMPONENT
+   ========================================================= */
+
 .mud-item {
   flex: 1 1 0;
+
   min-width: 0;
 
   display: flex;
@@ -169,88 +305,101 @@ textarea {
   position: relative;
 
   width: 100%;
-  min-width: 0;
-  min-height: 42px;
 
-  padding: 13px 2px 4px;
+  min-width: 0;
+  min-height: 44px;
+
+  padding: 14px 3px 6px;
 
   border: 1px solid #181818;
   border-radius: 5px;
 
-  color: #111;
+  color: white;
 
   font-size: 10px;
   font-weight: 900;
+
+  overflow: hidden;
 }
 
 .mud-component.incomplete {
-  background: #eca2b6;
+  background: var(--red);
 }
 
 .mud-component.complete {
-  background: #b7dfb2;
+  background: var(--green);
 }
 
 .mud-component.selected {
-  outline: 3px solid white;
+  outline: 3px solid #eeeeee;
 }
 
-.mud-move-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-}
-
-.mud-move-controls button {
-  min-height: 24px;
-  padding: 1px;
-
-  border: 0;
-  border-radius: 3px;
-
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.mud-hinge,
-.mud-latch {
+.mud-hinge {
   position: absolute;
-  top: 2px;
 
-  width: 13px;
-  height: 13px;
+  top: 3px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  width: 14px;
+  height: 14px;
+
   border-radius: 50%;
 
-  background: #222;
+  background: #181818;
   color: white;
 
-  font-size: 7px;
+  font-size: 8px;
 }
 
-.mud-hinge.left,
-.mud-latch.left {
-  left: 2px;
+.mud-hinge.left {
+  left: 3px;
 }
 
-.mud-hinge.right,
-.mud-latch.right {
-  right: 2px;
+.mud-hinge.right {
+  right: 3px;
 }
 
 
-/* ==========================================================
+/* =========================================================
+   MUD MOVE CONTROLS
+   ========================================================= */
+
+.mud-move-controls {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 2px;
+}
+
+.mud-move-controls button {
+  min-height: 24px;
+
+  padding: 1px;
+
+  border: 0;
+  border-radius: 3px;
+
+  background: #555a5d;
+  color: white;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
    LAYOUT CHECK
-========================================================== */
+   ========================================================= */
 
 .layout-check {
   margin-top: 4px;
 
-  padding: 4px 7px;
+  padding: 5px 7px;
 
   border-radius: 4px;
 
@@ -261,42 +410,49 @@ textarea {
 }
 
 .layout-check.incomplete {
-  background: #ead28c;
-  color: #302708;
+  background: #9f7e47;
+  color: white;
 }
 
 .layout-check.complete {
-  background: #a7dca3;
-  color: #123012;
+  background: var(--green);
+  color: white;
 }
 
 .layout-check.error {
-  background: #de8a8a;
-  color: #390909;
+  background: var(--red-dark);
+  color: white;
 }
 
 
-/* ==========================================================
-   MAIN BODY
-========================================================== */
+/* =========================================================
+   MAIN SHELL
+   ========================================================= */
 
 .app-shell {
-  width: min(100%, 1000px);
+  width: min(
+    100%,
+    1000px
+  );
+
   margin: 0 auto;
-  padding: 9px 10px 25px;
+
+  padding:
+    8px 8px
+    28px;
 }
 
 
-/* ==========================================================
+/* =========================================================
    CARDS
-========================================================== */
+   ========================================================= */
 
 .card {
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 
-  background: #44474a;
+  background: var(--panel);
 
-  border: 1px solid #64676a;
+  border: 1px solid var(--border);
   border-radius: 8px;
 
   overflow: hidden;
@@ -307,12 +463,10 @@ textarea {
 
   list-style: none;
 
-  color: white;
+  cursor: pointer;
 
   font-size: 18px;
   font-weight: 900;
-
-  cursor: pointer;
 }
 
 .card > summary::-webkit-details-marker {
@@ -321,6 +475,7 @@ textarea {
 
 .card > summary::after {
   content: "+";
+
   float: right;
 }
 
@@ -329,7 +484,7 @@ textarea {
 }
 
 .card[open] > summary {
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #686d70;
 }
 
 .card-content {
@@ -339,20 +494,40 @@ textarea {
 .static-title {
   padding: 14px;
 
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #686d70;
 
   font-size: 18px;
   font-weight: 900;
 }
 
 
-/* ==========================================================
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h3,
+.small-heading {
+  margin: 20px 0 10px;
+
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #666b6e;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
    LABELS
-========================================================== */
+   ========================================================= */
 
 label {
   display: block;
+
   margin-bottom: 13px;
+
+  color: #f3f3f3;
 
   font-size: 15px;
   font-weight: 800;
@@ -364,73 +539,81 @@ label textarea {
   margin-top: 5px;
 }
 
-.required-field {
-  color: #ff8b8b;
+
+/* =========================================================
+   REQUIRED / COMPLETE FIELD STATUS
+   ========================================================= */
+
+.field-status {
+  transition:
+    color 0.15s ease;
 }
 
-.required-field input:not(:placeholder-shown) {
-  border-color: #6ca970;
+.field-status.required {
+  color: #e1a8a8;
+}
+
+.field-status.required input,
+.field-status.required select,
+.field-status.required textarea {
+  border-color: var(--red);
+}
+
+.field-status.complete {
+  color: var(--green-light);
+}
+
+.field-status.complete input,
+.field-status.complete select,
+.field-status.complete textarea {
+  border-color: var(--green);
+}
+
+.field-status.optional {
+  color: #f3f3f3;
+}
+
+.field-status.optional input,
+.field-status.optional select,
+.field-status.optional textarea {
+  border-color: var(--input-border);
 }
 
 
-/* ==========================================================
-   HEADINGS
-========================================================== */
-
-h3,
-.small-heading {
-  margin: 20px 0 10px;
-
-  padding-bottom: 5px;
-
-  border-bottom: 1px solid #666;
-
-  font-size: 15px;
-  font-weight: 900;
-}
-
-
-/* ==========================================================
-   GRIDS
-========================================================== */
+/* =========================================================
+   GRID
+   ========================================================= */
 
 .grid {
   display: grid;
+
   gap: 10px;
 }
 
 .grid.two {
   grid-template-columns:
-    repeat(2, 1fr);
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 }
 
 
-/* ==========================================================
-   BUTTON GROUPS
-========================================================== */
+/* =========================================================
+   INCLUDE BUTTONS
+   ========================================================= */
 
-.add-grid,
 .include-grid {
   display: grid;
+
   grid-template-columns:
     repeat(3, 1fr);
+
   gap: 5px;
 }
 
-.add-grid button {
-  min-height: 47px;
-
-  border: 1px solid #888;
-  border-radius: 6px;
-
-  background: #303234;
-  color: white;
-
-  font-weight: 800;
-}
-
 .include-btn {
-  min-height: 42px;
+  min-height: 43px;
 
   border: 0;
   border-radius: 5px;
@@ -440,40 +623,67 @@ h3,
 }
 
 .include-btn.on {
-  background: #a9dba6;
-  color: #163016;
+  background: var(--green);
+  color: white;
 }
 
 .include-btn.off {
-  background: #bd5555;
+  background: var(--red);
   color: white;
 }
 
 
-/* ==========================================================
-   COMPONENTS
-========================================================== */
+/* =========================================================
+   ADD COMPONENTS
+   ========================================================= */
+
+.add-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 5px;
+}
+
+.add-grid button {
+  min-height: 47px;
+
+  border: 1px solid #83888b;
+  border-radius: 6px;
+
+  background: #33373a;
+  color: white;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   COMPONENT CARDS
+   ========================================================= */
 
 .components {
   padding: 10px;
 
   display: grid;
+
   gap: 10px;
 }
 
 .component-card {
-  scroll-margin-top: 115px;
+  scroll-margin-top: 135px;
 
-  background: #36393b;
+  background: #373b3e;
 
-  border: 3px solid #eca2b6;
+  border: 3px solid var(--red);
   border-radius: 7px;
 
   overflow: hidden;
 }
 
 .component-card.complete {
-  border-color: #addda8;
+  border-color: var(--green);
 }
 
 .component-header {
@@ -481,9 +691,11 @@ h3,
   align-items: center;
   justify-content: space-between;
 
+  gap: 10px;
+
   padding: 8px 10px;
 
-  background: #292b2d;
+  background: #292c2f;
 }
 
 .component-title {
@@ -493,12 +705,12 @@ h3,
 .component-status {
   margin-left: 7px;
 
-  padding: 2px 5px;
+  padding: 3px 6px;
 
   border-radius: 3px;
 
-  background: #eca2b6;
-  color: #35101a;
+  background: var(--red);
+  color: white;
 
   font-size: 8px;
   font-weight: 900;
@@ -506,17 +718,16 @@ h3,
 
 .component-card.complete
 .component-status {
-  background: #addda8;
-  color: #143014;
+  background: var(--green);
 }
 
 .remove-btn {
-  min-height: 30px;
+  min-height: 31px;
 
   border: 0;
   border-radius: 4px;
 
-  background: #9e4949;
+  background: var(--red-dark);
   color: white;
 
   font-size: 11px;
@@ -527,48 +738,177 @@ h3,
 }
 
 
-/* ==========================================================
-   CALCULATED BOXES
-========================================================== */
+/* =========================================================
+   CALCULATED VALUES
+   ========================================================= */
 
 .calculated-line,
 .calculated-box,
 .info-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
   gap: 10px;
 
-  margin: 8px 0 13px;
+  margin:
+    8px 0
+    13px;
 
   padding: 9px 11px;
 
   border-radius: 6px;
 
-  background: #292b2d;
+  background: #2b2e31;
 }
 
 .calculated-line span,
 .calculated-box span,
 .info-row span {
-  color: #bbb;
+  color: #bcbcbc;
+
   font-size: 12px;
 }
 
-.calculated-line strong,
-.calculated-box strong,
-.info-row strong {
+
+/* =========================================================
+   POST HEIGHT
+   ========================================================= */
+
+.post-height-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin:
+    6px 0
+    12px;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  background: #2b2e31;
+}
+
+.post-height-summary > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-height-summary span {
+  color: #bbbbbb;
+
+  font-size: 11px;
+}
+
+.post-height-summary strong {
+  margin-top: 2px;
+
+  font-size: 16px;
+}
+
+.post-height-status {
+  margin-top: 3px;
+
+  color: #d7b274;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.change-post-height-btn,
+.reset-post-height-btn {
+  min-height: 36px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #63696c;
   color: white;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.reset-post-height-btn {
+  width: 100%;
+
+  margin-top: -4px;
+  margin-bottom: 12px;
 }
 
 
-/* ==========================================================
+/* =========================================================
+   GATE HEIGHT BASIS
+   ========================================================= */
+
+.gate-height-basis {
+  margin:
+    -4px 0
+    12px;
+
+  color: #b6b6b6;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   GATE WIDTH CONTROL
+   ========================================================= */
+
+.gate-width-controls {
+  margin-bottom: 13px;
+}
+
+.gate-width-mode-btn {
+  width: 100%;
+
+  min-height: 40px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: var(--green);
+  color: white;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.gate-width-mode-btn.manual {
+  background: #9f7e47;
+}
+
+.gate-manual-width-wrap {
+  margin-top: 9px;
+}
+
+
+/* =========================================================
+   GATE ORIENTATION
+   ========================================================= */
+
+.gate-orientation-row {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+
+/* =========================================================
    HOLES
-========================================================== */
+   ========================================================= */
 
 .hole-list {
   display: grid;
+
   gap: 5px;
 
   margin-bottom: 7px;
@@ -576,7 +916,10 @@ h3,
 
 .hole-row {
   display: grid;
-  grid-template-columns: 1fr 36px;
+
+  grid-template-columns:
+    1fr 38px;
+
   gap: 5px;
 }
 
@@ -584,100 +927,293 @@ h3,
   border: 0;
   border-radius: 5px;
 
-  background: #994949;
+  background: var(--red-dark);
   color: white;
 
   font-size: 19px;
 }
 
 .add-hole {
-  min-height: 37px;
+  min-height: 38px;
 
-  border: 1px solid #888;
+  border: 1px solid #7e8386;
   border-radius: 5px;
 
-  background: #555;
+  background: #555b5e;
   color: white;
 }
 
 
-/* ==========================================================
+/* =========================================================
    CHECKBOX
-========================================================== */
+   ========================================================= */
 
 .check-line {
   display: flex;
   align-items: center;
+
   gap: 8px;
 }
 
 .check-line input {
   width: 21px;
   height: 21px;
+
   min-height: 0;
 
   margin: 0;
 
-  accent-color: #75ae79;
+  accent-color: var(--green);
 }
 
 
-/* ==========================================================
-   POWDER
-========================================================== */
+/* =========================================================
+   TREATED PINE
+   ========================================================= */
 
-.powder-list {
+.pine-options-grid {
   display: grid;
-  gap: 5px;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 8px;
+}
+
+.pine-option-card {
+  padding: 9px;
+
+  border-radius: 6px;
+
+  background: #34383b;
+}
+
+.small-status-btn {
+  width: 100%;
+
+  min-height: 38px;
+
+  margin-bottom: 9px;
+
+  border: 0;
+  border-radius: 5px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.small-status-btn.on {
+  background: var(--green);
+  color: white;
+}
+
+.small-status-btn.off {
+  background: var(--red);
+  color: white;
+}
+
+
+/* =========================================================
+   POWDER COATING
+   ========================================================= */
+
+.powder-choice-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 6px;
 
   margin-bottom: 12px;
 }
 
-.powder-item {
+.powder-decision {
+  min-height: 45px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: var(--red);
+  color: white;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.powder-decision.complete,
+.powder-decision.selected {
+  background: var(--green);
+  color: white;
+}
+
+.cost-detail-box {
   display: grid;
 
-  grid-template-columns:
-    24px 1fr auto;
+  gap: 4px;
 
-  align-items: center;
+  margin:
+    6px 0
+    12px;
 
-  gap: 8px;
-
-  margin: 0;
-
-  padding: 8px;
+  padding: 9px;
 
   border-radius: 5px;
 
-  background: #303234;
+  background: #292d30;
+
+  color: #d0d0d0;
+
+  font-size: 11px;
 }
 
-.powder-item input {
-  width: 19px;
-  height: 19px;
-  min-height: 0;
-  margin: 0;
-}
+
+/* =========================================================
+   NOTICE
+   ========================================================= */
 
 .notice {
   padding: 9px 11px;
 
-  border-left: 4px solid #d6b458;
+  border-left: 4px solid var(--amber);
 
-  background: #3b372c;
+  background: #3a352b;
 
-  color: #eee3c3;
+  color: #eee1c5;
 
   font-size: 12px;
 }
 
 
-/* ==========================================================
-   SUMMARIES
-========================================================== */
+/* =========================================================
+   MATERIALS 3 WIDE
+   ========================================================= */
+
+.materials-three {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 6px;
+}
+
+.material-column {
+  padding: 10px;
+
+  border-radius: 6px;
+
+  background: #303437;
+}
+
+.material-column > strong {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #eeeeee;
+
+  font-size: 12px;
+}
+
+.material-column > div {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 6px;
+
+  margin-top: 5px;
+
+  font-size: 11px;
+}
+
+.material-column span {
+  color: #bbbbbb;
+}
+
+.material-column b {
+  text-align: right;
+}
+
+
+/* =========================================================
+   CONSUMABLES
+   ========================================================= */
+
+.consumables-list {
+  display: grid;
+
+  gap: 4px;
+}
+
+.consumables-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 8px 10px;
+
+  border-radius: 5px;
+
+  background: #303437;
+}
+
+.consumables-list span {
+  color: #bbbbbb;
+
+  font-size: 12px;
+}
+
+.consumables-list strong {
+  text-align: right;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   FABRICATION LIST
+   ========================================================= */
+
+.fabrication-view {
+  display: grid;
+
+  gap: 6px;
+}
+
+.fabrication-reference {
+  padding: 8px 10px;
+
+  border-radius: 5px;
+
+  background: var(--green-dark);
+  color: white;
+
+  font-size: 11px;
+}
+
+.fabrication-item {
+  padding: 9px 10px;
+
+  border-left: 4px solid #777e81;
+  border-radius: 5px;
+
+  background: #303437;
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+
+/* =========================================================
+   SUMMARY GRID
+   ========================================================= */
 
 .summary-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, 1fr);
 
@@ -691,13 +1227,14 @@ h3,
 
   border-radius: 5px;
 
-  background: #303234;
+  background: #303437;
 }
 
 .summary-grid span {
   display: block;
 
-  color: #bbb;
+  color: #bbbbbb;
+
   font-size: 10px;
 }
 
@@ -710,274 +1247,13 @@ h3,
 }
 
 
-/* ==========================================================
-   FABRICATION
-========================================================== */
-
-.fabrication-view {
-  display: grid;
-  gap: 6px;
-}
-
-.fabrication-item {
-  display: grid;
-  gap: 2px;
-
-  padding: 9px;
-
-  border-left: 4px solid #999;
-  border-radius: 5px;
-
-  background: #303234;
-}
-
-.fabrication-item span {
-  color: #ccc;
-  font-size: 12px;
-}
-
-
-/* ==========================================================
-   QUOTE
-========================================================== */
-
-.quote-preview {
-  margin: 10px;
-
-  padding: 16px;
-
-  background: white;
-  color: #222;
-
-  border-radius: 6px;
-}
-
-.quote-head {
-  display: flex;
-  flex-direction: column;
-
-  padding-bottom: 10px;
-
-  border-bottom: 2px solid #444;
-}
-
-.quote-head strong {
-  font-size: 20px;
-}
-
-#quoteDescription p {
-  font-size: 13px;
-}
-
-.quote-total-row {
-  display: flex;
-  justify-content: space-between;
-
-  padding: 7px 0;
-
-  border-bottom: 1px solid #ddd;
-}
-
-.quote-total-row.grand {
-  margin-top: 4px;
-
-  padding: 10px;
-
-  background: #3d6041;
-  color: white;
-
-  border: 0;
-}
-
-.quote-terms {
-  margin-top: 13px;
-
-  font-size: 11px;
-  color: #555;
-}
-
-
-/* ==========================================================
-   ACTIONS
-========================================================== */
-
-.actions {
-  display: grid;
-  grid-template-columns:
-    repeat(5, 1fr);
-
-  gap: 5px;
-
-  margin-top: 10px;
-}
-
-.actions button {
-  min-height: 45px;
-
-  border: 0;
-  border-radius: 5px;
-
-  font-weight: 800;
-}
-
-.actions .green {
-  background: #9fd59c;
-}
-
-.actions .red {
-  background: #bb5555;
-  color: white;
-}
-
-
-/* ==========================================================
-   OTHER
-========================================================== */
-
-.hidden {
-  display: none !important;
-}
-
-.muted {
-  color: #aaa;
-  font-size: 12px;
-}
-
-
-/* ==========================================================
-   PHONE
-========================================================== */
-
-@media (max-width: 600px) {
-
-  .app-shell {
-    padding: 7px 7px 20px;
-  }
-
-  .grid.two {
-    grid-template-columns: 1fr;
-  }
-
-  .top-customer span {
-    display: none;
-  }
-
-  .mud-map {
-    gap: 2px;
-  }
-
-  .mud-component {
-    font-size: 9px;
-  }
-
-  .summary-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-  .actions {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-  input,
-  select,
-  textarea {
-    font-size: 16px;
-  }
-}
-
-
-/* ==========================================================
-   PRINT
-========================================================== */
-
-@media print {
-
-  body * {
-    visibility: hidden;
-  }
-
-  .quote-preview,
-  .quote-preview * {
-    visibility: visible;
-  }
-
-  .quote-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
-
-    width: 100%;
-
-    margin: 0;
-    padding: 15mm;
-  }
-}
-
 /* =========================================================
-   FINAL CONSOLIDATED APP ADDITIONS
-========================================================= */
-
-
-/* Gate auto/manual width */
-
-.gate-width-controls {
-  margin-bottom: 13px;
-}
-
-.gate-width-mode-btn {
-  width: 100%;
-  min-height: 40px;
-
-  border: 0;
-  border-radius: 5px;
-
-  background: #a9dba6;
-  color: #173017;
-
-  font-weight: 900;
-}
-
-.gate-width-mode-btn.manual {
-  background: #e1bd73;
-  color: #302408;
-}
-
-.gate-manual-width-wrap {
-  margin-top: 9px;
-}
-
-
-/* Whole-job powder coating */
-
-.powder-job-toggle {
-  width: 100%;
-  min-height: 45px;
-
-  margin-bottom: 12px;
-
-  border: 0;
-  border-radius: 6px;
-
-  font-weight: 900;
-}
-
-.powder-job-toggle.on {
-  background: #a9dba6;
-  color: #173017;
-}
-
-.powder-job-toggle.off {
-  background: #bd5555;
-  color: white;
-}
-
-
-/* Additional labour */
+   LABOUR TOTALS
+   ========================================================= */
 
 .labour-totals-panel {
   display: grid;
+
   gap: 4px;
 
   margin: 12px 0;
@@ -986,13 +1262,14 @@ h3,
 .labour-totals-panel > div {
   display: flex;
   justify-content: space-between;
+
   gap: 12px;
 
   padding: 7px 9px;
 
   border-radius: 5px;
 
-  background: #303234;
+  background: #303437;
 }
 
 .labour-totals-panel span {
@@ -1000,13 +1277,13 @@ h3,
 }
 
 .labour-subtotal {
-  border-top: 1px solid #686868;
+  border-top: 1px solid #686d70;
 }
 
 .labour-grand-total {
   margin-top: 5px;
 
-  background: #3d6041 !important;
+  background: var(--green-dark) !important;
 }
 
 .labour-grand-total span,
@@ -1015,10 +1292,230 @@ h3,
 }
 
 
-/* Saved job library */
+/* =========================================================
+   FINAL PRICE
+   ========================================================= */
+
+.final-price-label {
+  margin-top: 14px;
+}
+
+#finalPrice {
+  background: #e7eee8;
+
+  border-color: var(--green);
+
+  color: #243729;
+
+  font-size: 21px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   FINISHED QUOTE
+   ========================================================= */
+
+.quote-preview {
+  margin: 10px;
+
+  padding: 18px;
+
+  border-radius: 7px;
+
+  background: white;
+  color: #222222;
+}
+
+.quote-head {
+  display: flex;
+  flex-direction: column;
+
+  padding-bottom: 11px;
+
+  border-bottom: 2px solid var(--green);
+}
+
+.quote-head strong {
+  color: var(--green-dark);
+
+  font-size: 21px;
+}
+
+.quote-head span {
+  margin-top: 2px;
+
+  color: #555555;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   FORMAL QUOTE SECTIONS
+   ========================================================= */
+
+.quote-section {
+  margin-top: 18px;
+}
+
+.quote-section h4 {
+  margin:
+    0 0
+    7px;
+
+  color: var(--green-dark);
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+
+.quote-section p {
+  margin:
+    5px 0
+    8px;
+
+  color: #333333;
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   QUOTE PRICE BLOCK
+   ========================================================= */
+
+.quote-price-block {
+  margin-top: 18px;
+
+  padding: 11px;
+
+  background: #eeeeee;
+
+  border-top: 2px solid var(--green);
+  border-bottom: 2px solid var(--green);
+}
+
+.quote-total-row {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 6px 0;
+
+  border-bottom: 1px solid #d1d1d1;
+}
+
+.quote-total-row:last-child {
+  border-bottom: 0;
+}
+
+.quote-total-row.grand {
+  margin-top: 4px;
+
+  padding: 10px;
+
+  background: var(--green-dark);
+  color: white;
+
+  border: 0;
+
+  font-size: 15px;
+}
+
+.quote-acceptance {
+  margin-top: 18px;
+
+  padding-top: 10px;
+
+  border-top: 1px solid #d4d4d4;
+
+  color: #444444;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   WARNING CARD
+   ========================================================= */
+
+.warning-card {
+  border-color: #8d7346;
+}
+
+.warning-card .static-title {
+  background: #5b4d34;
+}
+
+.warning-list {
+  display: grid;
+
+  gap: 5px;
+}
+
+.warning-list > div {
+  padding: 8px 10px;
+
+  border-radius: 5px;
+
+  background: #3c3529;
+
+  color: #ead8b8;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 5px;
+
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.actions button {
+  min-height: 46px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #d2d2d2;
+  color: #202020;
+
+  font-weight: 800;
+}
+
+.actions .green {
+  background: var(--green);
+  color: white;
+}
+
+.actions .red {
+  background: var(--red);
+  color: white;
+}
+
+
+/* =========================================================
+   SAVED JOBS
+   ========================================================= */
 
 .saved-jobs-list {
   display: grid;
+
   gap: 6px;
 }
 
@@ -1033,7 +1530,7 @@ h3,
 
   border-radius: 6px;
 
-  background: #303234;
+  background: #303437;
 }
 
 .saved-job-info {
@@ -1041,6 +1538,10 @@ h3,
   flex-direction: column;
 
   min-width: 0;
+}
+
+.saved-job-info strong {
+  color: white;
 }
 
 .saved-job-info span {
@@ -1053,6 +1554,7 @@ h3,
 
 .saved-job-actions {
   display: flex;
+
   gap: 5px;
 }
 
@@ -1065,12 +1567,206 @@ h3,
   font-weight: 800;
 }
 
-.delete-saved-job {
-  background: #a94f4f;
+.open-saved-job {
+  background: var(--green);
   color: white;
 }
 
-.open-saved-job {
-  background: #a9dba6;
-  color: #173017;
+.delete-saved-job {
+  background: var(--red);
+  color: white;
+}
+
+
+/* =========================================================
+   HIDDEN / MUTED
+   ========================================================= */
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: #aaaaaa;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .app-shell {
+    padding:
+      7px 7px
+      22px;
+  }
+
+
+  /*
+    General 2-wide grids become single-column,
+    EXCEPT the specific controls we deliberately
+    keep compact.
+  */
+
+  .grid.two {
+    grid-template-columns: 1fr;
+  }
+
+
+  /*
+    Hinge Side + Opens stays side-by-side.
+  */
+
+  .gate-orientation-row {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  /*
+    Treated Pine options stay two wide where possible.
+  */
+
+  .pine-options-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  /*
+    Materials remain three across,
+    because they are summary cards.
+  */
+
+  .materials-three {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .material-column {
+    padding: 7px 5px;
+  }
+
+  .material-column > strong {
+    font-size: 10px;
+  }
+
+  .material-column > div {
+    display: block;
+
+    font-size: 9px;
+  }
+
+  .material-column b {
+    display: block;
+
+    margin-top: 2px;
+
+    text-align: left;
+
+    font-size: 11px;
+  }
+
+
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .actions {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+
+  .quote-preview {
+    margin: 7px;
+
+    padding: 14px;
+  }
+
+
+  .quote-section h4 {
+    font-size: 12px;
+  }
+
+
+  .quote-section p {
+    font-size: 12px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+  .top-title > strong {
+    font-size: 15px;
+  }
+
+  .undo-btn {
+    min-width: 68px;
+
+    padding:
+      6px 8px;
+  }
+
+  .mud-component {
+    font-size: 9px;
+  }
+
+  .pine-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+  body {
+    background: white;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .quote-preview,
+  .quote-preview * {
+    visibility: visible;
+  }
+
+  .quote-preview {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+
+    margin: 0;
+
+    padding: 15mm;
+
+    border: 0;
+  }
 }
