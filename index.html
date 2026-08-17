@@ -12,7 +12,7 @@
 
   <title>JTLA Gates Quote</title>
 
-  <link rel="stylesheet" href="style.css?v=220">
+  <link rel="stylesheet" href="style.css?v=230">
   <link rel="manifest" href="manifest.json">
 </head>
 
@@ -60,7 +60,7 @@
     <div class="mud-map-top">
 
       <span>
-        STREET VIEW
+        LEFT TO RIGHT
       </span>
 
       <strong id="topProjectNumber">
@@ -134,6 +134,38 @@
         </div>
 
 
+        <!-- ADD COMPONENTS -->
+
+        <h3>
+          Add Components
+        </h3>
+
+        <div class="add-grid">
+
+          <button
+            id="addPostBtn"
+            type="button"
+          >
+            + Post
+          </button>
+
+          <button
+            id="addGateBtn"
+            type="button"
+          >
+            + Gate
+          </button>
+
+          <button
+            id="addPanelBtn"
+            type="button"
+          >
+            + Fixed Panel
+          </button>
+
+        </div>
+
+
         <!-- VIEW / REFERENCE -->
 
         <h3>
@@ -144,7 +176,7 @@
           class="field-status required"
           data-required-field="referenceDirection"
         >
-          All left / right references are viewed from
+          Left / right references are viewed from
 
           <select id="referenceDirection">
 
@@ -234,422 +266,176 @@
 
         </div>
 
+      </div>
 
-        <!-- CLADDING -->
+    </details>
 
-        <div id="claddingSection">
 
-          <h3>
-            Cladding
-          </h3>
+    <!-- =====================================================
+         CLADDING
+    ====================================================== -->
+
+    <details
+      id="claddingCard"
+      class="card"
+      open
+    >
+
+      <summary>
+        <span>Cladding</span>
+
+        <span
+          id="claddingSummary"
+          class="summary-inline"
+        >
+          Not complete
+        </span>
+      </summary>
+
+      <div
+        id="claddingSection"
+        class="card-content"
+      >
+
+        <label
+          class="field-status required"
+          data-required-field="claddingType"
+        >
+          Material
+
+          <select id="claddingType">
+
+            <option value="ekodeck">
+              Ekodeck Screening 67x15mm
+            </option>
+
+            <option value="cypressPickets">
+              Cypress 67x15mm
+            </option>
+
+            <option value="losp90">
+              LOSP 92x18mm Primed H3
+            </option>
+
+            <option value="losp140">
+              LOSP 138x18mm Primed H3
+            </option>
+
+            <option value="merbau90">
+              Merbau Decking 90mm
+            </option>
+
+            <option value="merbau140">
+              Merbau Decking 140mm
+            </option>
+
+            <option value="treatedPinePalings">
+              Treated Pine Palings
+            </option>
+
+            <option value="colorbond">
+              Colorbond Steel Cladding
+            </option>
+
+            <option value="custom">
+              Custom / Other
+            </option>
+
+          </select>
+        </label>
+
+
+        <label
+          class="field-status required"
+          data-required-field="claddingDirection"
+        >
+          Direction
+
+          <select id="claddingDirection">
+
+            <option value="">
+              Select direction
+            </option>
+
+            <option value="vertical">
+              Vertical
+            </option>
+
+            <option value="horizontal">
+              Horizontal
+            </option>
+
+          </select>
+        </label>
+
+
+        <!-- EKODECK -->
+
+        <div id="ekodeckOptions">
 
           <label
             class="field-status required"
-            data-required-field="claddingType"
+            data-required-field="ekodeckColour"
           >
-            Material
+            Ekodeck colour
 
-            <select id="claddingType">
+            <select id="ekodeckColour">
 
-              <option value="ekodeck">
-                Ekodeck Screening 67x15mm
+              <option>Greystone</option>
+              <option>Alpine Ash</option>
+              <option>Leatherwood</option>
+              <option>Riverbank Red</option>
+
+            </select>
+          </label>
+
+        </div>
+
+
+        <!-- CYPRESS -->
+
+        <div
+          id="cypressOptions"
+          class="hidden"
+        >
+
+          <label
+            class="field-status required"
+            data-required-field="cypressFinish"
+          >
+            Finish
+
+            <select id="cypressFinish">
+
+              <option value="Raw">
+                Raw
               </option>
 
-              <option value="cypressPickets">
-                Cypress 67x15mm
+              <option value="Oil">
+                Oil
               </option>
 
-              <option value="losp90">
-                LOSP 92x18mm Primed H3
-              </option>
-
-              <option value="losp140">
-                LOSP 138x18mm Primed H3
-              </option>
-
-              <option value="merbau90">
-                Merbau Decking 90mm
-              </option>
-
-              <option value="merbau140">
-                Merbau Decking 140mm
-              </option>
-
-              <option value="treatedPinePalings">
-                Treated Pine Palings
-              </option>
-
-              <option value="colorbond">
-                Colorbond Steel Cladding
-              </option>
-
-              <option value="custom">
-                Custom / Other
+              <option value="Paint">
+                Paint
               </option>
 
             </select>
           </label>
 
-          <label
-            class="field-status required"
-            data-required-field="claddingDirection"
-          >
-            Direction
-
-            <select id="claddingDirection">
-
-              <option value="">
-                Select direction
-              </option>
-
-              <option value="vertical">
-                Vertical
-              </option>
-
-              <option value="horizontal">
-                Horizontal
-              </option>
-
-            </select>
-          </label>
-
-
-          <!-- EKODECK -->
-
-          <div id="ekodeckOptions">
-
-            <label
-              class="field-status required"
-              data-required-field="ekodeckColour"
-            >
-              Ekodeck colour
-
-              <select id="ekodeckColour">
-
-                <option>Greystone</option>
-                <option>Alpine Ash</option>
-                <option>Leatherwood</option>
-                <option>Riverbank Red</option>
-
-              </select>
-            </label>
-
-          </div>
-
-
-          <!-- CYPRESS -->
-
           <div
-            id="cypressOptions"
+            id="cypressColourWrap"
             class="hidden"
           >
 
             <label
               class="field-status required"
-              data-required-field="cypressFinish"
+              data-required-field="cypressColour"
             >
-              Finish
-
-              <select id="cypressFinish">
-
-                <option value="Raw">
-                  Raw
-                </option>
-
-                <option value="Oil">
-                  Oil
-                </option>
-
-                <option value="Paint">
-                  Paint
-                </option>
-
-              </select>
-            </label>
-
-            <div
-              id="cypressColourWrap"
-              class="hidden"
-            >
-
-              <label
-                class="field-status required"
-                data-required-field="cypressColour"
-              >
-                Paint colour
-
-                <input
-                  id="cypressColour"
-                  type="text"
-                >
-              </label>
-
-            </div>
-
-          </div>
-
-
-          <!-- LOSP -->
-
-          <div
-            id="lospOptions"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="lospFinish"
-            >
-              Finish
-
-              <select id="lospFinish">
-
-                <option value="Primed">
-                  Primed
-                </option>
-
-                <option value="Paint">
-                  Paint
-                </option>
-
-              </select>
-            </label>
-
-            <div
-              id="lospColourWrap"
-              class="hidden"
-            >
-
-              <label
-                class="field-status required"
-                data-required-field="lospColour"
-              >
-                Paint colour
-
-                <input
-                  id="lospColour"
-                  type="text"
-                >
-              </label>
-
-            </div>
-
-          </div>
-
-
-          <!-- MERBAU -->
-
-          <div
-            id="merbauOptions"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="merbauFinish"
-            >
-              Finish
-
-              <select id="merbauFinish">
-
-                <option value="Raw">
-                  Raw
-                </option>
-
-                <option value="Oil">
-                  Oil
-                </option>
-
-              </select>
-            </label>
-
-          </div>
-
-
-          <!-- TREATED PINE PALINGS -->
-
-          <div
-            id="treatedPineOptions"
-            class="hidden"
-          >
-
-            <div class="grid two">
-
-              <label
-                class="field-status required"
-                data-required-field="treatedPineLength"
-              >
-                Paling length
-
-                <select id="treatedPineLength">
-
-                  <option value="1650">
-                    1650mm
-                  </option>
-
-                  <option value="1800">
-                    1800mm
-                  </option>
-
-                  <option value="2100">
-                    2100mm
-                  </option>
-
-                </select>
-              </label>
-
-              <label
-                class="field-status required"
-                data-required-field="treatedPineWidth"
-              >
-                Paling width
-
-                <select id="treatedPineWidth">
-
-                  <option value="100">
-                    100mm
-                  </option>
-
-                  <option value="125">
-                    125mm
-                  </option>
-
-                  <option value="150">
-                    150mm
-                  </option>
-
-                </select>
-              </label>
-
-            </div>
-
-
-            <div class="pine-options-grid">
-
-              <div class="pine-option-card">
-
-                <button
-                  id="pineCappingToggle"
-                  type="button"
-                  class="small-status-btn on"
-                >
-                  CAPPING ON
-                </button>
-
-                <label>
-                  Capping length (m)
-
-                  <input
-                    id="pineCappingMetres"
-                    type="number"
-                    step="0.01"
-                    placeholder="Auto"
-                  >
-                </label>
-
-              </div>
-
-
-              <div class="pine-option-card">
-
-                <button
-                  id="pinePlinthToggle"
-                  type="button"
-                  class="small-status-btn on"
-                >
-                  PLINTH ON
-                </button>
-
-                <label>
-                  Plinth length (m)
-
-                  <input
-                    id="pinePlinthMetres"
-                    type="number"
-                    step="0.01"
-                    placeholder="Auto"
-                  >
-                </label>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- COLORBOND -->
-
-          <div
-            id="colorbondOptions"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="colorbondProfile"
-            >
-              Profile
-
-              <select id="colorbondProfile">
-
-                <option>
-                  Good Neighbour
-                </option>
-
-                <option>
-                  Corrugated
-                </option>
-
-                <option>
-                  Trimdek
-                </option>
-
-                <option>
-                  Other
-                </option>
-
-              </select>
-            </label>
-
-            <label
-              class="field-status required"
-              data-required-field="colorbondColour"
-            >
-              Colour
-
-              <select id="colorbondColour">
-              </select>
-            </label>
-
-          </div>
-
-
-          <!-- CUSTOM -->
-
-          <div
-            id="customOptions"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="customDescription"
-            >
-              Description
+              Paint colour
 
               <input
-                id="customDescription"
+                id="cypressColour"
                 type="text"
-              >
-            </label>
-
-            <label>
-              Material cost inc GST
-
-              <input
-                id="customCost"
-                type="number"
               >
             </label>
 
@@ -658,34 +444,269 @@
         </div>
 
 
-        <!-- ADD COMPONENTS -->
+        <!-- LOSP -->
 
-        <h3>
-          Add Components
-        </h3>
+        <div
+          id="lospOptions"
+          class="hidden"
+        >
 
-        <div class="add-grid">
-
-          <button
-            id="addPostBtn"
-            type="button"
+          <label
+            class="field-status required"
+            data-required-field="lospFinish"
           >
-            + Post
-          </button>
+            Finish
 
-          <button
-            id="addGateBtn"
-            type="button"
-          >
-            + Gate
-          </button>
+            <select id="lospFinish">
 
-          <button
-            id="addPanelBtn"
-            type="button"
+              <option value="Primed">
+                Primed
+              </option>
+
+              <option value="Paint">
+                Paint
+              </option>
+
+            </select>
+          </label>
+
+          <div
+            id="lospColourWrap"
+            class="hidden"
           >
-            + Fixed Panel
-          </button>
+
+            <label
+              class="field-status required"
+              data-required-field="lospColour"
+            >
+              Paint colour
+
+              <input
+                id="lospColour"
+                type="text"
+              >
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- MERBAU -->
+
+        <div
+          id="merbauOptions"
+          class="hidden"
+        >
+
+          <label
+            class="field-status required"
+            data-required-field="merbauFinish"
+          >
+            Finish
+
+            <select id="merbauFinish">
+
+              <option value="Raw">
+                Raw
+              </option>
+
+              <option value="Oil">
+                Oil
+              </option>
+
+            </select>
+          </label>
+
+        </div>
+
+
+        <!-- TREATED PINE PALINGS -->
+
+        <div
+          id="treatedPineOptions"
+          class="hidden"
+        >
+
+          <div class="grid two">
+
+            <label
+              class="field-status required"
+              data-required-field="treatedPineLength"
+            >
+              Paling length
+
+              <select id="treatedPineLength">
+
+                <option value="1650">
+                  1650mm
+                </option>
+
+                <option value="1800">
+                  1800mm
+                </option>
+
+                <option value="2100">
+                  2100mm
+                </option>
+
+              </select>
+            </label>
+
+            <label
+              class="field-status required"
+              data-required-field="treatedPineWidth"
+            >
+              Paling width
+
+              <select id="treatedPineWidth">
+
+                <option value="100">
+                  100mm
+                </option>
+
+                <option value="125">
+                  125mm
+                </option>
+
+                <option value="150">
+                  150mm
+                </option>
+
+              </select>
+            </label>
+
+          </div>
+
+
+          <div class="pine-options-grid">
+
+            <div class="pine-option-card">
+
+              <button
+                id="pineCappingToggle"
+                type="button"
+                class="small-status-btn on"
+              >
+                CAPPING ON
+              </button>
+
+              <label>
+                Capping length (m)
+
+                <input
+                  id="pineCappingMetres"
+                  type="number"
+                  step="0.01"
+                  placeholder="Auto"
+                >
+              </label>
+
+            </div>
+
+
+            <div class="pine-option-card">
+
+              <button
+                id="pinePlinthToggle"
+                type="button"
+                class="small-status-btn on"
+              >
+                PLINTH ON
+              </button>
+
+              <label>
+                Plinth length (m)
+
+                <input
+                  id="pinePlinthMetres"
+                  type="number"
+                  step="0.01"
+                  placeholder="Auto"
+                >
+              </label>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- COLORBOND -->
+
+        <div
+          id="colorbondOptions"
+          class="hidden"
+        >
+
+          <label
+            class="field-status required"
+            data-required-field="colorbondProfile"
+          >
+            Profile
+
+            <select id="colorbondProfile">
+
+              <option>
+                Good Neighbour
+              </option>
+
+              <option>
+                Corrugated
+              </option>
+
+              <option>
+                Trimdek
+              </option>
+
+              <option>
+                Other
+              </option>
+
+            </select>
+          </label>
+
+          <label
+            class="field-status required"
+            data-required-field="colorbondColour"
+          >
+            Colour
+
+            <select id="colorbondColour">
+            </select>
+          </label>
+
+        </div>
+
+
+        <!-- CUSTOM -->
+
+        <div
+          id="customOptions"
+          class="hidden"
+        >
+
+          <label
+            class="field-status required"
+            data-required-field="customDescription"
+          >
+            Description
+
+            <input
+              id="customDescription"
+              type="text"
+            >
+          </label>
+
+          <label>
+            Material cost inc GST
+
+            <input
+              id="customCost"
+              type="number"
+            >
+          </label>
 
         </div>
 
@@ -725,33 +746,57 @@
          POWDER COATING
     ====================================================== -->
 
-    <details class="card" open>
+    <details
+      id="powderCard"
+      class="card powder-card"
+      open
+    >
 
       <summary>
-        Powder Coating
+
+        <span>
+          Powder Coating
+        </span>
+
+        <span
+          id="powderSummary"
+          class="summary-inline"
+        >
+          Not selected
+        </span>
+
       </summary>
 
-      <div class="card-content">
+      <div class="card-content powder-compact">
 
-        <div class="powder-choice-grid">
+        <div class="powder-line">
 
-          <button
-            id="powderYesBtn"
-            type="button"
-            class="powder-decision incomplete"
-          >
-            POWDER COATED
-          </button>
+          <strong>
+            POWDER COATING
+          </strong>
 
-          <button
-            id="powderNoBtn"
-            type="button"
-            class="powder-decision incomplete"
-          >
-            NOT POWDER COATED
-          </button>
+          <div class="powder-choice-grid">
+
+            <button
+              id="powderYesBtn"
+              type="button"
+              class="powder-decision"
+            >
+              YES
+            </button>
+
+            <button
+              id="powderNoBtn"
+              type="button"
+              class="powder-decision"
+            >
+              NO
+            </button>
+
+          </div>
 
         </div>
+
 
         <input
           id="powderDecision"
@@ -759,42 +804,41 @@
           value=""
         >
 
+
         <div
           id="powderYesOptions"
           class="hidden"
         >
 
-          <label
-            class="field-status required"
-            data-required-field="powderColour"
-          >
-            Powder-coat colour
+          <div class="powder-detail-row">
 
-            <select id="powderColour">
-            </select>
-          </label>
+            <label
+              class="field-status required powder-colour-field"
+              data-required-field="powderColour"
+            >
+              Colour
 
-          <div class="info-row">
+              <select id="powderColour">
+              </select>
+            </label>
 
-            <span>
-              Powder coating subtotal
-            </span>
+            <div class="powder-price-display">
 
-            <strong id="powderTotalDisplay">
-              $0.00
-            </strong>
+              <span>
+                PC total
+              </span>
+
+              <strong id="powderTotalDisplay">
+                $0.00
+              </strong>
+
+              <small>
+                inc GST
+              </small>
+
+            </div>
 
           </div>
-
-          <div
-            id="powderCalculationDetail"
-            class="cost-detail-box"
-          >
-          </div>
-
-          <p class="notice">
-            Allow approximately 2 weeks for powder-coat processing.
-          </p>
 
         </div>
 
@@ -804,10 +848,10 @@
           class="hidden"
         >
 
-          <div class="info-row">
+          <div class="powder-no-summary">
 
             <span>
-              Protective finishing allowance
+              Duragalv finish
             </span>
 
             <strong id="nonPowderFinishDisplay">
@@ -815,10 +859,6 @@
             </strong>
 
           </div>
-
-          <p class="notice">
-            Duragalv fabrication areas will be treated with etch primer and silver galvanising spray.
-          </p>
 
         </div>
 
@@ -1083,7 +1123,7 @@
 
       <div class="card-content">
 
-        <div class="summary-grid">
+        <div class="summary-grid internal-summary">
 
           <div>
             <span>
@@ -1135,39 +1175,82 @@
             </strong>
           </div>
 
-          <div>
-            <span>
-              Effective rate
-            </span>
-
-            <strong id="effectiveRate">
-              N/A
-            </strong>
-          </div>
-
         </div>
 
 
-        <label class="final-price-label">
-          Calculated quote incl GST
+        <!-- QUOTE CONTROL -->
 
-          <input
-            id="finalPrice"
-            type="number"
-            readonly
-          >
-        </label>
+        <div class="quote-control">
+
+          <div class="quote-control-line">
+
+            <label class="quote-edit-label">
+
+              <span>
+                Quote
+              </span>
+
+              <input
+                id="quotePrice"
+                type="number"
+                step="10"
+              >
+
+            </label>
 
 
-        <div class="info-row">
+            <div class="quote-metric">
 
-          <span>
-            Profit
-          </span>
+              <span>
+                Status
+              </span>
 
-          <strong id="profitTotal">
-            $0.00
-          </strong>
+              <strong id="quoteModeDisplay">
+                AUTO
+              </strong>
+
+            </div>
+
+
+            <div class="quote-metric">
+
+              <span>
+                Profit
+              </span>
+
+              <strong id="profitTotal">
+                $0.00
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="quote-control-line second">
+
+            <div class="quote-metric rate">
+
+              <span>
+                Rate
+              </span>
+
+              <strong id="effectiveRate">
+                N/A
+              </strong>
+
+            </div>
+
+
+            <button
+              id="resetQuoteBtn"
+              type="button"
+              class="reset-quote-btn"
+            >
+              RESET TO AUTO
+            </button>
+
+          </div>
 
         </div>
 
@@ -1302,9 +1385,9 @@
         </div>
 
 
-        <div class="quote-price-block">
+        <div class="quote-price-simple">
 
-          <div class="quote-total-row">
+          <div>
 
             <span>
               Price ex GST
@@ -1316,7 +1399,8 @@
 
           </div>
 
-          <div class="quote-total-row">
+
+          <div>
 
             <span>
               GST
@@ -1328,10 +1412,11 @@
 
           </div>
 
-          <div class="quote-total-row grand">
+
+          <div class="total">
 
             <span>
-              TOTAL INC GST
+              Total inc GST
             </span>
 
             <strong id="quoteTotalDisplay">
@@ -1490,7 +1575,7 @@
   <template id="componentTemplate">
 
     <article
-      class="component-card incomplete"
+      class="component-card"
       data-component-id=""
     >
 
@@ -1501,7 +1586,7 @@
           <strong class="component-title">
           </strong>
 
-          <span class="component-status">
+          <span class="component-status incomplete">
             INCOMPLETE
           </span>
 
@@ -2026,8 +2111,8 @@
   </template>
 
 
-  <script src="prices.js?v=220"></script>
-  <script src="app.js?v=220"></script>
+  <script src="prices.js?v=230"></script>
+  <script src="app.js?v=230"></script>
 
 </body>
 </html>
