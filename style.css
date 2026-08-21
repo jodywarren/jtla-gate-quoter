@@ -1,23 +1,20 @@
 /* =========================================================
    JTLA GATES
-   MAIN STYLESHEET
-   VERSION 240
-   ========================================================= */
-
-
-/* =========================================================
-   RESET
+   VERSION 241
    ========================================================= */
 
 * {
   box-sizing: border-box;
 }
 
+
 html {
   scroll-behavior: smooth;
 }
 
+
 body {
+
   margin: 0;
 
   font-family:
@@ -26,17 +23,13 @@ body {
     sans-serif;
 
   background: #2f3235;
+
   color: #eeeeee;
+
 }
 
 
-/* =========================================================
-   COLOUR SYSTEM
-   ========================================================= */
-
 :root {
-
-  --bg: #2f3235;
 
   --panel: #43474a;
 
@@ -46,39 +39,21 @@ body {
 
   --border: #64696c;
 
-  --text: #f1f1f1;
-
-  --muted: #b8b8b8;
-
-  --white: #ffffff;
-
-
-  /* fabrication green */
-
   --green: #45644d;
 
   --green-dark: #304737;
-
-  --green-light: #b9d0bd;
-
-
-  /* industrial red */
 
   --red: #7d4444;
 
   --red-dark: #5f3131;
 
-  --red-light: #ddb1b1;
-
-
-  --amber: #a98244;
-
   --input-border: #9b9b9b;
+
 }
 
 
 /* =========================================================
-   GENERAL FORM CONTROLS
+   INPUTS
    ========================================================= */
 
 button,
@@ -88,250 +63,302 @@ textarea {
   font: inherit;
 }
 
+
 button {
   cursor: pointer;
 }
 
+
 input,
 select,
 textarea {
+
   width: 100%;
 
   min-height: 46px;
 
-  padding: 10px 12px;
+  padding:
+    10px 12px;
 
-  background: #ffffff;
+  background: white;
+
   color: #111111;
 
-  border: 2px solid var(--input-border);
+  border:
+    2px solid
+    var(--input-border);
+
   border-radius: 6px;
 
   outline: none;
+
 }
+
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #66846d;
+
+  border-color:
+    #66846d;
+
 }
+
 
 input[readonly] {
-  background: #e5e5e5;
-}
 
-textarea {
-  min-height: 90px;
+  background:
+    #e5e5e5;
+
 }
 
 
 /* =========================================================
-   FIXED TOP HEADER
+   HEADER
    ========================================================= */
 
 .top-bar {
+
   position: sticky;
 
   top: 0;
 
-  z-index: 2000;
+  z-index: 3000;
 
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    58px
+    minmax(0, 1fr)
+    72px;
+
   align-items: center;
 
-  gap: 9px;
+  min-height: 64px;
 
-  min-height: 54px;
+  padding:
+    4px 8px;
 
-  padding: 5px 8px;
+  background:
+    #ffffff;
 
-  background: #ffffff;
-
-  border-bottom: 1px solid #cccccc;
+  border-bottom:
+    1px solid
+    #cccccc;
 
   box-shadow:
     0 2px 5px
     rgba(0, 0, 0, 0.18);
+
 }
 
-
-/* =========================================================
-   HEADER LOGO
-   ========================================================= */
 
 .top-logo-wrap {
-  flex: 0 0 auto;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
 
-  width: 40px;
-  height: 40px;
+  align-items: center;
+
+  justify-content: flex-start;
+
+  width: 56px;
+
+  height: 56px;
+
 }
+
 
 .top-logo {
+
   display: block;
 
-  max-width: 38px;
-  max-height: 38px;
+  max-width: 54px;
 
-  width: auto;
-  height: auto;
+  max-height: 54px;
 
   object-fit: contain;
+
 }
 
-
-/* =========================================================
-   HEADER TITLE / CLIENT
-   ========================================================= */
 
 .top-title {
-  flex: 1 1 auto;
 
   display: flex;
+
   flex-direction: column;
 
+  align-items: center;
+
+  justify-content: center;
+
   min-width: 0;
+
+  text-align: center;
+
 }
+
 
 .top-title > strong {
-  color: #252525;
 
-  font-size: 15px;
-  line-height: 1.05;
+  max-width: 100%;
+
+  color: #222222;
+
+  font-size: 17px;
+
+  font-weight: 900;
+
+  line-height: 1.1;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
 }
 
+
 .top-title > span {
-  margin-top: 2px;
+
+  margin-top: 3px;
 
   color: #555555;
 
   font-size: 12px;
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 700;
+
 }
 
-.top-title > small {
-  color: #888888;
-
-  font-size: 9px;
-}
-
-
-/* =========================================================
-   UNDO
-   ========================================================= */
 
 .undo-btn {
-  flex: 0 0 auto;
 
-  min-width: 66px;
-  min-height: 36px;
+  min-height: 38px;
 
-  padding: 5px 9px;
+  padding:
+    5px 8px;
 
-  border: 1px solid #999999;
+  border:
+    1px solid
+    #999999;
+
   border-radius: 5px;
 
-  background: #efefef;
-  color: #252525;
+  background:
+    #eeeeee;
+
+  color:
+    #222222;
 
   font-size: 10px;
+
   font-weight: 900;
+
 }
 
+
 .undo-btn:disabled {
+
   opacity: 0.35;
 
-  cursor: default;
 }
 
 
 /* =========================================================
-   FIXED QUICK NAVIGATION
+   QUICK NAV
    ========================================================= */
 
 .quick-nav-shell {
+
   position: sticky;
 
-  top: 54px;
+  top: 64px;
 
-  z-index: 1900;
+  z-index: 2900;
 
-  padding: 3px 5px;
+  padding:
+    4px 5px;
 
-  background: #24272a;
+  background:
+    #24272a;
 
-  border-bottom: 1px solid #55595c;
+  border-bottom:
+    1px solid
+    #55595c;
 
-  box-shadow:
-    0 2px 5px
-    rgba(0, 0, 0, 0.28);
 }
 
 
-/* =========================================================
-   QUICK NAV ROWS
-   ========================================================= */
-
 .quick-nav-row {
-  display: flex;
 
-  gap: 3px;
+  display: flex;
 
   width: 100%;
 
-  margin-bottom: 3px;
+  gap: 4px;
+
+  margin-bottom: 4px;
 
   overflow-x: auto;
+
   overflow-y: hidden;
 
   scrollbar-width: none;
 
   -webkit-overflow-scrolling: touch;
+
 }
+
 
 .quick-nav-row:last-child {
+
   margin-bottom: 0;
+
 }
+
 
 .quick-nav-row::-webkit-scrollbar {
+
   display: none;
+
 }
 
 
-/* =========================================================
-   QUICK NAV BUTTONS
-   ========================================================= */
-
 .quick-nav-tab {
-  flex: 0 0 auto;
 
-  min-height: 25px;
+  flex:
+    0 0 auto;
 
-  padding: 3px 8px;
+  min-height: 32px;
 
-  border: 1px solid #5e6366;
-  border-radius: 4px;
+  padding:
+    5px 11px;
 
-  background: #3c4043;
-  color: #dddddd;
+  border:
+    1px solid
+    #62676a;
 
-  font-size: 8px;
+  border-radius: 5px;
+
+  background:
+    #3c4043;
+
+  color:
+    #eeeeee;
+
+  font-size: 10px;
+
   font-weight: 900;
 
   white-space: nowrap;
+
 }
 
 
-/* physical components */
-
 .component-quick-tab {
-  min-width: 65px;
+
+  min-width: 82px;
 
   background:
     var(--component-colour);
@@ -340,58 +367,68 @@ textarea {
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.20);
+    rgba(255, 255, 255, 0.25);
+
 }
 
-
-/* selected section */
 
 .quick-nav-tab.active {
-  border-color: white;
 
-  color: white;
+  border-color:
+    white;
 
   box-shadow:
-    inset 0 0 0 1px white,
-    0 0 0 1px rgba(255, 255, 255, 0.25);
+    inset
+    0 0 0 1px white;
+
 }
 
-.section-nav-tab.active {
-  background: var(--green);
 
-  color: white;
+.section-nav-tab.active {
+
+  background:
+    var(--green);
+
+  color:
+    white;
+
 }
 
 
 /* =========================================================
-   STICKY MUD MAP
+   MUD MAP
    ========================================================= */
 
 .mud-map-shell {
+
   position: sticky;
 
-  /*
-    Header 54
-    Quick nav roughly 84
-  */
+  top: 176px;
 
-  top: 136px;
+  z-index: 2800;
 
-  z-index: 1800;
+  padding:
+    4px 6px
+    6px;
 
-  padding: 4px 6px 6px;
+  background:
+    #292c2f;
 
-  background: #292c2f;
-
-  border-bottom: 1px solid #555a5d;
+  border-bottom:
+    1px solid
+    #555a5d;
 
   box-shadow:
     0 3px 8px
     rgba(0, 0, 0, 0.28);
+
 }
 
+
 .mud-map-top {
+
   display: flex;
+
   justify-content: space-between;
 
   margin-bottom: 3px;
@@ -399,82 +436,75 @@ textarea {
   color: #b7b7b7;
 
   font-size: 8px;
+
   font-weight: 900;
+
 }
 
 
-/* =========================================================
-   SCROLLABLE MUD MAP
-   ========================================================= */
-
 .mud-map {
-  display: flex;
 
-  align-items: stretch;
+  display: flex;
 
   gap: 4px;
 
   width: 100%;
 
   overflow-x: auto;
+
   overflow-y: hidden;
 
   padding-bottom: 2px;
 
-  scrollbar-width: thin;
-
   -webkit-overflow-scrolling: touch;
+
 }
 
-.mud-map::-webkit-scrollbar {
-  height: 4px;
-}
-
-.mud-map::-webkit-scrollbar-thumb {
-  background: #666b6e;
-
-  border-radius: 4px;
-}
 
 .mud-empty {
+
   width: 100%;
 
   padding: 7px;
 
-  border: 1px dashed #686868;
+  border:
+    1px dashed
+    #686868;
+
   border-radius: 5px;
 
-  color: #999999;
+  color:
+    #999999;
 
   text-align: center;
 
   font-size: 10px;
+
 }
 
 
-/* =========================================================
-   MUD COMPONENT
-   ========================================================= */
-
 .mud-item {
-  min-width: 0;
 
   display: flex;
+
   flex-direction: column;
 
   gap: 2px;
+
 }
 
+
 .mud-component {
+
   position: relative;
 
   width: 100%;
 
-  min-height: 52px;
+  min-height: 57px;
 
   padding:
-    14px 5px
-    5px;
+    16px 6px
+    6px;
 
   border:
     2px solid
@@ -489,151 +519,165 @@ textarea {
     var(--component-text);
 
   overflow: hidden;
+
 }
 
 
-/* =========================================================
-   SELECTED MUD COMPONENT
-   ========================================================= */
-
 .mud-component.selected {
-  border-color: white;
+
+  border-color:
+    white;
 
   box-shadow:
     0 0 0 2px
-    rgba(255, 255, 255, 0.65);
+    rgba(255, 255, 255, 0.6);
+
 }
 
 
-/* =========================================================
-   MUD MAP LABELS
-   ========================================================= */
-
 .mud-label {
+
   display: block;
 
   color: white;
 
-  font-size: 10px;
+  font-size: 11px;
+
   font-weight: 900;
 
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
 }
 
+
 .mud-detail {
+
   display: block;
 
-  margin-top: 3px;
+  margin-top: 4px;
 
   color:
-    rgba(255, 255, 255, 0.82);
+    rgba(255, 255, 255, 0.85);
 
   font-size: 9px;
+
   font-weight: 700;
 
   white-space: nowrap;
+
 }
 
 
-/* =========================================================
-   MUD COMPLETION DOT
-
-   Always top-right.
-   Hinge marker is kept separately.
-   ========================================================= */
-
 .mud-status {
+
   position: absolute;
 
-  top: 4px;
+  top: 5px;
+
   right: 5px;
 
   z-index: 5;
 
-  width: 9px;
-  height: 9px;
+  width: 10px;
+
+  height: 10px;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.85);
+    white;
 
-  border-radius: 50%;
+  border-radius:
+    50%;
+
 }
+
 
 .mud-status.complete {
-  background: #4d9a5a;
+
+  background:
+    #4d9a5a;
+
 }
+
 
 .mud-status.incomplete {
-  background: #9e4141;
+
+  background:
+    #9e4141;
+
 }
 
 
-/* =========================================================
-   HINGE MARKER
-
-   Right hinge is moved inward so it
-   never covers the completion dot.
-   ========================================================= */
-
 .mud-hinge {
+
   position: absolute;
 
   top: 3px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
-  width: 15px;
-  height: 15px;
+  width: 16px;
 
-  border-radius: 50%;
+  height: 16px;
 
-  background: rgba(0, 0, 0, 0.68);
+  border-radius:
+    50%;
+
+  background:
+    rgba(0, 0, 0, 0.68);
+
   color: white;
 
   font-size: 8px;
+
   font-weight: 900;
+
 }
+
 
 .mud-hinge.left {
+
   left: 4px;
+
 }
+
 
 .mud-hinge.right {
-  right: 20px;
+
+  right: 23px;
+
 }
 
 
-/* =========================================================
-   MUD MOVE CONTROLS
-   ========================================================= */
-
 .mud-move-controls {
+
   display: grid;
 
   grid-template-columns:
     repeat(2, 1fr);
 
   gap: 2px;
+
 }
 
-.mud-move-controls button {
-  min-height: 23px;
 
-  padding: 0;
+.mud-move-controls button {
+
+  min-height: 24px;
 
   border: 0;
+
   border-radius: 3px;
 
-  background: #555a5d;
+  background:
+    #555a5d;
+
   color: white;
 
-  font-size: 9px;
-  font-weight: 900;
 }
 
 
@@ -642,60 +686,112 @@ textarea {
    ========================================================= */
 
 .layout-check {
-  margin-top: 3px;
 
-  padding: 4px 6px;
+  margin-top: 4px;
 
-  border-radius: 4px;
+  padding:
+    5px 6px;
+
+  border-radius:
+    4px;
 
   text-align: center;
 
-  font-size: 9px;
-  font-weight: 900;
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+
 }
+
 
 .layout-check.incomplete {
-  background: #896f40;
-  color: white;
+
+  background:
+    #896f40;
+
 }
+
 
 .layout-check.complete {
-  background: var(--green);
-  color: white;
+
+  background:
+    var(--green);
+
 }
+
 
 .layout-check.error {
-  background: var(--red-dark);
-  color: white;
+
+  background:
+    var(--red-dark);
+
 }
 
 
 /* =========================================================
-   SCROLL TARGET OFFSETS
-   ========================================================= */
-
-.nav-section,
-.nav-component,
-.component-card {
-  scroll-margin-top: 235px;
-}
-
-
-/* =========================================================
-   APP SHELL
+   APP
    ========================================================= */
 
 .app-shell {
-  width: min(
-    100%,
-    1000px
-  );
 
-  margin: 0 auto;
+  width:
+    min(
+      100%,
+      1000px
+    );
+
+  margin:
+    0 auto;
 
   padding:
-    8px 8px
-    28px;
+    10px 8px
+    35px;
+
+}
+
+
+/* =========================================================
+   SECTION ISOLATION
+
+   A section takes roughly the remaining
+   visible screen after the sticky UI.
+   ========================================================= */
+
+.nav-section,
+.nav-component {
+
+  scroll-margin-top:
+    278px;
+
+  margin-bottom:
+    42px;
+
+}
+
+
+details.nav-section[open],
+section.nav-section,
+article.nav-component {
+
+  min-height:
+    calc(
+      100svh - 285px
+    );
+
+}
+
+
+/*
+  Collapsed cards remain compact.
+*/
+
+details.nav-section:not([open]) {
+
+  min-height:
+    0;
+
 }
 
 
@@ -704,189 +800,256 @@ textarea {
    ========================================================= */
 
 .card {
-  margin-bottom: 9px;
 
-  background: var(--panel);
+  margin-bottom:
+    12px;
 
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background:
+    var(--panel);
 
-  overflow: hidden;
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    8px;
+
+  overflow:
+    hidden;
+
 }
 
+
 .card > summary {
+
   display: flex;
+
   align-items: center;
-  justify-content: space-between;
+
+  justify-content:
+    space-between;
 
   gap: 8px;
 
-  padding: 12px 13px;
+  padding:
+    13px 14px;
 
-  list-style: none;
+  cursor:
+    pointer;
 
-  cursor: pointer;
+  list-style:
+    none;
 
-  font-size: 17px;
-  font-weight: 900;
+  font-size:
+    18px;
+
+  font-weight:
+    900;
+
 }
+
 
 .card > summary::-webkit-details-marker {
-  display: none;
+
+  display:
+    none;
+
 }
+
 
 .card > summary::after {
-  content: "+";
 
-  margin-left: 6px;
+  content:
+    "+";
+
 }
+
 
 .card[open] > summary::after {
-  content: "−";
+
+  content:
+    "−";
+
 }
+
 
 .card[open] > summary {
+
   border-bottom:
-    1px solid #686d70;
+    1px solid
+    #686d70;
+
 }
+
 
 .card-content {
-  padding: 12px;
+
+  padding:
+    13px;
+
 }
+
 
 .static-title {
-  padding: 13px;
+
+  padding:
+    14px;
 
   border-bottom:
-    1px solid #686d70;
+    1px solid
+    #686d70;
 
-  font-size: 18px;
-  font-weight: 900;
+  font-size:
+    18px;
+
+  font-weight:
+    900;
+
 }
 
-
-/* =========================================================
-   COLLAPSED SUMMARY
-   ========================================================= */
 
 .summary-inline {
-  flex: 1 1 auto;
 
-  min-width: 0;
+  flex:
+    1 1 auto;
 
-  margin-left: auto;
+  min-width:
+    0;
 
-  color: #d0d0d0;
+  margin-left:
+    auto;
 
-  text-align: right;
+  text-align:
+    right;
 
-  font-size: 10px;
-  font-weight: 700;
+  color:
+    #d0d0d0;
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size:
+    11px;
+
+  white-space:
+    nowrap;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
 }
 
 
 /* =========================================================
-   HEADINGS
+   FORM
    ========================================================= */
 
 h3,
 .small-heading {
-  margin:
-    17px 0
-    8px;
 
-  padding-bottom: 5px;
+  margin:
+    18px 0
+    9px;
+
+  padding-bottom:
+    5px;
 
   border-bottom:
-    1px solid #666b6e;
+    1px solid
+    #666b6e;
 
-  font-size: 14px;
-  font-weight: 900;
+  font-size:
+    15px;
+
+  font-weight:
+    900;
+
 }
 
-
-/* =========================================================
-   LABELS
-   ========================================================= */
 
 label {
-  display: block;
 
-  margin-bottom: 12px;
+  display:
+    block;
 
-  color: #f3f3f3;
+  margin-bottom:
+    13px;
 
-  font-size: 14px;
-  font-weight: 800;
+  color:
+    #f3f3f3;
+
+  font-size:
+    14px;
+
+  font-weight:
+    800;
+
 }
+
 
 label input,
 label select,
 label textarea {
-  margin-top: 5px;
+
+  margin-top:
+    5px;
+
 }
 
-
-/* =========================================================
-   REQUIRED FIELDS
-   ========================================================= */
-
-.field-status {
-  transition:
-    color 0.15s ease;
-}
 
 .field-status.required {
-  color: #e0aaaa;
+
+  color:
+    #e0aaaa;
+
 }
+
 
 .field-status.required input,
-.field-status.required select,
-.field-status.required textarea {
-  border-color: var(--red);
+.field-status.required select {
+
+  border-color:
+    var(--red);
+
 }
+
 
 .field-status.complete {
-  color: #c4d9c8;
+
+  color:
+    #c4d9c8;
+
 }
+
 
 .field-status.complete input,
-.field-status.complete select,
-.field-status.complete textarea {
-  border-color: #5e8768;
+.field-status.complete select {
+
+  border-color:
+    #5e8768;
+
 }
 
-.field-status.optional {
-  color: #f3f3f3;
-}
-
-.field-status.optional input,
-.field-status.optional select,
-.field-status.optional textarea {
-  border-color: var(--input-border);
-}
-
-
-/* =========================================================
-   GRID
-   ========================================================= */
 
 .grid {
-  display: grid;
 
-  gap: 9px;
+  display:
+    grid;
+
+  gap:
+    9px;
+
 }
 
+
 .grid.two {
+
   grid-template-columns:
     repeat(
       2,
       minmax(0, 1fr)
     );
+
 }
 
 
@@ -895,82 +1058,126 @@ label textarea {
    ========================================================= */
 
 .add-grid {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 5px;
+  gap:
+    6px;
+
 }
 
+
 .add-grid button {
-  min-height: 44px;
 
-  border: 1px solid #7e8386;
-  border-radius: 6px;
+  min-height:
+    48px;
 
-  background: #323639;
-  color: white;
+  border:
+    1px solid
+    #7e8386;
 
-  font-size: 12px;
-  font-weight: 900;
+  border-radius:
+    6px;
+
+  background:
+    #323639;
+
+  color:
+    white;
+
+  font-size:
+    13px;
+
+  font-weight:
+    900;
+
 }
 
 
 /* =========================================================
-   INCLUDE SWITCHES
+   ON / OFF
    ========================================================= */
 
 .include-grid {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 5px;
+  gap:
+    5px;
+
 }
+
 
 .include-btn {
-  min-height: 41px;
 
-  border: 0;
-  border-radius: 5px;
+  min-height:
+    42px;
 
-  font-size: 10px;
-  font-weight: 900;
+  border:
+    0;
+
+  border-radius:
+    5px;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
 }
+
 
 .include-btn.on {
-  background: var(--green);
-  color: white;
+
+  background:
+    var(--green);
+
+  color:
+    white;
+
 }
 
+
 .include-btn.off {
-  background: var(--red);
-  color: white;
+
+  background:
+    var(--red);
+
+  color:
+    white;
+
 }
 
 
 /* =========================================================
-   COMPONENTS
+   COMPONENT CARDS
    ========================================================= */
 
 .components {
-  padding: 9px;
 
-  display: grid;
+  display:
+    grid;
 
-  gap: 10px;
+  gap:
+    14px;
+
+  padding:
+    10px;
+
 }
 
 
-/* =========================================================
-   COMPONENT CARD
-
-   Whole card uses identity colour.
-   ========================================================= */
-
 .component-card {
+
   background:
     var(--component-colour);
 
@@ -981,188 +1188,210 @@ label textarea {
     3px solid
     rgba(255, 255, 255, 0.18);
 
-  border-radius: 8px;
+  border-radius:
+    8px;
 
-  overflow: hidden;
+  overflow:
+    hidden;
 
   box-shadow:
     0 3px 8px
-    rgba(0, 0, 0, 0.20);
+    rgba(0, 0, 0, 0.2);
+
 }
 
 
-/* =========================================================
-   COMPONENT HEADER
-   ========================================================= */
-
 .component-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 
-  gap: 10px;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
 
   padding:
-    10px 11px;
+    12px;
 
   background:
-    rgba(0, 0, 0, 0.20);
+    rgba(0, 0, 0, 0.2);
 
   border-bottom:
     1px solid
-    rgba(255, 255, 255, 0.20);
+    rgba(255, 255, 255, 0.2);
+
 }
+
 
 .component-header > div {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
 
-  gap: 8px;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    8px;
+
 }
 
-
-/* larger component name */
 
 .component-title {
-  color: white;
 
-  font-size: 22px;
-  line-height: 1;
+  color:
+    white;
 
-  font-weight: 900;
+  font-size:
+    23px;
+
+  line-height:
+    1;
+
+  font-weight:
+    900;
+
 }
 
-
-/* =========================================================
-   COMPONENT COMPLETION
-   ========================================================= */
 
 .component-status {
-  display: inline-block;
 
-  padding: 3px 6px;
+  padding:
+    3px 7px;
 
-  border-radius: 4px;
+  border-radius:
+    4px;
 
-  color: white;
+  font-size:
+    8px;
 
-  font-size: 8px;
-  font-weight: 900;
+  font-weight:
+    900;
+
 }
 
-.component-status.incomplete {
-  background: #873c3c;
-}
 
 .component-status.complete {
-  background: #376b42;
+
+  background:
+    #376b42;
+
 }
 
 
-/* =========================================================
-   COMPONENT BODY
-   ========================================================= */
+.component-status.incomplete {
+
+  background:
+    #873c3c;
+
+}
+
 
 .component-body {
-  padding: 12px;
+
+  padding:
+    13px;
+
 }
 
-.component-body label,
-.component-body .small-heading {
-  color: white;
+
+.component-body label {
+
+  color:
+    white;
+
 }
 
-.component-body .field-status.required {
-  color: #ffe1e1;
-}
-
-.component-body .field-status.complete {
-  color: #e2f0e5;
-}
 
 .component-body input,
-.component-body select,
-.component-body textarea {
-  background: white;
-  color: #111111;
+.component-body select {
+
+  background:
+    white;
+
+  color:
+    #111111;
+
 }
 
 
-/* =========================================================
-   REMOVE BUTTON
-   ========================================================= */
-
 .remove-btn {
-  min-height: 31px;
 
-  padding: 5px 9px;
+  min-height:
+    32px;
+
+  padding:
+    5px 9px;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.30);
+    rgba(255, 255, 255, 0.3);
 
-  border-radius: 4px;
+  border-radius:
+    4px;
 
   background:
     rgba(0, 0, 0, 0.28);
 
-  color: white;
+  color:
+    white;
 
-  font-size: 10px;
-  font-weight: 900;
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
 }
 
 
 /* =========================================================
-   CALCULATED INFO
+   CALCULATED BOXES
    ========================================================= */
 
 .calculated-line,
-.calculated-box,
-.info-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.calculated-box {
 
-  gap: 10px;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
 
   margin:
     7px 0
     12px;
 
-  padding: 9px 10px;
+  padding:
+    9px 10px;
 
-  border-radius: 6px;
+  border-radius:
+    6px;
 
   background:
     rgba(0, 0, 0, 0.25);
 
-  color: white;
 }
 
-.calculated-line span,
-.calculated-box span,
-.info-row span {
-  color:
-    rgba(255, 255, 255, 0.78);
-
-  font-size: 11px;
-}
-
-.calculated-line strong,
-.calculated-box strong,
-.info-row strong {
-  color: white;
-}
-
-
-/* =========================================================
-   GATE CLADDING DIMENSIONS
-   ========================================================= */
 
 .gate-cladding-dimension-box {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     repeat(
@@ -1170,183 +1399,65 @@ label textarea {
       minmax(0, 1fr)
     );
 
-  gap: 6px;
+  gap:
+    6px;
 
-  margin-bottom: 10px;
+  margin-bottom:
+    10px;
+
 }
 
-.gate-cladding-dimension-box > div {
-  padding: 8px 9px;
 
-  border-radius: 5px;
+.gate-cladding-dimension-box > div {
+
+  padding:
+    8px 9px;
+
+  border-radius:
+    5px;
 
   background:
     rgba(0, 0, 0, 0.22);
+
 }
 
+
 .gate-cladding-dimension-box span {
-  display: block;
+
+  display:
+    block;
 
   color:
     rgba(255, 255, 255, 0.72);
 
-  font-size: 9px;
+  font-size:
+    9px;
+
 }
+
 
 .gate-cladding-dimension-box strong {
-  display: block;
 
-  margin-top: 3px;
+  display:
+    block;
 
-  color: white;
+  margin-top:
+    3px;
 
-  font-size: 14px;
+  font-size:
+    14px;
+
 }
 
 
 /* =========================================================
-   POST HEIGHT
-   ========================================================= */
-
-.post-height-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin:
-    6px 0
-    11px;
-
-  padding: 9px;
-
-  border-radius: 6px;
-
-  background:
-    rgba(0, 0, 0, 0.25);
-}
-
-.post-height-summary > div {
-  display: flex;
-  flex-direction: column;
-}
-
-.post-height-summary span {
-  color:
-    rgba(255, 255, 255, 0.75);
-
-  font-size: 10px;
-}
-
-.post-height-summary strong {
-  margin-top: 2px;
-
-  color: white;
-
-  font-size: 16px;
-}
-
-.post-height-status {
-  margin-top: 3px;
-
-  color: #ffe0a4;
-
-  font-size: 9px;
-  font-weight: 900;
-}
-
-
-/* =========================================================
-   POST HEIGHT BUTTONS
-   ========================================================= */
-
-.change-post-height-btn,
-.reset-post-height-btn {
-  min-height: 35px;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.28);
-
-  border-radius: 5px;
-
-  background:
-    rgba(0, 0, 0, 0.28);
-
-  color: white;
-
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.reset-post-height-btn {
-  width: 100%;
-
-  margin-top: -3px;
-  margin-bottom: 11px;
-}
-
-
-/* =========================================================
-   GATE HEIGHT BASIS
-   ========================================================= */
-
-.gate-height-basis {
-  margin:
-    -3px 0
-    11px;
-
-  color:
-    rgba(255, 255, 255, 0.76);
-
-  font-size: 10px;
-}
-
-
-/* =========================================================
-   GATE WIDTH MODE
-   ========================================================= */
-
-.gate-width-controls {
-  margin-bottom: 12px;
-}
-
-.gate-width-mode-btn {
-  width: 100%;
-
-  min-height: 38px;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.28);
-
-  border-radius: 5px;
-
-  background:
-    rgba(0, 0, 0, 0.28);
-
-  color: white;
-
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.gate-width-mode-btn.manual {
-  background: #765e34;
-}
-
-.gate-manual-width-wrap {
-  margin-top: 8px;
-}
-
-
-/* =========================================================
-   HINGE / OPEN
+   GATE
    ========================================================= */
 
 .gate-orientation-row {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     repeat(
@@ -1354,125 +1465,42 @@ label textarea {
       minmax(0, 1fr)
     );
 
-  gap: 8px;
+  gap:
+    8px;
+
 }
 
 
-/* =========================================================
-   HOLES
-   ========================================================= */
-
-.hole-list {
-  display: grid;
-
-  gap: 5px;
-
-  margin-bottom: 7px;
-}
-
-.hole-row {
-  display: grid;
-
-  grid-template-columns:
-    1fr 38px;
-
-  gap: 5px;
-}
-
-.remove-hole {
-  border: 0;
-  border-radius: 5px;
-
-  background:
-    rgba(0, 0, 0, 0.32);
-
-  color: white;
-
-  font-size: 19px;
-}
-
+.gate-width-mode-btn,
+.change-post-height-btn,
+.reset-post-height-btn,
 .add-hole {
-  min-height: 37px;
+
+  width:
+    100%;
+
+  min-height:
+    38px;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.28);
+    rgba(255, 255, 255, 0.3);
 
-  border-radius: 5px;
+  border-radius:
+    5px;
 
   background:
     rgba(0, 0, 0, 0.25);
 
-  color: white;
-}
+  color:
+    white;
 
+  font-size:
+    10px;
 
-/* =========================================================
-   CHECKBOX
-   ========================================================= */
+  font-weight:
+    900;
 
-.check-line {
-  display: flex;
-  align-items: center;
-
-  gap: 8px;
-}
-
-.check-line input {
-  width: 21px;
-  height: 21px;
-
-  min-height: 0;
-
-  margin: 0;
-
-  accent-color: var(--green);
-}
-
-
-/* =========================================================
-   TREATED PINE
-   ========================================================= */
-
-.pine-options-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
-  gap: 8px;
-}
-
-.pine-option-card {
-  padding: 9px;
-
-  border-radius: 6px;
-
-  background: #35393c;
-}
-
-.small-status-btn {
-  width: 100%;
-
-  min-height: 37px;
-
-  margin-bottom: 8px;
-
-  border: 0;
-  border-radius: 5px;
-
-  font-size: 9px;
-  font-weight: 900;
-}
-
-.small-status-btn.on {
-  background: var(--green);
-  color: white;
-}
-
-.small-status-btn.off {
-  background: var(--red);
-  color: white;
 }
 
 
@@ -1481,178 +1509,141 @@ label textarea {
    ========================================================= */
 
 .mesh-info-box {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     1fr auto auto;
 
-  align-items: center;
-
-  gap: 7px;
-
-  margin-bottom: 11px;
-
-  padding: 9px;
-
-  border-radius: 6px;
-
-  background: #303437;
-}
-
-.mesh-info-box strong {
-  color: white;
-
-  font-size: 12px;
-}
-
-.mesh-info-box span {
-  color: #cccccc;
-
-  font-size: 10px;
-}
-
-.small-note {
-  margin:
-    -3px 0
+  gap:
     8px;
 
-  color: #bbbbbb;
+  align-items:
+    center;
 
-  font-size: 10px;
-  line-height: 1.35;
+  margin-bottom:
+    12px;
+
+  padding:
+    10px;
+
+  border-radius:
+    6px;
+
+  background:
+    #303437;
+
+}
+
+
+.mesh-info-box strong {
+
+  font-size:
+    12px;
+
+}
+
+
+.mesh-info-box span {
+
+  color:
+    #cccccc;
+
+  font-size:
+    10px;
+
+}
+
+
+.small-note {
+
+  color:
+    #bbbbbb;
+
+  font-size:
+    10px;
+
 }
 
 
 /* =========================================================
-   POWDER COATING
+   POWDER
    ========================================================= */
 
-.powder-card > summary {
-  min-height: 46px;
-}
-
-.powder-compact {
-  padding-top: 9px;
-  padding-bottom: 9px;
-}
-
 .powder-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 
-  gap: 8px;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    8px;
+
 }
 
-.powder-line > strong {
-  font-size: 11px;
-}
 
 .powder-choice-grid {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
-    repeat(2, 68px);
+    repeat(
+      2,
+      72px
+    );
 
-  gap: 5px;
+  gap:
+    6px;
+
 }
+
 
 .powder-decision {
-  min-height: 35px;
 
-  border: 0;
-  border-radius: 5px;
+  min-height:
+    38px;
 
-  background: var(--red);
-  color: white;
+  border:
+    0;
 
-  font-size: 10px;
-  font-weight: 900;
+  border-radius:
+    5px;
+
+  background:
+    var(--red);
+
+  color:
+    white;
+
+  font-weight:
+    900;
+
 }
+
 
 .powder-decision.selected {
-  background: var(--green);
-}
 
-.powder-detail-row {
-  display: grid;
+  background:
+    var(--green);
 
-  grid-template-columns:
-    minmax(0, 1fr)
-    auto;
-
-  align-items: end;
-
-  gap: 8px;
-
-  margin-top: 9px;
-}
-
-.powder-colour-field {
-  margin-bottom: 0;
-}
-
-.powder-price-display {
-  min-width: 110px;
-
-  padding: 7px 9px;
-
-  border-radius: 5px;
-
-  background: #303437;
-
-  text-align: right;
-}
-
-.powder-price-display span {
-  display: block;
-
-  color: #bdbdbd;
-
-  font-size: 9px;
-}
-
-.powder-price-display strong {
-  display: block;
-
-  margin-top: 2px;
-
-  font-size: 16px;
-}
-
-.powder-price-display small {
-  display: block;
-
-  color: #aaaaaa;
-
-  font-size: 9px;
-}
-
-.powder-no-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
-
-  margin-top: 9px;
-
-  padding: 7px 9px;
-
-  border-radius: 5px;
-
-  background: #303437;
-
-  font-size: 11px;
 }
 
 
 /* =========================================================
-   MATERIALS 3 WIDE
+   MATERIALS
    ========================================================= */
 
 .materials-three {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
     repeat(
@@ -1660,113 +1651,82 @@ label textarea {
       minmax(0, 1fr)
     );
 
-  gap: 6px;
+  gap:
+    6px;
+
 }
+
 
 .material-column {
-  padding: 9px;
 
-  border-radius: 6px;
+  padding:
+    9px;
 
-  background: #303437;
-}
+  border-radius:
+    6px;
 
-.material-column > strong {
-  display: block;
+  background:
+    #303437;
 
-  margin-bottom: 7px;
-
-  color: #eeeeee;
-
-  font-size: 11px;
-}
-
-.material-column > div {
-  display: flex;
-  justify-content: space-between;
-
-  gap: 5px;
-
-  margin-top: 5px;
-
-  font-size: 10px;
-}
-
-.material-column span {
-  color: #bbbbbb;
-}
-
-.material-column b {
-  text-align: right;
 }
 
 
-/* =========================================================
-   CONSUMABLES
-   ========================================================= */
+.consumables-list,
+.fabrication-view {
 
-.consumables-list {
-  display: grid;
+  display:
+    grid;
 
-  gap: 4px;
+  gap:
+    5px;
+
 }
+
 
 .consumables-list > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 
-  gap: 15px;
+  display:
+    flex;
 
-  padding: 8px 9px;
+  justify-content:
+    space-between;
 
-  border-radius: 5px;
+  gap:
+    10px;
 
-  background: #303437;
+  padding:
+    8px;
+
+  border-radius:
+    5px;
+
+  background:
+    #303437;
+
 }
 
-.consumables-list span {
-  color: #bbbbbb;
-
-  font-size: 11px;
-}
-
-.consumables-list strong {
-  text-align: right;
-
-  font-size: 11px;
-}
-
-
-/* =========================================================
-   FABRICATION LIST
-   ========================================================= */
-
-.fabrication-view {
-  display: grid;
-
-  gap: 5px;
-}
 
 .fabrication-reference {
-  padding: 8px 9px;
 
-  border-radius: 5px;
+  padding:
+    8px;
 
-  background: var(--green-dark);
-  color: white;
+  border-radius:
+    5px;
 
-  font-size: 10px;
+  background:
+    var(--green-dark);
+
 }
 
+
 .fabrication-item {
-  padding: 9px;
 
-  border:
-    2px solid
-    rgba(255, 255, 255, 0.16);
+  padding:
+    9px;
 
-  border-radius: 5px;
+  border-radius:
+    5px;
 
   background:
     var(--component-colour);
@@ -1774,399 +1734,168 @@ label textarea {
   color:
     var(--component-text);
 
-  font-size: 11px;
-  line-height: 1.35;
-}
+  font-size:
+    11px;
 
-.fabrication-cladding-cut {
-  padding: 8px 9px;
-
-  border-radius: 5px;
-
-  background: #363b3e;
-
-  color: #eeeeee;
-
-  font-size: 10px;
 }
 
 
 /* =========================================================
-   SUMMARY GRID
+   COSTING
    ========================================================= */
 
 .summary-grid {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
-    repeat(2, 1fr);
+    repeat(
+      2,
+      1fr
+    );
 
-  gap: 6px;
+  gap:
+    6px;
+
 }
+
 
 .summary-grid > div {
-  min-height: 59px;
 
-  padding: 8px;
+  padding:
+    8px;
 
-  border-radius: 5px;
-
-  background: #303437;
-}
-
-.summary-grid span {
-  display: block;
-
-  color: #bbbbbb;
-
-  font-size: 9px;
-}
-
-.summary-grid strong {
-  display: block;
-
-  margin-top: 4px;
-
-  font-size: 14px;
-}
-
-
-/* =========================================================
-   LABOUR
-   ========================================================= */
-
-.labour-totals-panel {
-  display: grid;
-
-  gap: 4px;
-
-  margin: 11px 0;
-}
-
-.labour-totals-panel > div {
-  display: flex;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  padding: 7px 9px;
-
-  border-radius: 5px;
-
-  background: #303437;
-}
-
-.labour-totals-panel span {
-  color: #bbbbbb;
-}
-
-.labour-subtotal {
-  border-top: 1px solid #686d70;
-}
-
-.labour-grand-total {
-  margin-top: 5px;
+  border-radius:
+    5px;
 
   background:
-    var(--green-dark)
-    !important;
+    #303437;
+
 }
 
-.labour-grand-total span,
-.labour-grand-total strong {
-  color: white;
-}
-
-
-/* =========================================================
-   INTERNAL COSTING
-   ========================================================= */
-
-.internal-summary {
-  margin-bottom: 11px;
-}
-
-
-/* =========================================================
-   QUOTE CONTROL
-   ========================================================= */
 
 .quote-control {
-  margin-top: 11px;
 
-  padding: 9px;
+  margin-top:
+    12px;
 
-  border-radius: 7px;
+  padding:
+    10px;
 
-  background: #2c3033;
+  border-radius:
+    7px;
 
-  border: 1px solid #5b6063;
+  background:
+    #2c3033;
+
 }
+
 
 .quote-control-line {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
-    minmax(140px, 1.5fr)
-    minmax(75px, 0.7fr)
-    minmax(100px, 1fr);
+    minmax(130px, 1.4fr)
+    75px
+    minmax(90px, 1fr);
 
-  gap: 6px;
+  gap:
+    6px;
 
-  align-items: end;
 }
+
 
 .quote-control-line.second {
+
   grid-template-columns:
-    minmax(140px, 1fr)
-    auto;
+    1fr auto;
 
-  margin-top: 6px;
+  margin-top:
+    7px;
+
 }
 
-.quote-edit-label {
-  margin-bottom: 0;
-}
-
-.quote-edit-label > span {
-  display: block;
-
-  margin-bottom: 4px;
-
-  color: #eeeeee;
-
-  font-size: 11px;
-  font-weight: 900;
-}
 
 #quotePrice {
-  min-height: 46px;
 
-  border: 2px solid var(--green);
+  font-size:
+    20px;
 
-  background: #f5f8f5;
+  font-weight:
+    900;
 
-  color: #233427;
+  border-color:
+    var(--green);
 
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.quote-metric {
-  min-height: 46px;
-
-  padding: 7px 8px;
-
-  border-radius: 5px;
-
-  background: #3a3e41;
-}
-
-.quote-metric span {
-  display: block;
-
-  color: #bdbdbd;
-
-  font-size: 8px;
-}
-
-.quote-metric strong {
-  display: block;
-
-  margin-top: 4px;
-
-  color: white;
-
-  font-size: 14px;
-}
-
-#quoteModeDisplay {
-  color: #b9d3be;
-}
-
-#quoteModeDisplay.manual {
-  color: #e8c47f;
-}
-
-.quote-metric.rate strong {
-  font-size: 16px;
-}
-
-.reset-quote-btn {
-  min-height: 42px;
-
-  padding: 6px 11px;
-
-  border: 1px solid #72777a;
-  border-radius: 5px;
-
-  background: #555b5e;
-  color: white;
-
-  font-size: 9px;
-  font-weight: 900;
 }
 
 
 /* =========================================================
-   FINISHED QUOTE
+   QUOTE
    ========================================================= */
 
 .quote-preview {
-  margin: 10px;
 
-  padding: 18px;
-
-  border-radius: 7px;
-
-  background: white;
-  color: #222222;
-}
-
-.quote-head {
-  display: flex;
-  flex-direction: column;
-
-  padding-bottom: 11px;
-
-  border-bottom:
-    1px solid #bbbbbb;
-}
-
-.quote-head strong {
-  color: #304f38;
-
-  font-size: 21px;
-}
-
-.quote-head span {
-  margin-top: 2px;
-
-  color: #555555;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   CLIENT-FACING GREEN WORDS ONLY
-   ========================================================= */
-
-.quote-section {
-  margin-top: 18px;
-}
-
-.quote-section h4 {
   margin:
-    0 0
+    10px;
+
+  padding:
+    18px;
+
+  border-radius:
     7px;
 
-  color: #365b3f;
+  background:
+    white;
 
-  font-size: 13px;
-  font-weight: 900;
+  color:
+    #222222;
 
-  letter-spacing: 0.3px;
-}
-
-.quote-section p {
-  margin:
-    5px 0
-    8px;
-
-  color: #333333;
-
-  font-size: 13px;
-
-  line-height: 1.45;
 }
 
 
-/* =========================================================
-   QUOTE PRICE
-   ========================================================= */
+.quote-section h4,
+.quote-head strong {
+
+  color:
+    #365b3f;
+
+}
+
 
 .quote-price-simple {
-  margin-top: 18px;
+
+  margin-top:
+    18px;
 
   padding:
     9px 0;
 
   border-top:
-    1px solid #aaaaaa;
+    1px solid
+    #aaaaaa;
 
   border-bottom:
-    1px solid #aaaaaa;
+    1px solid
+    #aaaaaa;
+
 }
+
 
 .quote-price-simple > div {
-  display: flex;
-  justify-content: space-between;
 
-  gap: 15px;
+  display:
+    flex;
 
-  padding: 5px 0;
+  justify-content:
+    space-between;
 
-  color: #333333;
-}
+  padding:
+    5px 0;
 
-.quote-price-simple .total {
-  margin-top: 4px;
-
-  padding-top: 9px;
-
-  border-top:
-    1px solid #cccccc;
-
-  font-size: 15px;
-}
-
-.quote-price-simple .total strong {
-  font-size: 18px;
-}
-
-.quote-acceptance {
-  margin-top: 18px;
-
-  padding-top: 10px;
-
-  border-top:
-    1px solid #d4d4d4;
-
-  color: #444444;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   WARNINGS
-   ========================================================= */
-
-.warning-card {
-  border-color: #8d7346;
-}
-
-.warning-card .static-title {
-  background: #55492f;
-}
-
-.warning-list {
-  display: grid;
-
-  gap: 5px;
-}
-
-.warning-list > div {
-  padding: 8px 10px;
-
-  border-radius: 5px;
-
-  background: #3b3529;
-
-  color: #ead8b8;
-
-  font-size: 11px;
 }
 
 
@@ -2175,38 +1904,58 @@ label textarea {
    ========================================================= */
 
 .actions {
-  display: grid;
+
+  display:
+    grid;
 
   grid-template-columns:
-    repeat(5, 1fr);
+    repeat(
+      5,
+      1fr
+    );
 
-  gap: 5px;
+  gap:
+    5px;
 
-  margin-top: 10px;
-  margin-bottom: 10px;
 }
+
 
 .actions button {
-  min-height: 45px;
 
-  border: 0;
-  border-radius: 5px;
+  min-height:
+    45px;
 
-  background: #d2d2d2;
-  color: #202020;
+  border:
+    0;
 
-  font-size: 11px;
-  font-weight: 900;
+  border-radius:
+    5px;
+
+  font-weight:
+    900;
+
 }
+
 
 .actions .green {
-  background: var(--green);
-  color: white;
+
+  background:
+    var(--green);
+
+  color:
+    white;
+
 }
 
+
 .actions .red {
-  background: var(--red);
-  color: white;
+
+  background:
+    var(--red);
+
+  color:
+    white;
+
 }
 
 
@@ -2214,68 +1963,51 @@ label textarea {
    SAVED JOBS
    ========================================================= */
 
-.saved-jobs-list {
-  display: grid;
-
-  gap: 6px;
-}
-
 .saved-job-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 
-  gap: 12px;
+  display:
+    flex;
 
-  padding: 10px;
+  justify-content:
+    space-between;
 
-  border-radius: 6px;
+  gap:
+    10px;
 
-  background: #303437;
+  padding:
+    10px;
+
+  margin-bottom:
+    6px;
+
+  border-radius:
+    6px;
+
+  background:
+    #303437;
+
 }
+
 
 .saved-job-info {
-  display: flex;
-  flex-direction: column;
 
-  min-width: 0;
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
 }
 
-.saved-job-info strong {
-  color: white;
-}
-
-.saved-job-info span {
-  color: #dddddd;
-}
-
-.saved-job-info small {
-  color: #aaaaaa;
-}
 
 .saved-job-actions {
-  display: flex;
 
-  gap: 5px;
-}
+  display:
+    flex;
 
-.saved-job-actions button {
-  min-height: 34px;
+  gap:
+    5px;
 
-  border: 0;
-  border-radius: 4px;
-
-  font-weight: 800;
-}
-
-.open-saved-job {
-  background: var(--green);
-  color: white;
-}
-
-.delete-saved-job {
-  background: var(--red);
-  color: white;
 }
 
 
@@ -2284,13 +2016,21 @@ label textarea {
    ========================================================= */
 
 .hidden {
-  display: none !important;
+
+  display:
+    none !important;
+
 }
 
-.muted {
-  color: #aaaaaa;
 
-  font-size: 11px;
+.muted {
+
+  color:
+    #aaaaaa;
+
+  font-size:
+    11px;
+
 }
 
 
@@ -2298,339 +2038,211 @@ label textarea {
    MOBILE
    ========================================================= */
 
-@media (max-width: 600px) {
-
-  .app-shell {
-    padding:
-      6px 6px
-      22px;
-  }
-
-
-  /* fixed header */
+@media (
+  max-width: 600px
+) {
 
   .top-bar {
-    min-height: 50px;
 
-    padding:
-      4px 6px;
+    grid-template-columns:
+      54px
+      minmax(0, 1fr)
+      62px;
+
+    min-height:
+      60px;
+
   }
+
 
   .top-logo-wrap {
-    width: 35px;
-    height: 35px;
+
+    width:
+      52px;
+
+    height:
+      52px;
+
   }
+
 
   .top-logo {
-    max-width: 34px;
-    max-height: 34px;
+
+    max-width:
+      50px;
+
+    max-height:
+      50px;
+
   }
+
 
   .top-title > strong {
-    font-size: 14px;
+
+    font-size:
+      16px;
+
   }
 
-  .top-title > span {
-    font-size: 11px;
-  }
-
-
-  /* navigation */
 
   .quick-nav-shell {
-    top: 50px;
 
-    padding:
-      2px 4px;
+    top:
+      60px;
+
   }
 
-  .quick-nav-row {
-    gap: 2px;
-
-    margin-bottom: 2px;
-  }
 
   .quick-nav-tab {
-    min-height: 22px;
+
+    min-height:
+      31px;
 
     padding:
-      2px 6px;
+      5px 10px;
 
-    font-size: 7px;
+    font-size:
+      9px;
+
   }
+
 
   .component-quick-tab {
-    min-width: 59px;
+
+    min-width:
+      78px;
+
   }
 
 
-  /* mud map follows header/navigation */
-
   .mud-map-shell {
-    top: 121px;
 
-    padding:
-      3px 5px
-      5px;
+    top:
+      168px;
+
   }
 
 
   .nav-section,
-  .nav-component,
-  .component-card {
-    scroll-margin-top: 215px;
+  .nav-component {
+
+    scroll-margin-top:
+      275px;
+
+    margin-bottom:
+      40px;
+
   }
 
 
-  /* normal form rows */
+  details.nav-section[open],
+  section.nav-section,
+  article.nav-component {
+
+    min-height:
+      calc(
+        100svh - 282px
+      );
+
+  }
+
 
   .grid.two {
-    grid-template-columns: 1fr;
+
+    grid-template-columns:
+      1fr;
+
   }
 
-
-  /* keep hinge / open together */
 
   .gate-orientation-row {
+
     grid-template-columns:
       repeat(
         2,
         minmax(0, 1fr)
       );
+
   }
 
-
-  /* gate dimensions remain two-wide */
 
   .gate-cladding-dimension-box {
+
     grid-template-columns:
       repeat(
         2,
-        minmax(0, 1fr)
+        1fr
       );
+
   }
 
-
-  /* pine */
-
-  .pine-options-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
-  }
-
-
-  /* mesh */
-
-  .mesh-info-box {
-    grid-template-columns:
-      1fr auto;
-  }
-
-  .mesh-info-box strong {
-    grid-column:
-      1 / -1;
-  }
-
-
-  /* materials remains 3 across */
 
   .materials-three {
+
     grid-template-columns:
       repeat(
         3,
-        minmax(0, 1fr)
+        1fr
       );
+
   }
+
 
   .material-column {
+
     padding:
       7px 5px;
-  }
 
-  .material-column > strong {
-    font-size: 9px;
-  }
+    font-size:
+      9px;
 
-  .material-column > div {
-    display: block;
-
-    font-size: 8px;
-  }
-
-  .material-column b {
-    display: block;
-
-    margin-top: 2px;
-
-    text-align: left;
-
-    font-size: 10px;
   }
 
 
-  /* powder */
+  .mesh-info-box {
 
-  .powder-choice-grid {
+    grid-template-columns:
+      1fr auto;
+
+  }
+
+
+  .mesh-info-box strong {
+
+    grid-column:
+      1 / -1;
+
+  }
+
+
+  .actions {
+
     grid-template-columns:
       repeat(
         2,
-        56px
+        1fr
       );
-  }
 
-  .powder-line > strong {
-    font-size: 9px;
-  }
-
-  .powder-detail-row {
-    grid-template-columns:
-      minmax(0, 1fr)
-      100px;
-  }
-
-
-  /* internal summary */
-
-  .summary-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-
-  /* quote */
-
-  .quote-control-line {
-    grid-template-columns:
-      minmax(115px, 1.3fr)
-      65px
-      minmax(85px, 1fr);
-  }
-
-  .quote-control-line.second {
-    grid-template-columns:
-      minmax(0, 1fr)
-      auto;
-  }
-
-  .quote-metric {
-    padding: 6px;
-  }
-
-  .quote-metric strong {
-    font-size: 12px;
-  }
-
-  #quotePrice {
-    font-size: 18px;
-  }
-
-
-  /* larger component title */
-
-  .component-title {
-    font-size: 21px;
-  }
-
-
-  /* buttons */
-
-  .actions {
-    grid-template-columns:
-      repeat(2, 1fr);
   }
 
 
   input,
   select,
   textarea {
-    font-size: 16px;
-  }
 
+    font-size:
+      16px;
 
-  .quote-preview {
-    margin: 7px;
-
-    padding: 14px;
-  }
-
-
-  .quote-section h4 {
-    font-size: 12px;
-  }
-
-  .quote-section p {
-    font-size: 12px;
-  }
-}
-
-
-/* =========================================================
-   VERY SMALL PHONE
-   ========================================================= */
-
-@media (max-width: 390px) {
-
-  .top-title > strong {
-    font-size: 13px;
-  }
-
-  .undo-btn {
-    min-width: 59px;
-
-    padding:
-      5px 6px;
-  }
-
-
-  .quick-nav-tab {
-    padding:
-      2px 5px;
-
-    font-size: 6.5px;
-  }
-
-
-  .mud-label {
-    font-size: 9px;
-  }
-
-  .mud-detail {
-    font-size: 8px;
-  }
-
-
-  .pine-options-grid {
-    grid-template-columns: 1fr;
-  }
-
-
-  .quote-control-line {
-    grid-template-columns:
-      1.2fr
-      60px
-      0.9fr;
-  }
-
-
-  .quote-metric strong {
-    font-size: 11px;
-  }
-
-
-  .reset-quote-btn {
-    padding:
-      5px 7px;
-
-    font-size: 8px;
   }
 
 
   .component-title {
-    font-size: 20px;
+
+    font-size:
+      22px;
+
   }
+
 }
 
 
@@ -2641,30 +2253,50 @@ label textarea {
 @media print {
 
   body {
-    background: white;
+
+    background:
+      white;
+
   }
 
+
   body * {
-    visibility: hidden;
+
+    visibility:
+      hidden;
+
   }
+
 
   .quote-preview,
   .quote-preview * {
-    visibility: visible;
+
+    visibility:
+      visible;
+
   }
+
 
   .quote-preview {
-    position: absolute;
 
-    left: 0;
-    top: 0;
+    position:
+      absolute;
 
-    width: 100%;
+    left:
+      0;
 
-    margin: 0;
+    top:
+      0;
 
-    padding: 15mm;
+    width:
+      100%;
 
-    border: 0;
+    margin:
+      0;
+
+    padding:
+      15mm;
+
   }
+
 }
