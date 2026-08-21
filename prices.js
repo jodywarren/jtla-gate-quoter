@@ -5,10 +5,6 @@
 
 const PRICES = {
 
-  /* =======================================================
-     BUSINESS
-     ======================================================= */
-
   company: {
     name: "JTLA Gates",
     contactName: "Jody Tuuta",
@@ -16,9 +12,8 @@ const PRICES = {
     email: "jtladesign@gmail.com"
   },
 
-
   business: {
-    labourRate: 60,               // ex GST per hour
+    labourRate: 60,
     materialMarkup: 0.20,
     gst: 0.10,
 
@@ -30,22 +25,11 @@ const PRICES = {
     steelStockLengthM: 8
   },
 
-
-  /* =======================================================
-     BANK DETAILS
-     Shown on formal quote / email.
-     ======================================================= */
-
   bank: {
     accountName: "JW and GF Tuuta",
     bsb: "306 089",
     accountNumber: "3406851"
   },
-
-
-  /* =======================================================
-     PROJECT NUMBERS
-     ======================================================= */
 
   projects: {
     startingProjectNumber: 1246,
@@ -56,7 +40,6 @@ const PRICES = {
 
   /* =======================================================
      STEEL
-     Purchase prices INC GST.
      ======================================================= */
 
   steel: {
@@ -91,12 +74,15 @@ const PRICES = {
       },
 
       "50x50_rhs": {
-        label: "50x50 RHS Duragalv",
+        label: "50x50x2 SHS Duragalv",
         widthMm: 50,
         depthMm: 50,
         stockLengthM: 8,
-        pricePerStockLength: 0,
-        priceIncludesGST: true
+
+        /* Supplier price EX GST */
+
+        pricePerStockLength: 72.00,
+        priceIncludesGST: false
       }
     },
 
@@ -148,10 +134,6 @@ const PRICES = {
 
   cladding: {
 
-    /* -------------------------------------------------------
-       EKODECK
-       ------------------------------------------------------- */
-
     ekodeck: {
       label: "Ekodeck Screening 67x15mm",
 
@@ -172,10 +154,6 @@ const PRICES = {
     },
 
 
-    /* -------------------------------------------------------
-       CYPRESS
-       ------------------------------------------------------- */
-
     cypressPickets: {
       label: "Cypress 67x15mm",
 
@@ -192,10 +170,6 @@ const PRICES = {
       ]
     },
 
-
-    /* -------------------------------------------------------
-       LOSP 92
-       ------------------------------------------------------- */
 
     losp90: {
       label: "LOSP 92x18mm Primed H3",
@@ -215,10 +189,6 @@ const PRICES = {
     },
 
 
-    /* -------------------------------------------------------
-       LOSP 138
-       ------------------------------------------------------- */
-
     losp140: {
       label: "LOSP 138x18mm Primed H3",
 
@@ -237,10 +207,6 @@ const PRICES = {
     },
 
 
-    /* -------------------------------------------------------
-       MERBAU 90
-       ------------------------------------------------------- */
-
     merbau90: {
       label: "Merbau Decking 90mm",
 
@@ -255,10 +221,6 @@ const PRICES = {
       ]
     },
 
-
-    /* -------------------------------------------------------
-       MERBAU 140
-       ------------------------------------------------------- */
 
     merbau140: {
       label: "Merbau Decking 140mm",
@@ -298,38 +260,13 @@ const PRICES = {
         150
       ],
 
-      /*
-        QUANTITY RULE
-
-        100mm:
-        one paling per 100mm of width
-        + 3 additional palings per metre.
-
-        125mm:
-        same rule as 100mm.
-
-        150mm:
-        one paling per 100mm of width,
-        with no extra allowance.
-      */
-
       extraPerMetre: {
         100: 3,
         125: 3,
         150: 0
       },
 
-      /*
-        Treated-pine cladding labour is
-        costed directly by area.
-      */
-
       labourRatePerM2: 50.00,
-
-      /*
-        Capping and plinth are both ON
-        by default and remain editable.
-      */
 
       capping: {
         defaultIncluded: true,
@@ -346,8 +283,55 @@ const PRICES = {
 
 
     /* -------------------------------------------------------
-       COLORBOND
+       50x50 GALVANISED MESH
        ------------------------------------------------------- */
+
+    galvMesh50: {
+
+      label: "50x50mm Galvanised Mesh - 4.0mm Wire",
+
+      cellSizeMm: 50,
+      wireDiameterMm: 4,
+
+      /*
+        Internal costing rate.
+        Includes transport allowance.
+        EX GST.
+      */
+
+      pricePerM2: 18.00,
+      priceIncludesGST: false,
+
+      /*
+        Available supplier sheet sizes.
+      */
+
+      sheets: [
+
+        {
+          key: "3000x2400",
+          label: "3000x2400mm Sheet",
+          lengthMm: 3000,
+          widthMm: 2400
+        },
+
+        {
+          key: "2400x1200",
+          label: "2400x1200mm Sheet",
+          lengthMm: 2400,
+          widthMm: 1200
+        },
+
+        {
+          key: "2000x1200",
+          label: "2000x1200mm Sheet",
+          lengthMm: 2000,
+          widthMm: 1200
+        }
+
+      ]
+    },
+
 
     colorbond: {
       label: "Colorbond Steel Cladding",
@@ -363,10 +347,6 @@ const PRICES = {
       ]
     },
 
-
-    /* -------------------------------------------------------
-       CUSTOM
-       ------------------------------------------------------- */
 
     custom: {
       label: "Custom / Other",
@@ -422,7 +402,7 @@ const PRICES = {
 
 
   /* =======================================================
-     FIXINGS / CONSUMABLES
+     FIXINGS
      ======================================================= */
 
   fixings: {
@@ -440,14 +420,6 @@ const PRICES = {
 
     baseplate: {
       label: "Fabricated steel baseplate",
-
-      /*
-        Includes:
-        plate
-        drilling
-        welding
-        bolts
-      */
 
       allowanceEach: 25.00,
       priceIncludesGST: true
@@ -486,68 +458,24 @@ const PRICES = {
 
   labour: {
 
-    /*
-      Gate fabrication:
-      cutting, welding, grinding,
-      finishing etc.
-    */
-
     gateFabricationHoursEach: 2.0,
-
-
-    /*
-      Each fabricated post:
-      cutting, custom cap,
-      fully welding etc.
-    */
 
     postFabricationHoursEach: 0.5,
 
-
-    /*
-      Complete fixed panel allowance.
-    */
-
     fixedPanelHoursEach: 2.0,
-
-
-    /*
-      EACH entered fixing hole:
-      10 minutes.
-    */
 
     drilledHoleHoursEach: 10 / 60,
 
-
-    /*
-      Install each concreted post.
-    */
-
     concretePostInstallHoursEach: 0.5,
 
-
-    /*
-      Baseplate installation.
-    */
-
     baseplatePostInstallHoursEach: 20 / 60,
-
-
-    /*
-      Hang gate and fit latch.
-
-      Includes:
-      handling
-      trailer loading
-      some associated travel time
-    */
 
     hangGateHoursEach: 1.5
   },
 
 
   /* =======================================================
-     POST / GATE FABRICATION RULES
+     FABRICATION RULES
      ======================================================= */
 
   fabrication: {
@@ -556,7 +484,39 @@ const PRICES = {
 
     gateGroundGapMm: 40,
 
+    /*
+      STEEL FRAME GAP
+
+      Post | 12mm | Gate | 12mm | Post
+
+      Total clearance around one gate
+      between two posts = 24mm.
+    */
+
     componentGapMm: 12,
+
+    /*
+      Cladding extends 6mm past
+      each side of the steel gate frame.
+
+      12mm steel gap - 6mm overhang
+      = approx 6mm finished visual gap.
+    */
+
+    gateCladdingOverhangMm: 6,
+
+    finishedCladdingGapMm: 6,
+
+    /*
+      Add approximately 30mm to calculated
+      cladding cut lengths for trimming /
+      fabrication processing.
+
+      Fixed-length purchased products can
+      ignore this allowance.
+    */
+
+    claddingProcessingAllowanceMm: 30,
 
     baseplateHeightAllowanceMm: 10,
 
@@ -591,6 +551,10 @@ const PRICES = {
 
     componentGapMm: 12,
 
+    gateCladdingOverhangMm: 6,
+
+    claddingProcessingAllowanceMm: 30,
+
     concreteEmbedmentMm: 650,
 
     baseplateHeightAllowanceMm: 10,
@@ -605,8 +569,6 @@ const PRICES = {
 
   /* =======================================================
      VIEW / REFERENCE DIRECTION
-     Does NOT reorder the mud map.
-     Mud map always remains left-to-right.
      ======================================================= */
 
   referenceDirections: {
@@ -641,6 +603,7 @@ const PRICES = {
   finishing: {
 
     duragalvTouchUp: {
+
       label:
         "Etch primer and silver galvanising spray",
 
@@ -652,23 +615,12 @@ const PRICES = {
 
   /* =======================================================
      POWDER COATING
-     ALL RATES EX GST.
+     ALL RATES EX GST
      ======================================================= */
 
   powderCoating: {
 
     priceIncludesGST: false,
-
-
-    /* -------------------------------------------------------
-       POSTS
-
-       Uses FULL fabricated cut length.
-
-       Example:
-       1800 finished concreted post
-       = 2450 fabricated length.
-       ------------------------------------------------------- */
 
     postRatePerLm: {
 
@@ -681,23 +633,9 @@ const PRICES = {
       "100x100_shs": 15.00
     },
 
-
-    /* -------------------------------------------------------
-       OPEN GATE / FRAME
-
-       Finished width × finished height.
-       ------------------------------------------------------- */
-
     openFrameRatePerM2: 65.00,
 
-
-    /*
-      Additional JTLA travel allowance
-      for each powder-coated JOB.
-    */
-
     jobTravelAllowanceExGST: 20.00,
-
 
     processingTime:
       "Allow approximately 2 weeks for powder coating."
@@ -705,55 +643,34 @@ const PRICES = {
 
 
   /* =======================================================
-     POWDER / COLORBOND COLOURS
-     Alphabetical.
+     COLOURS
      ======================================================= */
 
   colours: [
 
     "Basalt",
-
     "Bluegum",
-
     "Classic Cream",
-
     "Cottage Green",
-
     "Deep Ocean",
-
     "Dover White",
-
     "Dune",
-
     "Evening Haze",
-
     "Gully",
-
     "Ironstone",
-
     "Jasper",
-
     "Manor Red",
-
     "Monument",
-
     "Night Sky",
-
     "Pale Eucalypt",
-
     "Paperbark",
-
     "Shale Grey",
-
     "Southerly",
-
     "Surfmist",
-
     "Wallaby",
-
     "Windspray",
-
     "Woodland Grey"
+
   ],
 
 
