@@ -1,10 +1,11 @@
 /* ==========================================================
    JTLA GATES
    MAIN APP ENGINE
-   VERSION 240
+   VERSION 241
    ========================================================== */
 
-const $ = id => document.getElementById(id);
+const $ = id =>
+  document.getElementById(id);
 
 
 /* ==========================================================
@@ -12,6 +13,7 @@ const $ = id => document.getElementById(id);
    ========================================================== */
 
 let components = [];
+
 let componentCounter = 0;
 
 let selectedComponentId = null;
@@ -32,9 +34,11 @@ let undoState = null;
 let lastCalculation = null;
 
 let restoringJob = false;
+
 let refreshLock = false;
 
 let manualQuoteActive = false;
+
 let manualQuoteValue = 0;
 
 let suppressQuoteReset = false;
@@ -42,50 +46,58 @@ let suppressQuoteReset = false;
 
 /* ==========================================================
    COMPONENT COLOURS
-   STREET ORDER
    ========================================================== */
 
 const COMPONENT_COLOURS = [
+
   {
     name: "green",
     bg: "#42634b",
     text: "#ffffff"
   },
+
   {
     name: "orange",
     bg: "#9a6035",
     text: "#ffffff"
   },
+
   {
     name: "blue",
     bg: "#476b82",
     text: "#ffffff"
   },
+
   {
     name: "purple",
     bg: "#6b567c",
     text: "#ffffff"
   },
+
   {
     name: "ochre",
     bg: "#927637",
     text: "#ffffff"
   },
+
   {
     name: "red",
     bg: "#824b4b",
     text: "#ffffff"
   },
+
   {
     name: "teal",
     bg: "#3f7270",
     text: "#ffffff"
   },
+
   {
     name: "slate",
     bg: "#59646d",
     text: "#ffffff"
   }
+
 ];
 
 
@@ -94,34 +106,49 @@ const COMPONENT_COLOURS = [
    ========================================================== */
 
 function num(value) {
-  return Number(value || 0);
+
+  return Number(
+    value || 0
+  );
 }
 
 
 function money(value) {
+
   return new Intl.NumberFormat(
     "en-AU",
     {
       style: "currency",
       currency: "AUD"
     }
-  ).format(num(value));
+  )
+    .format(
+      num(value)
+    );
 }
 
 
-function toExGST(value, includesGST = true) {
+function toExGST(
+  value,
+  includesGST = true
+) {
+
   if (!includesGST) {
     return num(value);
   }
 
   return (
     num(value) /
-    (1 + PRICES.business.gst)
+    (
+      1 +
+      PRICES.business.gst
+    )
   );
 }
 
 
 function roundQuote(value) {
+
   return (
     Math.ceil(
       num(value) /
@@ -134,9 +161,15 @@ function roundQuote(value) {
 
 
 function formatProjectNumber(value) {
+
   const number =
-    String(Number(value))
-      .padStart(4, "0")
+    String(
+      Number(value)
+    )
+      .padStart(
+        4,
+        "0"
+      )
       .slice(-4);
 
   return `00${number}`;
@@ -144,23 +177,46 @@ function formatProjectNumber(value) {
 
 
 function rawPhone() {
+
   return String(
-    $("clientPhone")?.value || ""
+    $("clientPhone")
+      ?.value
+    ||
+    ""
   )
-    .replace(/\D/g, "")
-    .slice(0, 10);
+    .replace(
+      /\D/g,
+      ""
+    )
+    .slice(
+      0,
+      10
+    );
 }
 
 
 function displayPhone(value) {
-  const digits =
-    String(value || "")
-      .replace(/\D/g, "")
-      .slice(0, 10);
 
-  if (digits.length !== 10) {
+  const digits =
+    String(
+      value || ""
+    )
+      .replace(
+        /\D/g,
+        ""
+      )
+      .slice(
+        0,
+        10
+      );
+
+
+  if (
+    digits.length !== 10
+  ) {
     return digits;
   }
+
 
   return (
     `${digits.slice(0, 4)} ` +
@@ -171,70 +227,111 @@ function displayPhone(value) {
 
 
 function validAustralianMobile(value) {
-  return /^04\d{8}$/.test(
-    String(value || "")
-      .replace(/\D/g, "")
-  );
+
+  return /^04\d{8}$/
+    .test(
+      String(
+        value || ""
+      )
+        .replace(
+          /\D/g,
+          ""
+        )
+    );
 }
 
 
 function validEmail(value) {
+
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     .test(
-      String(value || "").trim()
+      String(
+        value || ""
+      )
+        .trim()
     );
 }
 
 
 function titleCaseWords(value) {
-  return String(value || "")
+
+  return String(
+    value || ""
+  )
     .replace(
       /\b[a-z]/g,
-      char => char.toUpperCase()
+      char =>
+        char.toUpperCase()
     );
 }
 
 
 function fullDirection(value) {
-  if (value === "vertical") {
+
+  if (
+    value === "vertical"
+  ) {
     return "vertical";
   }
 
-  if (value === "horizontal") {
+
+  if (
+    value === "horizontal"
+  ) {
     return "horizontal";
   }
+
 
   return "";
 }
 
 
 function abbreviatedDirection(value) {
-  if (value === "vertical") {
+
+  if (
+    value === "vertical"
+  ) {
     return "Vert";
   }
 
-  if (value === "horizontal") {
+
+  if (
+    value === "horizontal"
+  ) {
     return "Hori";
   }
+
 
   return "";
 }
 
 
 function selectedReferenceDescription() {
-  const value =
-    $("referenceDirection").value;
 
-  if (value === "other") {
+  const value =
+    $("referenceDirection")
+      .value;
+
+
+  if (
+    value === "other"
+  ) {
+
     return (
-      $("referenceOther").value.trim()
+      $("referenceOther")
+        .value
+        .trim()
       ||
       "Nominated site reference"
     );
   }
 
+
   return (
-    PRICES.referenceDirections[value]
+    PRICES
+      .referenceDirections[
+        value
+      ]
     ||
     "Looking from street toward property"
   );
@@ -242,6 +339,7 @@ function selectedReferenceDescription() {
 
 
 function getComponentColour(index) {
+
   return COMPONENT_COLOURS[
     index %
     COMPONENT_COLOURS.length
@@ -250,24 +348,33 @@ function getComponentColour(index) {
 
 
 /* ==========================================================
-   SAVED JOBS / PROJECT NUMBER
+   SAVED JOBS
    ========================================================== */
 
 function getSavedJobs() {
+
   try {
+
     return JSON.parse(
-      localStorage.getItem("jtlaJobs")
+      localStorage.getItem(
+        "jtlaJobs"
+      )
       ||
       "{}"
     );
+
   }
+
   catch {
+
     return {};
+
   }
 }
 
 
 function saveJobsObject(jobs) {
+
   localStorage.setItem(
     "jtlaJobs",
     JSON.stringify(jobs)
@@ -276,53 +383,81 @@ function saveJobsObject(jobs) {
 
 
 function getActiveProjectNumber() {
+
   let current =
     localStorage.getItem(
       "jtlaActiveProject"
     );
 
+
   if (current) {
     return current;
   }
 
+
   const jobs =
     getSavedJobs();
 
+
   const savedNumbers =
     Object.keys(jobs)
-      .map(project =>
-        Number(project.slice(-4))
+      .map(
+        project =>
+          Number(
+            project.slice(-4)
+          )
       )
-      .filter(Number.isFinite);
+      .filter(
+        Number.isFinite
+      );
+
 
   const next =
     savedNumbers.length
-      ? Math.max(...savedNumbers) + 1
-      : PRICES.projects
+
+      ? Math.max(
+          ...savedNumbers
+        ) + 1
+
+      : PRICES
+          .projects
           .startingProjectNumber;
 
+
   current =
-    formatProjectNumber(next);
+    formatProjectNumber(
+      next
+    );
+
 
   localStorage.setItem(
     "jtlaActiveProject",
     current
   );
 
+
   return current;
 }
 
 
 function getNextProjectNumber() {
+
   const jobs =
     getSavedJobs();
 
+
   const numbers =
     Object.keys(jobs)
-      .map(project =>
-        Number(project.slice(-4))
+      .map(
+        project =>
+          Number(
+            project.slice(-4)
+          )
       )
-      .filter(Number.isFinite);
+      .filter(
+        Number.isFinite
+      );
+
 
   const active =
     Number(
@@ -330,15 +465,24 @@ function getNextProjectNumber() {
         .slice(-4)
     );
 
+
   const highest =
     Math.max(
-      PRICES.projects
+
+      PRICES
+        .projects
         .startingProjectNumber - 1,
+
       active,
-      ...(numbers.length
-        ? numbers
-        : [0])
+
+      ...(
+        numbers.length
+          ? numbers
+          : [0]
+      )
+
     );
+
 
   return formatProjectNumber(
     highest + 1
@@ -351,50 +495,79 @@ function getNextProjectNumber() {
    ========================================================== */
 
 function resetQuoteToAuto() {
-  manualQuoteActive = false;
-  manualQuoteValue = 0;
+
+  manualQuoteActive =
+    false;
+
+  manualQuoteValue =
+    0;
+
 
   if (
     lastCalculation &&
     $("quotePrice")
   ) {
-    suppressQuoteReset = true;
+
+    suppressQuoteReset =
+      true;
+
 
     $("quotePrice").value =
-      lastCalculation.autoFinalPrice;
+      lastCalculation
+        .autoFinalPrice;
 
-    suppressQuoteReset = false;
+
+    suppressQuoteReset =
+      false;
   }
+
 
   updateQuoteMetrics();
 }
 
 
 function markQuoteManual() {
+
   const entered =
     num(
-      $("quotePrice").value
+      $("quotePrice")
+        .value
     );
 
-  if (entered <= 0) {
+
+  if (
+    entered <= 0
+  ) {
+
     resetQuoteToAuto();
+
     return;
   }
 
-  manualQuoteActive = true;
-  manualQuoteValue = entered;
+
+  manualQuoteActive =
+    true;
+
+  manualQuoteValue =
+    entered;
+
 
   updateQuoteMetrics();
+
   buildQuote();
+
   autoSaveJob();
 }
 
 
 function isNonPricingField(target) {
+
   const id =
     target?.id || "";
 
+
   return [
+
     "clientName",
     "siteAddress",
     "clientPhone",
@@ -403,11 +576,13 @@ function isNonPricingField(target) {
     "referenceOther",
     "projectNumber",
     "quotePrice"
+
   ].includes(id);
 }
 
 
 function maybeResetManualQuote(target) {
+
   if (
     suppressQuoteReset ||
     restoringJob ||
@@ -416,11 +591,13 @@ function maybeResetManualQuote(target) {
     return;
   }
 
+
   if (
     isNonPricingField(target)
   ) {
     return;
   }
+
 
   resetQuoteToAuto();
 }
@@ -431,7 +608,10 @@ function maybeResetManualQuote(target) {
    ========================================================== */
 
 function setUndoState(state) {
-  undoState = state;
+
+  undoState =
+    state;
+
 
   $("undoBtn").disabled =
     !undoState;
@@ -439,29 +619,46 @@ function setUndoState(state) {
 
 
 function clearUndoState() {
-  undoState = null;
-  $("undoBtn").disabled = true;
+
+  undoState =
+    null;
+
+
+  $("undoBtn").disabled =
+    true;
 }
 
 
 function performUndo() {
+
   if (!undoState) {
     return;
   }
 
+
   const state =
     undoState;
 
+
   clearUndoState();
+
   resetQuoteToAuto();
 
-  if (state.type === "delete") {
+
+  if (
+    state.type === "delete"
+  ) {
+
     restoreDeletedComponent(
       state
     );
   }
 
-  if (state.type === "move") {
+
+  if (
+    state.type === "move"
+  ) {
+
     restoreComponentOrder(
       state.order
     );
@@ -474,172 +671,246 @@ function performUndo() {
    ========================================================== */
 
 function snapshotComponent(component) {
+
   const card =
     document.querySelector(
       `[data-component-id="${component.id}"]`
     );
 
+
   if (!card) {
     return null;
   }
 
-  if (component.type === "post") {
+
+  if (
+    component.type ===
+    "post"
+  ) {
+
     return {
+
       type: "post",
 
       steelKey:
-        card.querySelector(
-          ".post-size"
-        ).value,
+        card
+          .querySelector(
+            ".post-size"
+          )
+          .value,
 
       fixing:
-        card.querySelector(
-          ".post-fixing"
-        ).value,
+        card
+          .querySelector(
+            ".post-fixing"
+          )
+          .value,
 
       customHeightEnabled:
-        card.dataset.customHeight
-        === "true",
+        card.dataset
+          .customHeight ===
+        "true",
 
       customHeight:
-        card.querySelector(
-          ".post-height-override"
-        ).value,
+        card
+          .querySelector(
+            ".post-height-override"
+          )
+          .value,
 
       holes:
         [
           ...card.querySelectorAll(
             ".hole-position"
           )
-        ].map(
-          input => input.value
-        ),
+        ]
+          .map(
+            input =>
+              input.value
+          ),
 
       topBoltEnabled:
-        card.querySelector(
-          ".house-bolt-enabled"
-        ).checked,
+        card
+          .querySelector(
+            ".house-bolt-enabled"
+          )
+          .checked,
 
       topHole:
-        card.querySelector(
-          ".top-hole-position"
-        ).value,
+        card
+          .querySelector(
+            ".top-hole-position"
+          )
+          .value,
 
       offset:
-        card.querySelector(
-          ".post-offset"
-        ).value
+        card
+          .querySelector(
+            ".post-offset"
+          )
+          .value
+
     };
   }
 
-  if (component.type === "gate") {
+
+  if (
+    component.type ===
+    "gate"
+  ) {
+
     return {
+
       type: "gate",
 
       widthMode:
-        card.dataset.widthMode
+        card.dataset
+          .widthMode
         ||
         "auto",
 
       manualWidth:
-        card.querySelector(
-          ".gate-manual-width"
-        ).value,
+        card
+          .querySelector(
+            ".gate-manual-width"
+          )
+          .value,
 
       frame:
-        card.querySelector(
-          ".gate-frame"
-        ).value,
+        card
+          .querySelector(
+            ".gate-frame"
+          )
+          .value,
 
       horizontalRails:
-        card.querySelector(
-          ".horizontal-rails"
-        ).value,
+        card
+          .querySelector(
+            ".horizontal-rails"
+          )
+          .value,
 
       verticalRails:
-        card.querySelector(
-          ".vertical-rails"
-        ).value,
+        card
+          .querySelector(
+            ".vertical-rails"
+          )
+          .value,
 
       hinge:
-        card.querySelector(
-          ".hinge-side"
-        ).value,
+        card
+          .querySelector(
+            ".hinge-side"
+          )
+          .value,
 
       opens:
-        card.querySelector(
-          ".open-direction"
-        ).value,
+        card
+          .querySelector(
+            ".open-direction"
+          )
+          .value,
 
       latch:
-        card.querySelector(
-          ".gate-latch"
-        ).value,
+        card
+          .querySelector(
+            ".gate-latch"
+          )
+          .value,
 
       otherLatch:
-        card.querySelector(
-          ".other-latch-description"
-        ).value,
+        card
+          .querySelector(
+            ".other-latch-description"
+          )
+          .value,
 
       otherLatchCost:
-        card.querySelector(
-          ".other-latch-cost"
-        ).value
+        card
+          .querySelector(
+            ".other-latch-cost"
+          )
+          .value
+
     };
   }
 
+
   return {
+
     type: "panel",
 
     width:
-      card.querySelector(
-        ".panel-width"
-      ).value,
+      card
+        .querySelector(
+          ".panel-width"
+        )
+        .value,
 
     height:
-      card.querySelector(
-        ".panel-height"
-      ).value,
+      card
+        .querySelector(
+          ".panel-height"
+        )
+        .value,
 
     railCount:
-      card.querySelector(
-        ".panel-rail-count"
-      ).value
+      card
+        .querySelector(
+          ".panel-rail-count"
+        )
+        .value
+
   };
 }
 
 
 /* ==========================================================
-   COMPONENT COLOUR
+   COMPONENT COLOURS
    ========================================================== */
 
 function applyComponentColours() {
+
   const visible =
     activeComponents();
 
+
   visible.forEach(
-    (component, index) => {
+    (
+      component,
+      index
+    ) => {
+
       const colour =
-        getComponentColour(index);
+        getComponentColour(
+          index
+        );
+
 
       component.colourIndex =
         index;
+
 
       const card =
         document.querySelector(
           `[data-component-id="${component.id}"]`
         );
 
-      if (card) {
-        card.style.setProperty(
-          "--component-colour",
-          colour.bg
-        );
 
-        card.style.setProperty(
-          "--component-text",
-          colour.text
-        );
+      if (card) {
+
+        card.style
+          .setProperty(
+            "--component-colour",
+            colour.bg
+          );
+
+
+        card.style
+          .setProperty(
+            "--component-text",
+            colour.text
+          );
       }
     }
   );
@@ -651,77 +922,118 @@ function applyComponentColours() {
    ========================================================== */
 
 function renumberComponents() {
+
   const gates =
     components.filter(
-      c => c.type === "gate"
+      component =>
+        component.type ===
+        "gate"
     );
+
 
   const panels =
     components.filter(
-      c => c.type === "panel"
+      component =>
+        component.type ===
+        "panel"
     );
 
+
   let postNumber = 0;
+
   let gateNumber = 0;
+
   let panelNumber = 0;
 
-  components.forEach(component => {
 
-    if (component.type === "post") {
-      postNumber++;
-      component.label =
-        `Post ${postNumber}`;
+  components.forEach(
+    component => {
+
+
+      if (
+        component.type ===
+        "post"
+      ) {
+
+        postNumber++;
+
+        component.label =
+          `Post ${postNumber}`;
+      }
+
+
+      else if (
+        component.type ===
+        "gate"
+      ) {
+
+        gateNumber++;
+
+
+        component.label =
+          gates.length === 1
+
+            ? "Gate"
+
+            : `Gate ${gateNumber}`;
+      }
+
+
+      else {
+
+        panelNumber++;
+
+
+        component.label =
+          panels.length === 1
+
+            ? "Fixed Panel"
+
+            : `Fixed Panel ${panelNumber}`;
+      }
+
+
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
+
+
+      if (card) {
+
+        card
+          .querySelector(
+            ".component-title"
+          )
+          .textContent =
+            component.label;
+      }
+
     }
+  );
 
-    else if (component.type === "gate") {
-      gateNumber++;
-
-      component.label =
-        gates.length === 1
-          ? "Gate"
-          : `Gate ${gateNumber}`;
-    }
-
-    else {
-      panelNumber++;
-
-      component.label =
-        panels.length === 1
-          ? "Fixed Panel"
-          : `Fixed Panel ${panelNumber}`;
-    }
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
-
-    if (card) {
-      card.querySelector(
-        ".component-title"
-      ).textContent =
-        component.label;
-    }
-  });
 
   applyComponentColours();
 }
 
 
 /* ==========================================================
-   ADD / BUILD COMPONENT
+   ADD COMPONENT
    ========================================================== */
 
 function addComponent(
   type,
   savedData = null
 ) {
+
   componentCounter++;
 
-  let id =
+
+  const id =
     savedData?.id
     ||
     `component-${componentCounter}`;
+
 
   const parsed =
     Number(
@@ -732,9 +1044,11 @@ function addComponent(
         )
     );
 
+
   if (
     Number.isFinite(parsed)
   ) {
+
     componentCounter =
       Math.max(
         componentCounter,
@@ -742,24 +1056,34 @@ function addComponent(
       );
   }
 
+
   const component = {
     id,
     type
   };
 
-  components.push(component);
+
+  components.push(
+    component
+  );
+
 
   buildComponent(
     component,
     savedData
   );
 
+
   renumberComponents();
 
+
   if (!restoringJob) {
+
     resetQuoteToAuto();
+
     refreshEverything();
   }
+
 
   return component;
 }
@@ -769,34 +1093,48 @@ function buildComponent(
   component,
   savedData = null
 ) {
+
   $("noComponentsMessage")
     ?.remove();
+
 
   const shell =
     $("componentTemplate")
       .content
       .cloneNode(true);
 
+
   const card =
-    shell.querySelector(
-      ".component-card"
-    );
+    shell
+      .querySelector(
+        ".component-card"
+      );
+
 
   card.dataset.componentId =
     component.id;
 
+
   card.dataset.componentType =
     component.type;
+
 
   card.id =
     `nav-${component.id}`;
 
-  const body =
-    shell.querySelector(
-      ".component-body"
-    );
 
-  if (component.type === "post") {
+  const body =
+    shell
+      .querySelector(
+        ".component-body"
+      );
+
+
+  if (
+    component.type ===
+    "post"
+  ) {
+
     body.appendChild(
       $("postTemplate")
         .content
@@ -804,7 +1142,12 @@ function buildComponent(
     );
   }
 
-  else if (component.type === "gate") {
+
+  else if (
+    component.type ===
+    "gate"
+  ) {
+
     body.appendChild(
       $("gateTemplate")
         .content
@@ -812,7 +1155,9 @@ function buildComponent(
     );
   }
 
+
   else {
+
     body.appendChild(
       $("panelTemplate")
         .content
@@ -820,13 +1165,18 @@ function buildComponent(
     );
   }
 
+
   $("componentsContainer")
-    .appendChild(shell);
+    .appendChild(
+      shell
+    );
+
 
   const inserted =
     document.querySelector(
       `[data-component-id="${component.id}"]`
     );
+
 
   setupComponent(
     inserted,
@@ -841,33 +1191,51 @@ function setupComponent(
   component,
   savedData
 ) {
-  card.querySelector(
-    ".remove-btn"
-  )
+
+  card
+    .querySelector(
+      ".remove-btn"
+    )
     .addEventListener(
       "click",
       () => {
+
         removeComponent(
           component.id
         );
       }
     );
 
-  if (component.type === "post") {
+
+  if (
+    component.type ===
+    "post"
+  ) {
+
     setupPost(
       card,
       savedData
     );
   }
 
-  if (component.type === "gate") {
+
+  if (
+    component.type ===
+    "gate"
+  ) {
+
     setupGate(
       card,
       savedData
     );
   }
 
-  if (component.type === "panel") {
+
+  if (
+    component.type ===
+    "panel"
+  ) {
+
     setupPanel(
       card,
       savedData
@@ -877,35 +1245,45 @@ function setupComponent(
 
 
 /* ==========================================================
-   POST SETUP
+   POST
    ========================================================== */
 
 function setupPost(
   card,
   saved = null
 ) {
+
   const size =
     card.querySelector(
       ".post-size"
     );
 
-  size.innerHTML = "";
+
+  size.innerHTML =
+    "";
+
 
   Object.entries(
     PRICES.steel.posts
   )
     .forEach(
-      ([key, item]) => {
+      (
+        [key, item]
+      ) => {
+
         const option =
           document.createElement(
             "option"
           );
 
+
         option.value =
           key;
 
+
         option.textContent =
           item.label;
+
 
         size.appendChild(
           option
@@ -913,114 +1291,163 @@ function setupPost(
       }
     );
 
+
   size.value =
     saved?.steelKey
     ||
-    PRICES.defaults.postType;
+    PRICES.defaults
+      .postType;
+
 
   card.dataset.customHeight =
     saved?.customHeightEnabled
+
       ? "true"
+
       : "false";
+
 
   if (saved) {
 
-    card.querySelector(
-      ".post-fixing"
-    ).value =
-      saved.fixing || "";
+    card
+      .querySelector(
+        ".post-fixing"
+      )
+      .value =
+        saved.fixing || "";
 
-    card.querySelector(
-      ".post-height-override"
-    ).value =
-      saved.customHeight || "";
 
-    card.querySelector(
-      ".house-bolt-enabled"
-    ).checked =
-      Boolean(
-        saved.topBoltEnabled
-      );
+    card
+      .querySelector(
+        ".post-height-override"
+      )
+      .value =
+        saved.customHeight || "";
 
-    card.querySelector(
-      ".top-hole-position"
-    ).value =
-      saved.topHole || "";
 
-    card.querySelector(
-      ".post-offset"
-    ).value =
-      saved.offset || "";
+    card
+      .querySelector(
+        ".house-bolt-enabled"
+      )
+      .checked =
+        Boolean(
+          saved.topBoltEnabled
+        );
 
-    card.querySelector(
-      ".hole-list"
-    ).innerHTML = "";
+
+    card
+      .querySelector(
+        ".top-hole-position"
+      )
+      .value =
+        saved.topHole || "";
+
+
+    card
+      .querySelector(
+        ".post-offset"
+      )
+      .value =
+        saved.offset || "";
+
+
+    card
+      .querySelector(
+        ".hole-list"
+      )
+      .innerHTML =
+        "";
+
 
     (
       saved.holes || []
     )
-      .forEach(value => {
-        addHole(
-          card,
-          value
-        );
-      });
+      .forEach(
+        value => {
+
+          addHole(
+            card,
+            value
+          );
+        }
+      );
   }
 
-  card.querySelector(
-    ".change-post-height-btn"
-  )
+
+  card
+    .querySelector(
+      ".change-post-height-btn"
+    )
     .addEventListener(
       "click",
       () => {
+
         resetQuoteToAuto();
+
 
         card.dataset.customHeight =
           "true";
 
+
         if (
-          !card.querySelector(
-            ".post-height-override"
-          ).value
+          !card
+            .querySelector(
+              ".post-height-override"
+            )
+            .value
         ) {
-          card.querySelector(
-            ".post-height-override"
-          ).value =
-            $("overallHeight").value;
+
+          card
+            .querySelector(
+              ".post-height-override"
+            )
+            .value =
+              $("overallHeight")
+                .value;
         }
+
 
         refreshEverything();
       }
     );
 
 
-  card.querySelector(
-    ".reset-post-height-btn"
-  )
+  card
+    .querySelector(
+      ".reset-post-height-btn"
+    )
     .addEventListener(
       "click",
       () => {
+
         resetQuoteToAuto();
+
 
         card.dataset.customHeight =
           "false";
 
-        card.querySelector(
-          ".post-height-override"
-        ).value =
-          "";
+
+        card
+          .querySelector(
+            ".post-height-override"
+          )
+          .value =
+            "";
+
 
         refreshEverything();
       }
     );
 
 
-  card.querySelector(
-    ".add-hole"
-  )
+  card
+    .querySelector(
+      ".add-hole"
+    )
     .addEventListener(
       "click",
       () => {
+
         resetQuoteToAuto();
 
         addHole(card);
@@ -1030,68 +1457,88 @@ function setupPost(
     );
 
 
-  card.querySelector(
-    ".post-fixing"
-  )
+  card
+    .querySelector(
+      ".post-fixing"
+    )
     .addEventListener(
       "change",
       () => {
+
         const fixing =
-          card.querySelector(
-            ".post-fixing"
-          ).value;
+          card
+            .querySelector(
+              ".post-fixing"
+            )
+            .value;
+
 
         if (
           fixing === "brick" &&
-          card.querySelector(
-            ".hole-list"
-          ).children.length === 0
+          card
+            .querySelector(
+              ".hole-list"
+            )
+            .children
+            .length === 0
         ) {
+
           addHole(card);
+
           addHole(card);
+
           addHole(card);
         }
+
 
         refreshEverything();
       }
     );
 
-  updatePostUI(card);
+
+  updatePostUI(
+    card
+  );
 }
 
-
-/* ==========================================================
-   POST HOLES
-   ========================================================== */
 
 function addHole(
   card,
   value = ""
 ) {
+
   const fragment =
     $("holeTemplate")
       .content
       .cloneNode(true);
 
+
   const row =
-    fragment.querySelector(
-      ".hole-row"
-    );
+    fragment
+      .querySelector(
+        ".hole-row"
+      );
+
 
   const input =
-    row.querySelector(
-      ".hole-position"
-    );
+    row
+      .querySelector(
+        ".hole-position"
+      );
+
 
   input.value =
     value;
 
-  row.querySelector(
-    ".remove-hole"
-  )
+
+  row
+    .querySelector(
+      ".remove-hole"
+    )
     .addEventListener(
       "click",
       () => {
+
         resetQuoteToAuto();
 
         row.remove();
@@ -1100,31 +1547,38 @@ function addHole(
       }
     );
 
-  card.querySelector(
-    ".hole-list"
-  )
-    .appendChild(fragment);
+
+  card
+    .querySelector(
+      ".hole-list"
+    )
+    .appendChild(
+      fragment
+    );
 }
 
 
-/* ==========================================================
-   POST HEIGHT / CUT LENGTH
-   ========================================================== */
-
 function getPostFinishedHeight(card) {
+
   if (
-    card.dataset.customHeight ===
+    card.dataset
+      .customHeight ===
     "true"
   ) {
+
     return num(
-      card.querySelector(
-        ".post-height-override"
-      ).value
+      card
+        .querySelector(
+          ".post-height-override"
+        )
+        .value
     );
   }
 
+
   return num(
-    $("overallHeight").value
+    $("overallHeight")
+      .value
   );
 }
 
@@ -1133,54 +1587,82 @@ function getPostCutLength(
   card,
   fixing
 ) {
+
   const finishedHeight =
-    getPostFinishedHeight(card);
+    getPostFinishedHeight(
+      card
+    );
+
 
   if (!finishedHeight) {
     return 0;
   }
 
-  if (fixing === "baseplate") {
+
+  if (
+    fixing === "baseplate"
+  ) {
+
     return Math.max(
+
       0,
 
       finishedHeight -
-      PRICES.fabrication
+      PRICES
+        .fabrication
         .baseplateHeightAllowanceMm
+
     );
   }
 
-  if (fixing === "brick") {
+
+  if (
+    fixing === "brick"
+  ) {
+
     return finishedHeight;
   }
+
 
   if (
     fixing &&
     fixing !== "existing"
   ) {
+
     return (
       finishedHeight +
-      PRICES.fabrication
+      PRICES
+        .fabrication
         .concreteEmbedmentMm
     );
   }
+
 
   return 0;
 }
 
 
 function updatePostUI(card) {
+
   const fixing =
-    card.querySelector(
-      ".post-fixing"
-    ).value;
+    card
+      .querySelector(
+        ".post-fixing"
+      )
+      .value;
+
 
   const custom =
-    card.dataset.customHeight ===
+    card.dataset
+      .customHeight ===
     "true";
 
+
   const finishedHeight =
-    getPostFinishedHeight(card);
+    getPostFinishedHeight(
+      card
+    );
+
 
   const cut =
     getPostCutLength(
@@ -1188,68 +1670,95 @@ function updatePostUI(card) {
       fixing
     );
 
-  card.querySelector(
-    ".post-height-override-wrap"
-  )
-    .classList.toggle(
+
+  card
+    .querySelector(
+      ".post-height-override-wrap"
+    )
+    .classList
+    .toggle(
       "hidden",
       !custom
     );
 
-  card.querySelector(
-    ".post-height-status"
-  ).textContent =
-    custom
-      ? "CUSTOM"
-      : "";
 
-  card.querySelector(
-    ".post-visible-height"
-  ).textContent =
-    finishedHeight
-      ? `${finishedHeight} mm`
-      : "-";
+  card
+    .querySelector(
+      ".post-height-status"
+    )
+    .textContent =
+      custom
+        ? "CUSTOM"
+        : "";
 
-  card.querySelector(
-    ".post-cut"
-  ).textContent =
-    cut
-      ? `${cut} mm`
-      : "-";
 
-  card.querySelector(
-    ".brick-holes"
-  )
-    .classList.toggle(
+  card
+    .querySelector(
+      ".post-visible-height"
+    )
+    .textContent =
+      finishedHeight
+        ? `${finishedHeight} mm`
+        : "-";
+
+
+  card
+    .querySelector(
+      ".post-cut"
+    )
+    .textContent =
+      cut
+        ? `${cut} mm`
+        : "-";
+
+
+  card
+    .querySelector(
+      ".brick-holes"
+    )
+    .classList
+    .toggle(
       "hidden",
       fixing !== "brick"
     );
 
-  card.querySelector(
-    ".house-bolt"
-  )
-    .classList.toggle(
+
+  card
+    .querySelector(
+      ".house-bolt"
+    )
+    .classList
+    .toggle(
       "hidden",
       fixing !== "concreteHouse"
     );
 
-  card.querySelector(
-    ".floating-offset"
-  )
-    .classList.toggle(
+
+  card
+    .querySelector(
+      ".floating-offset"
+    )
+    .classList
+    .toggle(
       "hidden",
       fixing !== "concreteFloating"
     );
 
-  const topBolt =
-    card.querySelector(
-      ".house-bolt-enabled"
-    ).checked;
 
-  card.querySelector(
-    ".house-bolt-position"
-  )
-    .classList.toggle(
+  const topBolt =
+    card
+      .querySelector(
+        ".house-bolt-enabled"
+      )
+      .checked;
+
+
+  card
+    .querySelector(
+      ".house-bolt-position"
+    )
+    .classList
+    .toggle(
       "hidden",
       !topBolt
     );
@@ -1257,35 +1766,45 @@ function updatePostUI(card) {
 
 
 /* ==========================================================
-   GATE SETUP
+   GATE
    ========================================================== */
 
 function setupGate(
   card,
   saved = null
 ) {
+
   const frame =
     card.querySelector(
       ".gate-frame"
     );
 
-  frame.innerHTML = "";
+
+  frame.innerHTML =
+    "";
+
 
   Object.entries(
     PRICES.steel.frame
   )
     .forEach(
-      ([key, item]) => {
+      (
+        [key, item]
+      ) => {
+
         const option =
           document.createElement(
             "option"
           );
 
+
         option.value =
           key;
 
+
         option.textContent =
           item.label;
+
 
         frame.appendChild(
           option
@@ -1293,10 +1812,12 @@ function setupGate(
       }
     );
 
+
   frame.value =
     saved?.frame
     ||
-    PRICES.defaults.frameType;
+    PRICES.defaults
+      .frameType;
 
 
   const latch =
@@ -1304,29 +1825,39 @@ function setupGate(
       ".gate-latch"
     );
 
-  latch.innerHTML = "";
+
+  latch.innerHTML =
+    "";
+
 
   Object.entries(
     PRICES.hardware.latches
   )
     .forEach(
-      ([key, item]) => {
+      (
+        [key, item]
+      ) => {
+
         const option =
           document.createElement(
             "option"
           );
 
+
         option.value =
           key;
 
+
         option.textContent =
           item.label;
+
 
         latch.appendChild(
           option
         );
       }
     );
+
 
   latch.value =
     saved?.latch
@@ -1339,131 +1870,189 @@ function setupGate(
     ||
     "auto";
 
-  card.querySelector(
-    ".gate-manual-width"
-  ).value =
-    saved?.manualWidth || "";
 
-  card.querySelector(
-    ".horizontal-rails"
-  ).value =
-    saved?.horizontalRails || "0";
-
-  card.querySelector(
-    ".vertical-rails"
-  ).value =
-    saved?.verticalRails || "0";
-
-  card.querySelector(
-    ".hinge-side"
-  ).value =
-    saved?.hinge
-    ||
-    PRICES.defaults.hingeSide;
-
-  card.querySelector(
-    ".open-direction"
-  ).value =
-    saved?.opens
-    ||
-    PRICES.defaults.openDirection;
-
-  card.querySelector(
-    ".other-latch-description"
-  ).value =
-    saved?.otherLatch || "";
-
-  card.querySelector(
-    ".other-latch-cost"
-  ).value =
-    saved?.otherLatchCost || "";
+  card
+    .querySelector(
+      ".gate-manual-width"
+    )
+    .value =
+      saved?.manualWidth || "";
 
 
-  card.querySelector(
-    ".gate-width-mode-btn"
-  )
+  card
+    .querySelector(
+      ".horizontal-rails"
+    )
+    .value =
+      saved?.horizontalRails || "0";
+
+
+  card
+    .querySelector(
+      ".vertical-rails"
+    )
+    .value =
+      saved?.verticalRails || "0";
+
+
+  card
+    .querySelector(
+      ".hinge-side"
+    )
+    .value =
+      saved?.hinge
+      ||
+      PRICES.defaults
+        .hingeSide;
+
+
+  card
+    .querySelector(
+      ".open-direction"
+    )
+    .value =
+      saved?.opens
+      ||
+      PRICES.defaults
+        .openDirection;
+
+
+  card
+    .querySelector(
+      ".other-latch-description"
+    )
+    .value =
+      saved?.otherLatch || "";
+
+
+  card
+    .querySelector(
+      ".other-latch-cost"
+    )
+    .value =
+      saved?.otherLatchCost || "";
+
+
+  card
+    .querySelector(
+      ".gate-width-mode-btn"
+    )
     .addEventListener(
       "click",
       () => {
+
         resetQuoteToAuto();
+
 
         card.dataset.widthMode =
           card.dataset.widthMode ===
           "manual"
+
             ? "auto"
+
             : "manual";
+
 
         refreshEverything();
       }
     );
 
-  updateGateUI(card);
+
+  updateGateUI(
+    card
+  );
 }
 
 
 function updateGateUI(card) {
+
   const manual =
-    card.dataset.widthMode ===
+    card.dataset
+      .widthMode ===
     "manual";
 
-  card.querySelector(
-    ".gate-width-mode-btn"
-  ).textContent =
-    manual
-      ? "MANUAL WIDTH"
-      : "AUTO WIDTH";
 
-  card.querySelector(
-    ".gate-width-mode-btn"
-  )
-    .classList.toggle(
+  card
+    .querySelector(
+      ".gate-width-mode-btn"
+    )
+    .textContent =
+      manual
+        ? "MANUAL WIDTH"
+        : "AUTO WIDTH";
+
+
+  card
+    .querySelector(
+      ".gate-width-mode-btn"
+    )
+    .classList
+    .toggle(
       "manual",
       manual
     );
 
-  card.querySelector(
-    ".gate-manual-width-wrap"
-  )
-    .classList.toggle(
+
+  card
+    .querySelector(
+      ".gate-manual-width-wrap"
+    )
+    .classList
+    .toggle(
       "hidden",
       !manual
     );
 
-  card.querySelector(
-    ".other-latch"
-  )
-    .classList.toggle(
+
+  card
+    .querySelector(
+      ".other-latch"
+    )
+    .classList
+    .toggle(
       "hidden",
 
-      card.querySelector(
-        ".gate-latch"
-      ).value !== "other"
+      card
+        .querySelector(
+          ".gate-latch"
+        )
+        .value !==
+      "other"
     );
 }
 
 
 /* ==========================================================
-   PANEL SETUP
+   PANEL
    ========================================================== */
 
 function setupPanel(
   card,
   saved = null
 ) {
-  card.querySelector(
-    ".panel-width"
-  ).value =
-    saved?.width || "";
 
-  card.querySelector(
-    ".panel-height"
-  ).value =
-    saved?.height || "";
+  card
+    .querySelector(
+      ".panel-width"
+    )
+    .value =
+      saved?.width || "";
 
-  card.querySelector(
-    ".panel-rail-count"
-  ).value =
-    saved?.railCount || "3";
+
+  card
+    .querySelector(
+      ".panel-height"
+    )
+    .value =
+      saved?.height || "";
+
+
+  card
+    .querySelector(
+      ".panel-rail-count"
+    )
+    .value =
+      saved?.railCount || "3";
 }
 
 
@@ -1472,248 +2061,331 @@ function setupPanel(
    ========================================================== */
 
 function readPosts() {
+
   return components
+
     .filter(
-      c => c.type === "post"
+      component =>
+        component.type ===
+        "post"
     )
-    .map(component => {
 
-      const card =
-        document.querySelector(
-          `[data-component-id="${component.id}"]`
-        );
+    .map(
+      component => {
 
-      const steelKey =
-        card.querySelector(
-          ".post-size"
-        ).value;
 
-      const steel =
-        PRICES.steel.posts[
-          steelKey
-        ];
-
-      const fixing =
-        card.querySelector(
-          ".post-fixing"
-        ).value;
-
-      const holes =
-        [
-          ...card.querySelectorAll(
-            ".hole-position"
-          )
-        ]
-          .map(
-            input =>
-              num(input.value)
-          )
-          .filter(
-            value =>
-              value > 0
+        const card =
+          document.querySelector(
+            `[data-component-id="${component.id}"]`
           );
 
-      const topHole =
-        card.querySelector(
-          ".house-bolt-enabled"
-        ).checked
 
-        ? num(
-            card.querySelector(
-              ".top-hole-position"
-            ).value
-          )
+        const steelKey =
+          card
+            .querySelector(
+              ".post-size"
+            )
+            .value;
 
-        : 0;
 
-      return {
-        id:
-          component.id,
+        const steel =
+          PRICES
+            .steel
+            .posts[
+              steelKey
+            ];
 
-        label:
-          component.label,
 
-        steelKey,
+        const fixing =
+          card
+            .querySelector(
+              ".post-fixing"
+            )
+            .value;
 
-        steelLabel:
-          steel.label,
 
-        widthMm:
-          steel.widthMm,
+        const holes =
+          [
+            ...card.querySelectorAll(
+              ".hole-position"
+            )
+          ]
 
-        depthMm:
-          steel.depthMm,
+            .map(
+              input =>
+                num(
+                  input.value
+                )
+            )
 
-        fixing,
+            .filter(
+              value =>
+                value > 0
+            );
 
-        finishedHeight:
-          getPostFinishedHeight(card),
 
-        cutLengthMm:
-          getPostCutLength(
-            card,
-            fixing
-          ),
+        const topHole =
+          card
+            .querySelector(
+              ".house-bolt-enabled"
+            )
+            .checked
 
-        customHeight:
-          card.dataset.customHeight ===
-          "true",
+          ? num(
+              card
+                .querySelector(
+                  ".top-hole-position"
+                )
+                .value
+            )
 
-        holes,
+          : 0;
 
-        topHole,
 
-        offset:
-          num(
-            card.querySelector(
-              ".post-offset"
-            ).value
-          )
-      };
-    });
+        return {
+
+          id:
+            component.id,
+
+          label:
+            component.label,
+
+          steelKey,
+
+          steelLabel:
+            steel.label,
+
+          widthMm:
+            steel.widthMm,
+
+          depthMm:
+            steel.depthMm,
+
+          fixing,
+
+          finishedHeight:
+            getPostFinishedHeight(
+              card
+            ),
+
+          cutLengthMm:
+            getPostCutLength(
+              card,
+              fixing
+            ),
+
+          customHeight:
+            card.dataset
+              .customHeight ===
+            "true",
+
+          holes,
+
+          topHole,
+
+          offset:
+            num(
+              card
+                .querySelector(
+                  ".post-offset"
+                )
+                .value
+            )
+
+        };
+      }
+    );
 }
 
 
 function readGates() {
+
   return components
+
     .filter(
-      c => c.type === "gate"
+      component =>
+        component.type ===
+        "gate"
     )
-    .map(component => {
 
-      const card =
-        document.querySelector(
-          `[data-component-id="${component.id}"]`
-        );
+    .map(
+      component => {
 
-      return {
-        id:
-          component.id,
 
-        label:
-          component.label,
+        const card =
+          document.querySelector(
+            `[data-component-id="${component.id}"]`
+          );
 
-        width:
-          num(
+
+        return {
+
+          id:
+            component.id,
+
+          label:
+            component.label,
+
+          width:
+            num(
+              card.dataset
+                .calculatedWidth
+            ),
+
+          height:
+            num(
+              card.dataset
+                .calculatedHeight
+            ),
+
+          claddingWidth:
+            num(
+              card.dataset
+                .claddingWidth
+            ),
+
+          widthMode:
             card.dataset
-              .calculatedWidth
-          ),
+              .widthMode
+            ||
+            "auto",
 
-        height:
-          num(
-            card.dataset
-              .calculatedHeight
-          ),
+          manualWidth:
+            num(
+              card
+                .querySelector(
+                  ".gate-manual-width"
+                )
+                .value
+            ),
 
-        claddingWidth:
-          num(
-            card.dataset
-              .claddingWidth
-          ),
+          frame:
+            card
+              .querySelector(
+                ".gate-frame"
+              )
+              .value,
 
-        widthMode:
-          card.dataset.widthMode
-          ||
-          "auto",
+          horizontalRails:
+            num(
+              card
+                .querySelector(
+                  ".horizontal-rails"
+                )
+                .value
+            ),
 
-        manualWidth:
-          num(
-            card.querySelector(
-              ".gate-manual-width"
-            ).value
-          ),
+          verticalRails:
+            num(
+              card
+                .querySelector(
+                  ".vertical-rails"
+                )
+                .value
+            ),
 
-        frame:
-          card.querySelector(
-            ".gate-frame"
-          ).value,
+          hinge:
+            card
+              .querySelector(
+                ".hinge-side"
+              )
+              .value,
 
-        horizontalRails:
-          num(
-            card.querySelector(
-              ".horizontal-rails"
-            ).value
-          ),
+          opens:
+            card
+              .querySelector(
+                ".open-direction"
+              )
+              .value,
 
-        verticalRails:
-          num(
-            card.querySelector(
-              ".vertical-rails"
-            ).value
-          ),
+          latch:
+            card
+              .querySelector(
+                ".gate-latch"
+              )
+              .value,
 
-        hinge:
-          card.querySelector(
-            ".hinge-side"
-          ).value,
+          otherLatch:
+            card
+              .querySelector(
+                ".other-latch-description"
+              )
+              .value
+              .trim(),
 
-        opens:
-          card.querySelector(
-            ".open-direction"
-          ).value,
+          otherLatchCost:
+            num(
+              card
+                .querySelector(
+                  ".other-latch-cost"
+                )
+                .value
+            )
 
-        latch:
-          card.querySelector(
-            ".gate-latch"
-          ).value,
-
-        otherLatch:
-          card.querySelector(
-            ".other-latch-description"
-          ).value.trim(),
-
-        otherLatchCost:
-          num(
-            card.querySelector(
-              ".other-latch-cost"
-            ).value
-          )
-      };
-    });
+        };
+      }
+    );
 }
 
 
 function readPanels() {
+
   return components
+
     .filter(
-      c => c.type === "panel"
+      component =>
+        component.type ===
+        "panel"
     )
-    .map(component => {
 
-      const card =
-        document.querySelector(
-          `[data-component-id="${component.id}"]`
-        );
+    .map(
+      component => {
 
-      return {
-        id:
-          component.id,
 
-        label:
-          component.label,
+        const card =
+          document.querySelector(
+            `[data-component-id="${component.id}"]`
+          );
 
-        width:
-          num(
-            card.querySelector(
-              ".panel-width"
-            ).value
-          ),
 
-        height:
-          num(
-            card.querySelector(
-              ".panel-height"
-            ).value
-          ),
+        return {
 
-        railCount:
-          num(
-            card.querySelector(
-              ".panel-rail-count"
-            ).value
-          )
-      };
-    });
+          id:
+            component.id,
+
+          label:
+            component.label,
+
+          width:
+            num(
+              card
+                .querySelector(
+                  ".panel-width"
+                )
+                .value
+            ),
+
+          height:
+            num(
+              card
+                .querySelector(
+                  ".panel-height"
+                )
+                .value
+            ),
+
+          railCount:
+            num(
+              card
+                .querySelector(
+                  ".panel-rail-count"
+                )
+                .value
+            )
+
+        };
+      }
+    );
 }
 
 
@@ -1722,23 +2394,31 @@ function readPanels() {
    ========================================================== */
 
 function componentIsActive(component) {
+
   if (
-    component.type === "post"
+    component.type ===
+    "post"
   ) {
+
     return includeState.posts;
   }
 
+
   if (
-    component.type === "gate"
+    component.type ===
+    "gate"
   ) {
+
     return includeState.gate;
   }
+
 
   return true;
 }
 
 
 function activeComponents() {
+
   return components.filter(
     componentIsActive
   );
@@ -1752,14 +2432,21 @@ function activeComponents() {
 function getGateControlHeight(
   gateComponent
 ) {
+
   const overall =
     num(
-      $("overallHeight").value
+      $("overallHeight")
+        .value
     );
 
-  if (!includeState.posts) {
+
+  if (
+    !includeState.posts
+  ) {
+
     return overall;
   }
+
 
   const index =
     components.findIndex(
@@ -1768,14 +2455,21 @@ function getGateControlHeight(
         gateComponent.id
     );
 
-  let leftHeight = null;
-  let rightHeight = null;
+
+  let leftHeight =
+    null;
+
+
+  let rightHeight =
+    null;
+
 
   for (
     let i = index - 1;
     i >= 0;
     i--
   ) {
+
     if (
       components[i].type !==
       "post"
@@ -1783,22 +2477,29 @@ function getGateControlHeight(
       continue;
     }
 
+
     const card =
       document.querySelector(
         `[data-component-id="${components[i].id}"]`
       );
 
+
     leftHeight =
-      getPostFinishedHeight(card);
+      getPostFinishedHeight(
+        card
+      );
+
 
     break;
   }
+
 
   for (
     let i = index + 1;
     i < components.length;
     i++
   ) {
+
     if (
       components[i].type !==
       "post"
@@ -1806,16 +2507,22 @@ function getGateControlHeight(
       continue;
     }
 
+
     const card =
       document.querySelector(
         `[data-component-id="${components[i].id}"]`
       );
 
+
     rightHeight =
-      getPostFinishedHeight(card);
+      getPostFinishedHeight(
+        card
+      );
+
 
     break;
   }
+
 
   const valid =
     [
@@ -1827,9 +2534,14 @@ function getGateControlHeight(
           num(value) > 0
       );
 
-  if (!valid.length) {
+
+  if (
+    !valid.length
+  ) {
+
     return overall;
   }
+
 
   return Math.min(
     ...valid
@@ -1839,40 +2551,46 @@ function getGateControlHeight(
 
 /* ==========================================================
    GATE DIMENSIONS
-   12MM STEEL CLEARANCE EACH SIDE
    ========================================================== */
 
 function calculateGateDimensions() {
+
   const cavity =
     num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     );
+
 
   const gates =
     components.filter(
       component =>
-        component.type === "gate"
+        component.type ===
+        "gate"
         &&
         includeState.gate
     );
 
-  if (!gates.length) {
+
+  if (
+    !gates.length
+  ) {
+
     return;
   }
+
 
   const posts =
     readPosts();
 
+
   const panels =
     readPanels();
+
 
   const active =
     activeComponents();
 
-  /*
-    Each physical boundary between
-    components gets 12mm steel clearance.
-  */
 
   const gapTotal =
     Math.max(
@@ -1880,7 +2598,8 @@ function calculateGateDimensions() {
       active.length - 1
     )
     *
-    PRICES.fabrication
+    PRICES
+      .fabrication
       .componentGapMm;
 
 
@@ -1888,14 +2607,19 @@ function calculateGateDimensions() {
     includeState.posts
 
       ? posts.reduce(
-          (sum, post) => {
+          (
+            sum,
+            post
+          ) => {
 
             if (
               post.fixing ===
               "existing"
             ) {
+
               return sum;
             }
+
 
             return (
               sum +
@@ -1910,43 +2634,63 @@ function calculateGateDimensions() {
 
   const panelWidthTotal =
     panels.reduce(
-      (sum, panel) =>
-        sum + panel.width,
+      (
+        sum,
+        panel
+      ) =>
+        sum +
+        panel.width,
       0
     );
 
 
-  let manualWidthTotal = 0;
-  let autoGateCount = 0;
+  let manualWidthTotal =
+    0;
 
 
-  gates.forEach(component => {
+  let autoGateCount =
+    0;
 
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
 
-    if (
-      card.dataset.widthMode ===
-      "manual"
-    ) {
-      manualWidthTotal +=
-        num(
-          card.querySelector(
-            ".gate-manual-width"
-          ).value
+  gates.forEach(
+    component => {
+
+
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
         );
-    }
 
-    else {
-      autoGateCount++;
+
+      if (
+        card.dataset
+          .widthMode ===
+        "manual"
+      ) {
+
+        manualWidthTotal +=
+          num(
+            card
+              .querySelector(
+                ".gate-manual-width"
+              )
+              .value
+          );
+      }
+
+
+      else {
+
+        autoGateCount++;
+      }
+
     }
-  });
+  );
 
 
   const remaining =
     Math.max(
+
       0,
 
       cavity -
@@ -1954,6 +2698,7 @@ function calculateGateDimensions() {
       panelWidthTotal -
       gapTotal -
       manualWidthTotal
+
     );
 
 
@@ -1968,108 +2713,135 @@ function calculateGateDimensions() {
       : 0;
 
 
-  gates.forEach(component => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
+  gates.forEach(
+    component => {
 
 
-    const steelWidth =
-      card.dataset.widthMode ===
-      "manual"
-
-        ? num(
-            card.querySelector(
-              ".gate-manual-width"
-            ).value
-          )
-
-        : autoWidth;
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
 
 
-    const controlHeight =
-      getGateControlHeight(
-        component
-      );
+      const steelWidth =
+        card.dataset
+          .widthMode ===
+        "manual"
+
+          ? num(
+              card
+                .querySelector(
+                  ".gate-manual-width"
+                )
+                .value
+            )
+
+          : autoWidth;
 
 
-    const steelHeight =
-      Math.max(
-        0,
-
-        controlHeight -
-        PRICES.fabrication
-          .gateGroundGapMm
-      );
+      const controlHeight =
+        getGateControlHeight(
+          component
+        );
 
 
-    /*
-      Cladding overhangs 6mm
-      each side of steel frame.
-    */
+      const steelHeight =
+        Math.max(
 
-    const claddingWidth =
-      includeState.cladding
+          0,
 
-        ? (
-            steelWidth +
-            PRICES.fabrication
-              .gateCladdingOverhangMm *
-            2
-          )
+          controlHeight -
+          PRICES
+            .fabrication
+            .gateGroundGapMm
 
-        : steelWidth;
+        );
 
 
-    card.dataset.calculatedWidth =
-      steelWidth;
+      const claddingWidth =
+        includeState.cladding
 
-    card.dataset.calculatedHeight =
-      steelHeight;
+          ? (
+              steelWidth +
+              (
+                PRICES
+                  .fabrication
+                  .gateCladdingOverhangMm *
+                2
+              )
+            )
 
-    card.dataset.claddingWidth =
-      claddingWidth;
-
-
-    card.querySelector(
-      ".gate-width-display"
-    ).textContent =
-      steelWidth
-        ? `${steelWidth} mm`
-        : "-";
+          : steelWidth;
 
 
-    card.querySelector(
-      ".gate-height-display"
-    ).textContent =
-      steelHeight
-        ? `${steelHeight} mm`
-        : "-";
+      card.dataset
+        .calculatedWidth =
+          steelWidth;
 
 
-    card.querySelector(
-      ".gate-cladding-width-display"
-    ).textContent =
-      claddingWidth
-        ? `${claddingWidth} mm`
-        : "-";
+      card.dataset
+        .calculatedHeight =
+          steelHeight;
 
 
-    card.querySelector(
-      ".gate-height-basis"
-    ).textContent =
-      controlHeight
+      card.dataset
+        .claddingWidth =
+          claddingWidth;
 
-        ? (
-            `${steelHeight}mm frame height from ` +
-            `${controlHeight}mm finished height less ` +
-            `${PRICES.fabrication.gateGroundGapMm}mm ground clearance`
-          )
 
-        : "";
-  });
+      card
+        .querySelector(
+          ".gate-width-display"
+        )
+        .textContent =
+          steelWidth
+
+            ? `${steelWidth} mm`
+
+            : "-";
+
+
+      card
+        .querySelector(
+          ".gate-height-display"
+        )
+        .textContent =
+          steelHeight
+
+            ? `${steelHeight} mm`
+
+            : "-";
+
+
+      card
+        .querySelector(
+          ".gate-cladding-width-display"
+        )
+        .textContent =
+          claddingWidth
+
+            ? `${claddingWidth} mm`
+
+            : "-";
+
+
+      card
+        .querySelector(
+          ".gate-height-basis"
+        )
+        .textContent =
+          controlHeight
+
+            ? (
+                `${steelHeight}mm frame height from ` +
+                `${controlHeight}mm finished height less ` +
+                `${PRICES.fabrication.gateGroundGapMm}mm ground clearance`
+              )
+
+            : "";
+
+    }
+  );
 }
 
 
@@ -2082,115 +2854,158 @@ function updateIncludeUI() {
   const gateButton =
     $("includeGateBtn");
 
+
   gateButton.textContent =
     includeState.gate
+
       ? "GATE ON"
+
       : "GATE OFF";
 
-  gateButton.classList.toggle(
-    "on",
-    includeState.gate
-  );
 
-  gateButton.classList.toggle(
-    "off",
-    !includeState.gate
-  );
+  gateButton.classList
+    .toggle(
+      "on",
+      includeState.gate
+    );
+
+
+  gateButton.classList
+    .toggle(
+      "off",
+      !includeState.gate
+    );
 
 
   const postButton =
     $("includePostsBtn");
 
+
   postButton.textContent =
     includeState.posts
+
       ? "POSTS ON"
+
       : "POSTS OFF";
 
-  postButton.classList.toggle(
-    "on",
-    includeState.posts
-  );
 
-  postButton.classList.toggle(
-    "off",
-    !includeState.posts
-  );
+  postButton.classList
+    .toggle(
+      "on",
+      includeState.posts
+    );
+
+
+  postButton.classList
+    .toggle(
+      "off",
+      !includeState.posts
+    );
 
 
   const cladButton =
     $("includeCladdingBtn");
 
+
   cladButton.textContent =
     includeState.cladding
+
       ? "CLADDING ON"
+
       : "CLADDING OFF";
 
-  cladButton.classList.toggle(
-    "on",
-    includeState.cladding
-  );
 
-  cladButton.classList.toggle(
-    "off",
-    !includeState.cladding
-  );
+  cladButton.classList
+    .toggle(
+      "on",
+      includeState.cladding
+    );
 
 
-  components
-    .filter(
-      c => c.type === "post"
-    )
-    .forEach(component => {
-
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      )
-        ?.classList.toggle(
-          "hidden",
-          !includeState.posts
-        );
-    });
+  cladButton.classList
+    .toggle(
+      "off",
+      !includeState.cladding
+    );
 
 
   components
-    .filter(
-      c => c.type === "gate"
-    )
-    .forEach(component => {
 
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      )
-        ?.classList.toggle(
-          "hidden",
-          !includeState.gate
-        );
-    });
+    .filter(
+      component =>
+        component.type ===
+        "post"
+    )
+
+    .forEach(
+      component => {
+
+
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        )
+          ?.classList
+          .toggle(
+            "hidden",
+            !includeState.posts
+          );
+
+      }
+    );
+
+
+  components
+
+    .filter(
+      component =>
+        component.type ===
+        "gate"
+    )
+
+    .forEach(
+      component => {
+
+
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        )
+          ?.classList
+          .toggle(
+            "hidden",
+            !includeState.gate
+          );
+
+      }
+    );
 
 
   $("claddingCard")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       !includeState.cladding
     );
 
 
   $("gateMaterialsCard")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       !includeState.gate
     );
 
 
   $("postMaterialsCard")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       !includeState.posts
     );
 
 
   $("claddingMaterialsCard")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       !includeState.cladding
     );
@@ -2204,45 +3019,82 @@ function updateIncludeUI() {
 function updateCladdingUI() {
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
+
+
+  const isMesh =
+    type ===
+    "galvMesh50";
+
+
+  /*
+    MESH:
+    no direction control visible.
+  */
+
+  $("claddingDirectionWrap")
+    .classList
+    .toggle(
+      "hidden",
+      isMesh
+    );
+
+
+  if (isMesh) {
+
+    $("claddingDirection")
+      .value =
+        "vertical";
+  }
 
 
   $("ekodeckOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       type !== "ekodeck"
     );
 
 
   $("cypressOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      type !== "cypressPickets"
+      type !==
+      "cypressPickets"
     );
 
 
   $("lospOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
+
       ![
         "losp90",
         "losp140"
-      ].includes(type)
+      ]
+        .includes(type)
     );
 
 
   $("merbauOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
+
       ![
         "merbau90",
         "merbau140"
-      ].includes(type)
+      ]
+        .includes(type)
     );
 
 
   $("treatedPineOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       type !==
       "treatedPinePalings"
@@ -2250,54 +3102,51 @@ function updateCladdingUI() {
 
 
   $("meshOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      type !== "galvMesh50"
+      !isMesh
     );
 
 
   $("colorbondOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      type !== "colorbond"
+      type !==
+      "colorbond"
     );
 
 
   $("customOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      type !== "custom"
+      type !==
+      "custom"
     );
 
 
   $("cypressColourWrap")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      $("cypressFinish").value
-      !== "Paint"
+
+      $("cypressFinish")
+        .value !==
+      "Paint"
     );
 
 
   $("lospColourWrap")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      $("lospFinish").value
-      !== "Paint"
+
+      $("lospFinish")
+        .value !==
+      "Paint"
     );
-
-
-  /*
-    Mesh direction is irrelevant,
-    so force one internal value and
-    hide Direction requirement.
-  */
-
-  if (
-    type === "galvMesh50"
-  ) {
-    $("claddingDirection").value =
-      "vertical";
-  }
 
 
   updateTreatedPineUI();
@@ -2314,13 +3163,17 @@ function updateCladdingUI() {
 
 function claddingIsComplete() {
 
-  if (!includeState.cladding) {
+  if (
+    !includeState.cladding
+  ) {
+
     return true;
   }
 
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
 
 
   if (!type) {
@@ -2330,18 +3183,25 @@ function claddingIsComplete() {
 
   if (
     type !== "galvMesh50" &&
-    !$("claddingDirection").value
+    !$("claddingDirection")
+      .value
   ) {
+
     return false;
   }
 
 
   if (
-    type === "cypressPickets" &&
-    $("cypressFinish").value ===
+    type ===
+    "cypressPickets" &&
+    $("cypressFinish")
+      .value ===
     "Paint" &&
-    !$("cypressColour").value.trim()
+    !$("cypressColour")
+      .value
+      .trim()
   ) {
+
     return false;
   }
 
@@ -2350,19 +3210,31 @@ function claddingIsComplete() {
     [
       "losp90",
       "losp140"
-    ].includes(type) &&
-    $("lospFinish").value ===
-    "Paint" &&
-    !$("lospColour").value.trim()
+    ]
+      .includes(type)
+    &&
+    $("lospFinish")
+      .value ===
+    "Paint"
+    &&
+    !$("lospColour")
+      .value
+      .trim()
   ) {
+
     return false;
   }
 
 
   if (
-    type === "custom" &&
-    !$("customDescription").value.trim()
+    type ===
+    "custom"
+    &&
+    !$("customDescription")
+      .value
+      .trim()
   ) {
+
     return false;
   }
 
@@ -2373,27 +3245,38 @@ function claddingIsComplete() {
 
 function getCladdingShortSummary() {
 
-  if (!includeState.cladding) {
+  if (
+    !includeState.cladding
+  ) {
+
     return "Off";
   }
 
 
-  if (!claddingIsComplete()) {
+  if (
+    !claddingIsComplete()
+  ) {
+
     return "Not complete";
   }
 
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
 
 
   const dir =
     abbreviatedDirection(
-      $("claddingDirection").value
+      $("claddingDirection")
+        .value
     );
 
 
-  if (type === "ekodeck") {
+  if (
+    type === "ekodeck"
+  ) {
+
     return (
       `Eko, ` +
       `${$("ekodeckColour").value}, ` +
@@ -2406,6 +3289,7 @@ function getCladdingShortSummary() {
     type ===
     "treatedPinePalings"
   ) {
+
     return (
       `Pine, ` +
       `${$("treatedPineWidth").value}mm, ` +
@@ -2415,15 +3299,21 @@ function getCladdingShortSummary() {
 
 
   if (
-    type === "galvMesh50"
+    type ===
+    "galvMesh50"
   ) {
-    return "Mesh, 50x50, 4mm";
+
+    return (
+      "Mesh, 50x50, 4mm"
+    );
   }
 
 
   if (
-    type === "cypressPickets"
+    type ===
+    "cypressPickets"
   ) {
+
     return (
       `Cypress, ` +
       `${$("cypressFinish").value}, ` +
@@ -2436,12 +3326,17 @@ function getCladdingShortSummary() {
     [
       "losp90",
       "losp140"
-    ].includes(type)
+    ]
+      .includes(type)
   ) {
+
     const label =
       type === "losp90"
+
         ? "LOSP 92"
+
         : "LOSP 138";
+
 
     return (
       `${label}, ` +
@@ -2451,7 +3346,11 @@ function getCladdingShortSummary() {
   }
 
 
-  if (type === "merbau90") {
+  if (
+    type ===
+    "merbau90"
+  ) {
+
     return (
       `Merbau 90, ` +
       `${$("merbauFinish").value}, ` +
@@ -2460,7 +3359,11 @@ function getCladdingShortSummary() {
   }
 
 
-  if (type === "merbau140") {
+  if (
+    type ===
+    "merbau140"
+  ) {
+
     return (
       `Merbau 140, ` +
       `${$("merbauFinish").value}, ` +
@@ -2469,7 +3372,11 @@ function getCladdingShortSummary() {
   }
 
 
-  if (type === "colorbond") {
+  if (
+    type ===
+    "colorbond"
+  ) {
+
     return (
       `Colorbond, ` +
       `${$("colorbondColour").value}, ` +
@@ -2478,7 +3385,11 @@ function getCladdingShortSummary() {
   }
 
 
-  if (type === "custom") {
+  if (
+    type ===
+    "custom"
+  ) {
+
     return (
       `${$("customDescription").value}, ` +
       `${dir}`
@@ -2491,6 +3402,7 @@ function getCladdingShortSummary() {
 
 
 function updateCladdingSummary() {
+
   $("claddingSummary")
     .textContent =
       getCladdingShortSummary();
@@ -2498,12 +3410,15 @@ function updateCladdingSummary() {
 
 
 function maybeCollapseCladding() {
+
   if (
     includeState.cladding &&
     claddingIsComplete()
   ) {
-    $("claddingCard").open =
-      false;
+
+    $("claddingCard")
+      .open =
+        false;
   }
 }
 
@@ -2517,17 +3432,23 @@ function updateTreatedPineUI() {
   $("pineCappingToggle")
     .textContent =
       treatedPineState.capping
+
         ? "CAPPING ON"
+
         : "CAPPING OFF";
 
+
   $("pineCappingToggle")
-    .classList.toggle(
+    .classList
+    .toggle(
       "on",
       treatedPineState.capping
     );
 
+
   $("pineCappingToggle")
-    .classList.toggle(
+    .classList
+    .toggle(
       "off",
       !treatedPineState.capping
     );
@@ -2536,17 +3457,23 @@ function updateTreatedPineUI() {
   $("pinePlinthToggle")
     .textContent =
       treatedPineState.plinth
+
         ? "PLINTH ON"
+
         : "PLINTH OFF";
 
+
   $("pinePlinthToggle")
-    .classList.toggle(
+    .classList
+    .toggle(
       "on",
       treatedPineState.plinth
     );
 
+
   $("pinePlinthToggle")
-    .classList.toggle(
+    .classList
+    .toggle(
       "off",
       !treatedPineState.plinth
     );
@@ -2560,172 +3487,246 @@ function updateTreatedPineUI() {
 function updateRailUI() {
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
+
 
   const direction =
-    $("claddingDirection").value;
+    $("claddingDirection")
+      .value;
 
 
   components
+
     .filter(
-      c => c.type === "gate"
+      component =>
+        component.type ===
+        "gate"
     )
-    .forEach(component => {
 
-      const card =
-        document.querySelector(
-          `[data-component-id="${component.id}"]`
-        );
+    .forEach(
+      component => {
 
 
-      const mesh =
-        type === "galvMesh50";
-
-
-      card.querySelector(
-        ".horizontal-rail-wrap"
-      )
-        .classList.toggle(
-          "hidden",
-
-          mesh ||
-          !includeState.cladding ||
-          direction !== "vertical"
-        );
-
-
-      card.querySelector(
-        ".vertical-rail-wrap"
-      )
-        .classList.toggle(
-          "hidden",
-
-          mesh ||
-          !includeState.cladding ||
-          direction !== "horizontal"
-        );
-    });
-
-
-  components
-    .filter(
-      c => c.type === "panel"
-    )
-    .forEach(component => {
-
-      const card =
-        document.querySelector(
-          `[data-component-id="${component.id}"]`
-        );
-
-
-      const mesh =
-        type === "galvMesh50";
-
-
-      card.querySelector(
-        ".panel-rail-controls"
-      )
-        .classList.toggle(
-          "hidden",
-
-          mesh ||
-          direction !== "vertical"
-        );
-
-
-      card.querySelector(
-        ".panel-cladding-summary"
-      ).textContent =
-        includeState.cladding
-          ? claddingDescription()
-          : "No cladding";
-
-
-      const info =
-        card.querySelector(
-          ".panel-rail-info"
-        );
-
-
-      if (mesh) {
-        info.innerHTML =
-          `
-          <div class="calculated-line">
-            <span>Mesh fixing</span>
-            <strong>Internal clear opening</strong>
-          </div>
-          `;
-
-        return;
-      }
-
-
-      if (
-        direction === "horizontal"
-      ) {
-        info.innerHTML =
-          `
-          <div class="calculated-line">
-            <span>Steel rails</span>
-            <strong>None</strong>
-          </div>
-          `;
-      }
-
-
-      else if (
-        direction === "vertical"
-      ) {
-        const count =
-          num(
-            card.querySelector(
-              ".panel-rail-count"
-            ).value
+        const card =
+          document.querySelector(
+            `[data-component-id="${component.id}"]`
           );
 
 
-        info.innerHTML =
-          `
-          <div class="calculated-line">
-            <span>Rails</span>
-            <strong>
-              ${
-                count === 4
-                  ? "Top + Mid + Lower + Extra"
-                  : "Top + Mid + Lower"
-              }
-            </strong>
-          </div>
-          `;
-      }
+        const mesh =
+          type ===
+          "galvMesh50";
 
 
-      else {
-        info.innerHTML = "";
+        card
+          .querySelector(
+            ".horizontal-rail-wrap"
+          )
+          .classList
+          .toggle(
+            "hidden",
+
+            mesh ||
+            !includeState.cladding ||
+            direction !==
+            "vertical"
+          );
+
+
+        card
+          .querySelector(
+            ".vertical-rail-wrap"
+          )
+          .classList
+          .toggle(
+            "hidden",
+
+            mesh ||
+            !includeState.cladding ||
+            direction !==
+            "horizontal"
+          );
+
       }
-    });
+    );
+
+
+  components
+
+    .filter(
+      component =>
+        component.type ===
+        "panel"
+    )
+
+    .forEach(
+      component => {
+
+
+        const card =
+          document.querySelector(
+            `[data-component-id="${component.id}"]`
+          );
+
+
+        const mesh =
+          type ===
+          "galvMesh50";
+
+
+        card
+          .querySelector(
+            ".panel-rail-controls"
+          )
+          .classList
+          .toggle(
+            "hidden",
+
+            mesh ||
+            direction !==
+            "vertical"
+          );
+
+
+        card
+          .querySelector(
+            ".panel-cladding-summary"
+          )
+          .textContent =
+            includeState.cladding
+
+              ? claddingDescription()
+
+              : "No cladding";
+
+
+        const info =
+          card
+            .querySelector(
+              ".panel-rail-info"
+            );
+
+
+        if (mesh) {
+
+          info.innerHTML =
+            `
+            <div class="calculated-line">
+
+              <span>
+                Mesh fixing
+              </span>
+
+              <strong>
+                Internal clear opening
+              </strong>
+
+            </div>
+            `;
+
+
+          return;
+        }
+
+
+        if (
+          direction ===
+          "horizontal"
+        ) {
+
+          info.innerHTML =
+            `
+            <div class="calculated-line">
+
+              <span>
+                Steel rails
+              </span>
+
+              <strong>
+                None
+              </strong>
+
+            </div>
+            `;
+        }
+
+
+        else if (
+          direction ===
+          "vertical"
+        ) {
+
+          const count =
+            num(
+              card
+                .querySelector(
+                  ".panel-rail-count"
+                )
+                .value
+            );
+
+
+          info.innerHTML =
+            `
+            <div class="calculated-line">
+
+              <span>
+                Rails
+              </span>
+
+              <strong>
+
+                ${
+                  count === 4
+
+                    ? "Top + Mid + Lower + Extra"
+
+                    : "Top + Mid + Lower"
+                }
+
+              </strong>
+
+            </div>
+            `;
+        }
+
+
+        else {
+
+          info.innerHTML =
+            "";
+        }
+
+      }
+    );
 }
 
 
 /* ==========================================================
    CLADDING DESCRIPTION
-   CLIENT-FACING
    ========================================================== */
 
 function claddingDescription() {
 
-  if (!includeState.cladding) {
+  if (
+    !includeState.cladding
+  ) {
+
     return "";
   }
 
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
 
 
   const data =
-    PRICES.cladding[type];
+    PRICES
+      .cladding[
+        type
+      ];
 
 
   if (!data) {
@@ -2734,8 +3735,10 @@ function claddingDescription() {
 
 
   if (
-    type === "galvMesh50"
+    type ===
+    "galvMesh50"
   ) {
+
     return (
       "50x50mm galvanised mesh with 4.0mm wire"
     );
@@ -2746,22 +3749,30 @@ function claddingDescription() {
     data.label;
 
 
-  if (type === "ekodeck") {
+  if (
+    type === "ekodeck"
+  ) {
+
     text +=
       `, ${$("ekodeckColour").value}`;
   }
 
 
   if (
-    type === "cypressPickets"
+    type ===
+    "cypressPickets"
   ) {
+
     text +=
       `, ${$("cypressFinish").value}`;
 
+
     if (
-      $("cypressFinish").value ===
+      $("cypressFinish")
+        .value ===
       "Paint"
     ) {
+
       text +=
         ` ${$("cypressColour").value}`;
     }
@@ -2772,15 +3783,20 @@ function claddingDescription() {
     [
       "losp90",
       "losp140"
-    ].includes(type)
+    ]
+      .includes(type)
   ) {
+
     text +=
       `, ${$("lospFinish").value}`;
 
+
     if (
-      $("lospFinish").value ===
+      $("lospFinish")
+        .value ===
       "Paint"
     ) {
+
       text +=
         ` ${$("lospColour").value}`;
     }
@@ -2791,8 +3807,10 @@ function claddingDescription() {
     [
       "merbau90",
       "merbau140"
-    ].includes(type)
+    ]
+      .includes(type)
   ) {
+
     text +=
       `, ${$("merbauFinish").value}`;
   }
@@ -2802,23 +3820,34 @@ function claddingDescription() {
     type ===
     "treatedPinePalings"
   ) {
+
     text +=
       `, ${$("treatedPineLength").value}mm × ${$("treatedPineWidth").value}mm`;
   }
 
 
-  if (type === "colorbond") {
+  if (
+    type ===
+    "colorbond"
+  ) {
+
     text +=
       `, ${$("colorbondProfile").value}`;
+
 
     text +=
       `, ${$("colorbondColour").value}`;
   }
 
 
-  if (type === "custom") {
+  if (
+    type ===
+    "custom"
+  ) {
+
     text =
-      $("customDescription").value
+      $("customDescription")
+        .value
       ||
       "Custom cladding";
   }
@@ -2826,11 +3855,13 @@ function claddingDescription() {
 
   const direction =
     fullDirection(
-      $("claddingDirection").value
+      $("claddingDirection")
+        .value
     );
 
 
   if (direction) {
+
     text +=
       `, ${direction}`;
   }
@@ -2841,7 +3872,7 @@ function claddingDescription() {
 
 
 /* ==========================================================
-   CLADDING PIECE DIMENSION HELPERS
+   CLADDING PROCESSING
    ========================================================== */
 
 function getProcessedCladdingLengthMm(
@@ -2849,41 +3880,35 @@ function getProcessedCladdingLengthMm(
   type
 ) {
 
-  /*
-    Treated pine is ordered at a
-    preset paling length, so do not
-    add 30mm.
-
-    Mesh uses exact internal dimensions.
-
-    Everything else gets +30mm
-    processing allowance.
-  */
-
   if (
-    type === "treatedPinePalings"
+    type ===
+    "treatedPinePalings"
   ) {
+
     return rawLengthMm;
   }
 
 
   if (
-    type === "galvMesh50"
+    type ===
+    "galvMesh50"
   ) {
+
     return rawLengthMm;
   }
 
 
   return (
     rawLengthMm +
-    PRICES.fabrication
+    PRICES
+      .fabrication
       .claddingProcessingAllowanceMm
   );
 }
 
 
 /* ==========================================================
-   TREATED PINE CALCULATION
+   TREATED PINE CALC
    ========================================================== */
 
 function calculateTreatedPine(
@@ -2893,105 +3918,142 @@ function calculateTreatedPine(
 
   const selectedWidth =
     num(
-      $("treatedPineWidth").value
+      $("treatedPineWidth")
+        .value
     );
 
 
   const selectedLength =
     num(
-      $("treatedPineLength").value
+      $("treatedPineLength")
+        .value
     );
 
 
   const data =
-    PRICES.cladding
+    PRICES
+      .cladding
       .treatedPinePalings;
 
 
-  const areas = [];
+  const areas =
+    [];
 
 
-  if (includeState.gate) {
-    gates.forEach(gate => {
+  if (
+    includeState.gate
+  ) {
 
-      areas.push({
-        width:
-          gate.claddingWidth,
+    gates.forEach(
+      gate => {
 
-        height:
-          gate.height
-      });
-    });
+
+        areas.push({
+
+          width:
+            gate.claddingWidth,
+
+          height:
+            gate.height
+
+        });
+      }
+    );
   }
 
 
-  panels.forEach(panel => {
-
-    areas.push({
-      width:
-        panel.width,
-
-      height:
-        panel.height
-    });
-  });
+  panels.forEach(
+    panel => {
 
 
-  let palingCount = 0;
-  let totalAreaM2 = 0;
-  let totalWidthM = 0;
+      areas.push({
 
+        width:
+          panel.width,
 
-  areas.forEach(area => {
+        height:
+          panel.height
 
-    if (
-      !area.width ||
-      !area.height
-    ) {
-      return;
+      });
     }
+  );
 
 
-    const widthM =
-      area.width /
-      1000;
+  let palingCount =
+    0;
 
 
-    const baseCount =
-      area.width /
-      100;
+  let totalAreaM2 =
+    0;
 
 
-    const extra =
-      data.extraPerMetre[
-        selectedWidth
-      ]
-      ||
-      0;
+  let totalWidthM =
+    0;
 
 
-    const count =
-      Math.ceil(
-        baseCount +
-        extra *
-        widthM
-      );
+  areas.forEach(
+    area => {
 
 
-    palingCount +=
-      count;
+      if (
+        !area.width ||
+        !area.height
+      ) {
+
+        return;
+      }
 
 
-    totalAreaM2 +=
-      area.width /
-      1000 *
-      area.height /
-      1000;
+      const widthM =
+        area.width /
+        1000;
 
 
-    totalWidthM +=
-      widthM;
-  });
+      const baseCount =
+        area.width /
+        100;
+
+
+      const extra =
+        data
+          .extraPerMetre[
+            selectedWidth
+          ]
+        ||
+        0;
+
+
+      const count =
+        Math.ceil(
+          baseCount +
+          (
+            extra *
+            widthM
+          )
+        );
+
+
+      palingCount +=
+        count;
+
+
+      totalAreaM2 +=
+        (
+          area.width /
+          1000
+        )
+        *
+        (
+          area.height /
+          1000
+        );
+
+
+      totalWidthM +=
+        widthM;
+
+    }
+  );
 
 
   const palingCostIncGST =
@@ -3004,30 +4066,42 @@ function calculateTreatedPine(
     data.labourRatePerM2;
 
 
-  let cappingMetres = 0;
-  let plinthMetres = 0;
+  let cappingMetres =
+    0;
 
 
-  if (treatedPineState.capping) {
+  let plinthMetres =
+    0;
+
+
+  if (
+    treatedPineState.capping
+  ) {
 
     cappingMetres =
-      $("pineCappingMetres").value
+      $("pineCappingMetres")
+        .value
 
         ? num(
-            $("pineCappingMetres").value
+            $("pineCappingMetres")
+              .value
           )
 
         : totalWidthM;
   }
 
 
-  if (treatedPineState.plinth) {
+  if (
+    treatedPineState.plinth
+  ) {
 
     plinthMetres =
-      $("pinePlinthMetres").value
+      $("pinePlinthMetres")
+        .value
 
         ? num(
-            $("pinePlinthMetres").value
+            $("pinePlinthMetres")
+              .value
           )
 
         : totalWidthM;
@@ -3053,123 +4127,128 @@ function calculateTreatedPine(
     plinthMetres,
 
     materialCostExGST:
+
       toExGST(
         palingCostIncGST,
         true
       )
+
       +
+
       toExGST(
-        cappingMetres *
-        data.capping.pricePerM,
+        (
+          cappingMetres *
+          data.capping
+            .pricePerM
+        ),
         true
       )
+
       +
+
       toExGST(
-        plinthMetres *
-        data.plinth.pricePerM,
+        (
+          plinthMetres *
+          data.plinth
+            .pricePerM
+        ),
         true
       ),
 
     labourCostExGST
+
   };
 }
 
 
 /* ==========================================================
-   MESH CLEAR OPENINGS
+   MESH
    ========================================================== */
 
 function getGateMeshCut(gate) {
 
   const frame =
-    PRICES.steel.frame[
-      gate.frame
-    ];
-
-
-  /*
-    Mesh sits inside the gate frame.
-
-    Use the frame's visible width
-    as the material removed from
-    both sides.
-
-    Default 50x25 frame therefore:
-
-    Gate 1050 x 1760
-    clear mesh approx:
-    950 x 1660.
-  */
-
-  const cutWidth =
-    Math.max(
-      0,
-
-      gate.width -
-      frame.widthMm * 2
-    );
-
-
-  const cutHeight =
-    Math.max(
-      0,
-
-      gate.height -
-      frame.widthMm * 2
-    );
+    PRICES
+      .steel
+      .frame[
+        gate.frame
+      ];
 
 
   return {
+
     widthMm:
-      cutWidth,
+      Math.max(
+
+        0,
+
+        gate.width -
+        (
+          frame.widthMm *
+          2
+        )
+
+      ),
 
     heightMm:
-      cutHeight
+      Math.max(
+
+        0,
+
+        gate.height -
+        (
+          frame.widthMm *
+          2
+        )
+
+      )
+
   };
 }
 
 
 function getPanelMeshCut(panel) {
 
-  /*
-    Fixed panel mesh calculation uses
-    the same default 50mm clear-frame
-    allowance.
-
-    This is primarily for quoting/order
-    planning. Final fabrication can be
-    adjusted at the bench.
-  */
-
   const frame =
-    PRICES.steel.frame[
-      PRICES.defaults.frameType
-    ];
+    PRICES
+      .steel
+      .frame[
+        PRICES.defaults
+          .frameType
+      ];
 
 
   return {
+
     widthMm:
       Math.max(
+
         0,
 
         panel.width -
-        frame.widthMm * 2
+        (
+          frame.widthMm *
+          2
+        )
+
       ),
 
     heightMm:
       Math.max(
+
         0,
 
         panel.height -
-        frame.widthMm * 2
+        (
+          frame.widthMm *
+          2
+        )
+
       )
+
   };
 }
 
-
-/* ==========================================================
-   MESH SHEET OPTIMISER
-   ========================================================== */
 
 function rectangleFits(
   piece,
@@ -3178,13 +4257,27 @@ function rectangleFits(
 ) {
 
   const normal =
-    piece.widthMm <= sheetWidth &&
-    piece.heightMm <= sheetHeight;
+    (
+      piece.widthMm <=
+      sheetWidth
+    )
+    &&
+    (
+      piece.heightMm <=
+      sheetHeight
+    );
 
 
   const rotated =
-    piece.heightMm <= sheetWidth &&
-    piece.widthMm <= sheetHeight;
+    (
+      piece.heightMm <=
+      sheetWidth
+    )
+    &&
+    (
+      piece.widthMm <=
+      sheetHeight
+    );
 
 
   return (
@@ -3201,67 +4294,85 @@ function canFitTwoPiecesInSheet(
 ) {
 
   const orientationsA = [
+
     {
       w: a.widthMm,
       h: a.heightMm
     },
+
     {
       w: a.heightMm,
       h: a.widthMm
     }
+
   ];
 
 
   const orientationsB = [
+
     {
       w: b.widthMm,
       h: b.heightMm
     },
+
     {
       w: b.heightMm,
       h: b.widthMm
     }
+
   ];
 
 
-  for (const oa of orientationsA) {
+  for (
+    const oa of
+    orientationsA
+  ) {
 
-    for (const ob of orientationsB) {
+    for (
+      const ob of
+      orientationsB
+    ) {
 
-      /*
-        Side-by-side.
-      */
 
       if (
-        oa.w + ob.w <=
-        sheet.widthMm
+        (
+          oa.w + ob.w <=
+          sheet.widthMm
+        )
         &&
-        Math.max(
-          oa.h,
-          ob.h
-        ) <=
-        sheet.lengthMm
+        (
+          Math.max(
+            oa.h,
+            ob.h
+          )
+          <=
+          sheet.lengthMm
+        )
       ) {
+
         return true;
       }
 
 
-      /*
-        One above the other.
-      */
-
       if (
-        oa.h + ob.h <=
-        sheet.lengthMm
+        (
+          oa.h + ob.h <=
+          sheet.lengthMm
+        )
         &&
-        Math.max(
-          oa.w,
-          ob.w
-        ) <=
-        sheet.widthMm
+        (
+          Math.max(
+            oa.w,
+            ob.w
+          )
+          <=
+          sheet.widthMm
+        )
       ) {
+
         return true;
       }
+
     }
   }
 
@@ -3273,25 +4384,33 @@ function canFitTwoPiecesInSheet(
 function optimiseMeshSheets(pieces) {
 
   const data =
-    PRICES.cladding.galvMesh50;
+    PRICES
+      .cladding
+      .galvMesh50;
 
 
   const preferred =
-    $("meshPreferredSheet").value;
+    $("meshPreferredSheet")
+      .value;
 
 
   let available =
-    [...data.sheets];
+    [
+      ...data.sheets
+    ];
 
 
   if (
     preferred !== "auto"
   ) {
+
     const match =
       available.find(
         sheet =>
-          sheet.key === preferred
+          sheet.key ===
+          preferred
       );
+
 
     available =
       match
@@ -3300,14 +4419,11 @@ function optimiseMeshSheets(pieces) {
   }
 
 
-  /*
-    Largest first makes it easier
-    to reuse one large sheet for
-    multiple pieces.
-  */
-
   available.sort(
-    (a, b) =>
+    (
+      a,
+      b
+    ) =>
       (
         b.lengthMm *
         b.widthMm
@@ -3321,9 +4437,14 @@ function optimiseMeshSheets(pieces) {
 
 
   const remaining =
-    [...pieces]
+    [
+      ...pieces
+    ]
       .sort(
-        (a, b) =>
+        (
+          a,
+          b
+        ) =>
           (
             b.widthMm *
             b.heightMm
@@ -3336,7 +4457,8 @@ function optimiseMeshSheets(pieces) {
       );
 
 
-  const orders = [];
+  const orders =
+    [];
 
 
   while (
@@ -3347,11 +4469,19 @@ function optimiseMeshSheets(pieces) {
       remaining.shift();
 
 
-    let bestSheet = null;
-    let pairedIndex = -1;
+    let bestSheet =
+      null;
 
 
-    for (const sheet of available) {
+    let pairedIndex =
+      -1;
+
+
+    for (
+      const sheet of
+      available
+    ) {
+
 
       if (
         !rectangleFits(
@@ -3360,15 +4490,13 @@ function optimiseMeshSheets(pieces) {
           sheet.lengthMm
         )
       ) {
+
         continue;
       }
 
 
-      /*
-        Try pair with another piece.
-      */
-
-      let possiblePair = -1;
+      let possiblePair =
+        -1;
 
 
       for (
@@ -3384,7 +4512,10 @@ function optimiseMeshSheets(pieces) {
             sheet
           )
         ) {
-          possiblePair = i;
+
+          possiblePair =
+            i;
+
           break;
         }
       }
@@ -3398,14 +4529,10 @@ function optimiseMeshSheets(pieces) {
         possiblePair;
 
 
-      /*
-        If this sheet can hold two,
-        use it immediately.
-      */
-
       if (
         possiblePair >= 0
       ) {
+
         break;
       }
     }
@@ -3413,43 +4540,49 @@ function optimiseMeshSheets(pieces) {
 
     if (!bestSheet) {
 
-      /*
-        Should only happen if custom
-        dimensions exceed all standard
-        sheets.
-      */
-
       orders.push({
+
         key: "custom",
-        label: "Custom mesh sheet required",
+
+        label:
+          "Custom mesh sheet required",
+
         widthMm:
           first.widthMm,
+
         lengthMm:
           first.heightMm,
-        pieces: [first]
+
+        pieces:
+          [first]
+
       });
+
 
       continue;
     }
 
 
     const order = {
+
       ...bestSheet,
 
-      pieces: [
-        first
-      ]
+      pieces:
+        [first]
+
     };
 
 
     if (
       pairedIndex >= 0
     ) {
+
       order.pieces.push(
         remaining[
           pairedIndex
         ]
       );
+
 
       remaining.splice(
         pairedIndex,
@@ -3468,25 +4601,63 @@ function optimiseMeshSheets(pieces) {
 }
 
 
-/* ==========================================================
-   MESH CALCULATION
-   ========================================================== */
-
 function calculateMesh(
   gates,
   panels
 ) {
 
-  const pieces = [];
+  const pieces =
+    [];
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    gates.forEach(gate => {
+    gates.forEach(
+      gate => {
+
+
+        const cut =
+          getGateMeshCut(
+            gate
+          );
+
+
+        if (
+          cut.widthMm &&
+          cut.heightMm
+        ) {
+
+          pieces.push({
+
+            componentId:
+              gate.id,
+
+            label:
+              `${gate.label} mesh`,
+
+            widthMm:
+              cut.widthMm,
+
+            heightMm:
+              cut.heightMm
+
+          });
+        }
+
+      }
+    );
+  }
+
+
+  panels.forEach(
+    panel => {
+
 
       const cut =
-        getGateMeshCut(
-          gate
+        getPanelMeshCut(
+          panel
         );
 
 
@@ -3494,65 +4665,44 @@ function calculateMesh(
         cut.widthMm &&
         cut.heightMm
       ) {
+
         pieces.push({
+
           componentId:
-            gate.id,
+            panel.id,
 
           label:
-            `${gate.label} mesh`,
+            `${panel.label} mesh`,
 
           widthMm:
             cut.widthMm,
 
           heightMm:
             cut.heightMm
+
         });
       }
-    });
-  }
 
-
-  panels.forEach(panel => {
-
-    const cut =
-      getPanelMeshCut(
-        panel
-      );
-
-
-    if (
-      cut.widthMm &&
-      cut.heightMm
-    ) {
-      pieces.push({
-        componentId:
-          panel.id,
-
-        label:
-          `${panel.label} mesh`,
-
-        widthMm:
-          cut.widthMm,
-
-        heightMm:
-          cut.heightMm
-      });
     }
-  });
+  );
 
 
   const totalAreaM2 =
     pieces.reduce(
-      (sum, piece) => {
-
-        return (
-          sum +
+      (
+        sum,
+        piece
+      ) =>
+        sum +
+        (
           piece.widthMm /
-          1000 *
+          1000
+        )
+        *
+        (
           piece.heightMm /
           1000
-        );
-      },
+        ),
       0
     );
 
@@ -3563,33 +4713,30 @@ function calculateMesh(
     );
 
 
-  /*
-    Cost the ACTUAL required square
-    metres at $18/m², not whole supplier
-    sheet area.
-
-    Ordering information still tells
-    you which sheet sizes to buy.
-  */
-
   const materialCostExGST =
     totalAreaM2 *
-    PRICES.cladding
+    PRICES
+      .cladding
       .galvMesh50
       .pricePerM2;
 
 
   return {
+
     pieces,
+
     orders,
+
     totalAreaM2,
+
     materialCostExGST
+
   };
 }
 
 
 /* ==========================================================
-   GENERAL CLADDING CALCULATION
+   GENERAL CLADDING CALC
    ========================================================== */
 
 function calculateCladding(
@@ -3597,60 +4744,63 @@ function calculateCladding(
   panels
 ) {
 
-  if (!includeState.cladding) {
+  const empty = {
 
-    return {
-      boards: 0,
-      metres: 0,
-      stockLengths: 0,
-      waste: 0,
+    boards: 0,
 
-      materialCostExGST: 0,
+    metres: 0,
 
-      specialLabourExGST: 0,
+    stockLengths: 0,
 
-      treatedPine: null,
-      mesh: null,
+    waste: 0,
 
-      cutPieces: []
-    };
+    materialCostExGST: 0,
+
+    specialLabourExGST: 0,
+
+    treatedPine: null,
+
+    mesh: null,
+
+    cutPieces: []
+
+  };
+
+
+  if (
+    !includeState.cladding
+  ) {
+
+    return empty;
   }
 
 
   const type =
-    $("claddingType").value;
+    $("claddingType")
+      .value;
 
 
   const direction =
-    $("claddingDirection").value;
+    $("claddingDirection")
+      .value;
 
 
   const data =
-    PRICES.cladding[type];
+    PRICES
+      .cladding[
+        type
+      ];
 
 
   if (!data) {
 
-    return {
-      boards: 0,
-      metres: 0,
-      stockLengths: 0,
-      waste: 0,
-
-      materialCostExGST: 0,
-
-      specialLabourExGST: 0,
-
-      treatedPine: null,
-      mesh: null,
-
-      cutPieces: []
-    };
+    return empty;
   }
 
 
   if (
-    type === "galvMesh50"
+    type ===
+    "galvMesh50"
   ) {
 
     const mesh =
@@ -3661,11 +4811,11 @@ function calculateCladding(
 
 
     return {
+
       boards:
         mesh.pieces.length,
 
-      metres:
-        0,
+      metres: 0,
 
       stockLengths:
         mesh.orders.length,
@@ -3683,29 +4833,14 @@ function calculateCladding(
 
       cutPieces:
         mesh.pieces
+
     };
   }
 
 
-  if (
-    !direction
-  ) {
+  if (!direction) {
 
-    return {
-      boards: 0,
-      metres: 0,
-      stockLengths: 0,
-      waste: 0,
-
-      materialCostExGST: 0,
-
-      specialLabourExGST: 0,
-
-      treatedPine: null,
-      mesh: null,
-
-      cutPieces: []
-    };
+    return empty;
   }
 
 
@@ -3722,6 +4857,7 @@ function calculateCladding(
 
 
     return {
+
       boards:
         pine.palingCount,
 
@@ -3745,6 +4881,7 @@ function calculateCladding(
       mesh: null,
 
       cutPieces: []
+
     };
   }
 
@@ -3754,196 +4891,216 @@ function calculateCladding(
   ) {
 
     return {
-      boards: 0,
-      metres: 0,
-      stockLengths: 0,
-      waste: 0,
+
+      ...empty,
 
       materialCostExGST:
         toExGST(
           num(
-            $("customCost").value
+            $("customCost")
+              .value
           ),
           true
-        ),
+        )
 
-      specialLabourExGST: 0,
-
-      treatedPine: null,
-      mesh: null,
-
-      cutPieces: []
     };
   }
 
 
-  const areas = [];
-
-
-  if (includeState.gate) {
-
-    gates.forEach(gate => {
-
-      /*
-        Normal cladding uses the
-        finished overhanging width.
-      */
-
-      areas.push({
-        componentId:
-          gate.id,
-
-        label:
-          gate.label,
-
-        width:
-          gate.claddingWidth,
-
-        height:
-          gate.height
-      });
-    });
-  }
-
-
-  panels.forEach(panel => {
-
-    areas.push({
-      componentId:
-        panel.id,
-
-      label:
-        panel.label,
-
-      width:
-        panel.width,
-
-      height:
-        panel.height
-    });
-  });
+  const areas =
+    [];
 
 
   if (
-    type === "colorbond"
+    includeState.gate
+  ) {
+
+    gates.forEach(
+      gate => {
+
+
+        areas.push({
+
+          componentId:
+            gate.id,
+
+          label:
+            gate.label,
+
+          width:
+            gate.claddingWidth,
+
+          height:
+            gate.height
+
+        });
+
+      }
+    );
+  }
+
+
+  panels.forEach(
+    panel => {
+
+
+      areas.push({
+
+        componentId:
+          panel.id,
+
+        label:
+          panel.label,
+
+        width:
+          panel.width,
+
+        height:
+          panel.height
+
+      });
+
+    }
+  );
+
+
+  if (
+    type ===
+    "colorbond"
   ) {
 
     const areaM2 =
       areas.reduce(
-        (sum, area) => {
-
-          return (
-            sum +
+        (
+          sum,
+          area
+        ) =>
+          sum +
+          (
             area.width /
-            1000 *
+            1000
+          )
+          *
+          (
             area.height /
             1000
-          );
-        },
+          ),
         0
       );
 
 
     return {
-      boards: 0,
-      metres: 0,
-      stockLengths: 0,
-      waste: 0,
+
+      ...empty,
 
       materialCostExGST:
         toExGST(
-          areaM2 *
-          num(
-            data.pricePerM2
+          (
+            areaM2 *
+            num(
+              data.pricePerM2
+            )
           ),
-
           data.priceIncludesGST
-        ),
+        )
 
-      specialLabourExGST: 0,
-
-      treatedPine: null,
-      mesh: null,
-
-      cutPieces: []
     };
   }
 
 
   const module =
     data.boardWidthMm +
-    PRICES.fabrication
+    PRICES
+      .fabrication
       .claddingGapMm;
 
 
-  const pieces = [];
+  const pieces =
+    [];
 
 
-  areas.forEach(area => {
+  areas.forEach(
+    area => {
 
-    if (
-      !area.width ||
-      !area.height
-    ) {
-      return;
+
+      if (
+        !area.width ||
+        !area.height
+      ) {
+
+        return;
+      }
+
+
+      const count =
+        Math.ceil(
+          (
+            direction ===
+            "vertical"
+
+              ? area.width
+
+              : area.height
+          )
+          /
+          module
+        );
+
+
+      const rawLengthMm =
+        direction ===
+        "vertical"
+
+          ? area.height
+
+          : area.width;
+
+
+      const processedLengthMm =
+        getProcessedCladdingLengthMm(
+          rawLengthMm,
+          type
+        );
+
+
+      for (
+        let i = 0;
+        i < count;
+        i++
+      ) {
+
+        pieces.push({
+
+          componentId:
+            area.componentId,
+
+          label:
+            area.label,
+
+          rawLengthMm,
+
+          cutLengthMm:
+            processedLengthMm,
+
+          lengthM:
+            processedLengthMm /
+            1000
+
+        });
+      }
+
     }
-
-
-    const count =
-      Math.ceil(
-        (
-          direction === "vertical"
-            ? area.width
-            : area.height
-        )
-        /
-        module
-      );
-
-
-    const rawLengthMm =
-      direction === "vertical"
-        ? area.height
-        : area.width;
-
-
-    const processedLengthMm =
-      getProcessedCladdingLengthMm(
-        rawLengthMm,
-        type
-      );
-
-
-    for (
-      let i = 0;
-      i < count;
-      i++
-    ) {
-
-      pieces.push({
-        componentId:
-          area.componentId,
-
-        label:
-          area.label,
-
-        rawLengthMm,
-
-        cutLengthMm:
-          processedLengthMm,
-
-        lengthM:
-          processedLengthMm /
-          1000
-      });
-    }
-  });
+  );
 
 
   const metres =
     pieces.reduce(
-      (sum, piece) =>
-        sum + piece.lengthM,
+      (
+        sum,
+        piece
+      ) =>
+        sum +
+        piece.lengthM,
       0
     );
 
@@ -3964,6 +5121,7 @@ function calculateCladding(
 
 
     return {
+
       boards:
         pieces.length,
 
@@ -3977,24 +5135,28 @@ function calculateCladding(
 
       materialCostExGST:
         toExGST(
-          stock.lengths *
-          data.pricePerStockLength,
-
+          (
+            stock.lengths *
+            data.pricePerStockLength
+          ),
           data.priceIncludesGST
         ),
 
       specialLabourExGST: 0,
 
       treatedPine: null,
+
       mesh: null,
 
       cutPieces:
         pieces
+
     };
   }
 
 
   return {
+
     boards:
       pieces.length,
 
@@ -4006,21 +5168,24 @@ function calculateCladding(
 
     materialCostExGST:
       toExGST(
-        metres *
-        num(
-          data.pricePerLinealM
+        (
+          metres *
+          num(
+            data.pricePerLinealM
+          )
         ),
-
         data.priceIncludesGST
       ),
 
     specialLabourExGST: 0,
 
     treatedPine: null,
+
     mesh: null,
 
     cutPieces:
       pieces
+
   };
 }
 
@@ -4036,53 +5201,74 @@ function stockPieces(
 
   const valid =
     pieces
+
       .filter(
         piece =>
           piece > 0
       )
+
       .sort(
-        (a, b) =>
+        (
+          a,
+          b
+        ) =>
           b - a
       );
 
 
-  const bins = [];
+  const bins =
+    [];
 
 
-  valid.forEach(piece => {
+  valid.forEach(
+    piece => {
 
-    let placed = false;
+
+      let placed =
+        false;
 
 
-    for (
-      let i = 0;
-      i < bins.length;
-      i++
-    ) {
-
-      if (
-        bins[i] + piece <=
-        stockLength + 0.00001
+      for (
+        let i = 0;
+        i < bins.length;
+        i++
       ) {
 
-        bins[i] += piece;
+        if (
+          bins[i] + piece <=
+          stockLength + 0.00001
+        ) {
 
-        placed = true;
+          bins[i] +=
+            piece;
 
-        break;
+
+          placed =
+            true;
+
+
+          break;
+        }
       }
-    }
 
 
-    if (!placed) {
-      bins.push(piece);
+      if (!placed) {
+
+        bins.push(
+          piece
+        );
+      }
+
     }
-  });
+  );
 
 
   const used =
     valid.reduce(
-      (sum, piece) =>
+      (
+        sum,
+        piece
+      ) =>
         sum + piece,
       0
     );
@@ -4094,6 +5280,7 @@ function stockPieces(
 
 
   return {
+
     lengths:
       bins.length,
 
@@ -4104,232 +5291,8 @@ function stockPieces(
         0,
         purchased - used
       )
+
   };
-}
-
-
-/* ==========================================================
-   POWDER COATING
-   ========================================================== */
-
-function calculatePowderCoating(
-  posts,
-  gates,
-  panels
-) {
-
-  if (
-    $("powderDecision").value !==
-    "yes"
-  ) {
-
-    return {
-      rawCostExGST: 0,
-      customerOptionExGST: 0,
-      customerOptionIncGST: 0
-    };
-  }
-
-
-  let rawCostExGST = 0;
-
-
-  if (includeState.posts) {
-
-    posts.forEach(post => {
-
-      if (
-        !post.cutLengthMm ||
-        post.fixing === "existing"
-      ) {
-        return;
-      }
-
-
-      const rate =
-        PRICES.powderCoating
-          .postRatePerLm[
-            post.steelKey
-          ]
-        ||
-        0;
-
-
-      rawCostExGST +=
-        post.cutLengthMm /
-        1000 *
-        rate;
-    });
-  }
-
-
-  if (includeState.gate) {
-
-    gates.forEach(gate => {
-
-      if (
-        !gate.width ||
-        !gate.height
-      ) {
-        return;
-      }
-
-
-      rawCostExGST +=
-        gate.width /
-        1000 *
-        gate.height /
-        1000 *
-        PRICES.powderCoating
-          .openFrameRatePerM2;
-    });
-  }
-
-
-  if (
-    includeState.cladding &&
-    $("claddingDirection").value ===
-    "vertical" &&
-    $("claddingType").value !==
-    "galvMesh50"
-  ) {
-
-    panels.forEach(panel => {
-
-      if (
-        !panel.width ||
-        !panel.height
-      ) {
-        return;
-      }
-
-
-      rawCostExGST +=
-        panel.width /
-        1000 *
-        panel.height /
-        1000 *
-        PRICES.powderCoating
-          .openFrameRatePerM2;
-    });
-  }
-
-
-  rawCostExGST +=
-    PRICES.powderCoating
-      .jobTravelAllowanceExGST;
-
-
-  const customerOptionExGST =
-    rawCostExGST *
-    (
-      1 +
-      PRICES.business
-        .materialMarkup
-    );
-
-
-  const customerOptionIncGST =
-    customerOptionExGST *
-    (
-      1 +
-      PRICES.business.gst
-    );
-
-
-  return {
-    rawCostExGST,
-    customerOptionExGST,
-    customerOptionIncGST
-  };
-}
-
-
-/* ==========================================================
-   NON-PC FINISH
-   ========================================================== */
-
-function calculateNonPowderFinish(
-  frameUsageByType,
-  posts
-) {
-
-  if (
-    $("powderDecision").value !==
-    "no"
-  ) {
-    return 0;
-  }
-
-
-  let surfaceAreaM2 = 0;
-
-
-  Object.entries(
-    frameUsageByType
-  )
-    .forEach(
-      ([key, metres]) => {
-
-        const steel =
-          PRICES.steel.frame[key];
-
-
-        const perimeterM =
-          2 *
-          (
-            steel.widthMm +
-            steel.depthMm
-          )
-          /
-          1000;
-
-
-        surfaceAreaM2 +=
-          perimeterM *
-          metres;
-      }
-    );
-
-
-  if (includeState.posts) {
-
-    posts.forEach(post => {
-
-      if (
-        !post.cutLengthMm ||
-        post.fixing === "existing"
-      ) {
-        return;
-      }
-
-
-      const perimeterM =
-        2 *
-        (
-          post.widthMm +
-          post.depthMm
-        )
-        /
-        1000;
-
-
-      surfaceAreaM2 +=
-        perimeterM *
-        (
-          post.cutLengthMm /
-          1000
-        );
-    });
-  }
-
-
-  return (
-    surfaceAreaM2 *
-    PRICES.finishing
-      .duragalvTouchUp
-      .ratePerM2
-  );
 }
 
 
@@ -4354,182 +5317,248 @@ function calculateFrameSteel(
       !metres ||
       metres <= 0
     ) {
+
       return;
     }
 
 
-    if (!groups[key]) {
-      groups[key] = [];
+    if (
+      !groups[key]
+    ) {
+
+      groups[key] =
+        [];
     }
 
 
-    groups[key].push(
-      metres
-    );
+    groups[key]
+      .push(
+        metres
+      );
   }
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    gates.forEach(gate => {
-
-      if (
-        !gate.width ||
-        !gate.height
-      ) {
-        return;
-      }
+    gates.forEach(
+      gate => {
 
 
-      const key =
-        gate.frame;
-
-
-      const steel =
-        PRICES.steel.frame[key];
-
-
-      addPiece(
-        key,
-        gate.width / 1000
-      );
-
-      addPiece(
-        key,
-        gate.width / 1000
-      );
-
-      addPiece(
-        key,
-        gate.height / 1000
-      );
-
-      addPiece(
-        key,
-        gate.height / 1000
-      );
-
-
-      if (
-        includeState.cladding &&
-        $("claddingType").value !==
-        "galvMesh50" &&
-        $("claddingDirection").value ===
-        "vertical"
-      ) {
-
-        const railLength =
-          Math.max(
-            0,
-
-            gate.width -
-            steel.widthMm * 2
-          )
-          /
-          1000;
-
-
-        for (
-          let i = 0;
-          i < gate.horizontalRails;
-          i++
+        if (
+          !gate.width ||
+          !gate.height
         ) {
 
-          addPiece(
-            key,
-            railLength
-          );
+          return;
         }
-      }
 
 
-      if (
-        includeState.cladding &&
-        $("claddingType").value !==
-        "galvMesh50" &&
-        $("claddingDirection").value ===
-        "horizontal"
-      ) {
-
-        const railLength =
-          Math.max(
-            0,
-
-            gate.height -
-            steel.widthMm * 2
-          )
-          /
-          1000;
+        const key =
+          gate.frame;
 
 
-        for (
-          let i = 0;
-          i < gate.verticalRails;
-          i++
+        const steel =
+          PRICES
+            .steel
+            .frame[
+              key
+            ];
+
+
+        addPiece(
+          key,
+          gate.width /
+          1000
+        );
+
+
+        addPiece(
+          key,
+          gate.width /
+          1000
+        );
+
+
+        addPiece(
+          key,
+          gate.height /
+          1000
+        );
+
+
+        addPiece(
+          key,
+          gate.height /
+          1000
+        );
+
+
+        if (
+          includeState.cladding &&
+          $("claddingType")
+            .value !==
+          "galvMesh50" &&
+          $("claddingDirection")
+            .value ===
+          "vertical"
         ) {
 
-          addPiece(
-            key,
-            railLength
-          );
+          const railLength =
+            Math.max(
+
+              0,
+
+              gate.width -
+              (
+                steel.widthMm *
+                2
+              )
+
+            )
+            /
+            1000;
+
+
+          for (
+            let i = 0;
+            i < gate.horizontalRails;
+            i++
+          ) {
+
+            addPiece(
+              key,
+              railLength
+            );
+          }
         }
+
+
+        if (
+          includeState.cladding &&
+          $("claddingType")
+            .value !==
+          "galvMesh50" &&
+          $("claddingDirection")
+            .value ===
+          "horizontal"
+        ) {
+
+          const railLength =
+            Math.max(
+
+              0,
+
+              gate.height -
+              (
+                steel.widthMm *
+                2
+              )
+
+            )
+            /
+            1000;
+
+
+          for (
+            let i = 0;
+            i < gate.verticalRails;
+            i++
+          ) {
+
+            addPiece(
+              key,
+              railLength
+            );
+          }
+        }
+
       }
-    });
+    );
   }
 
 
   if (
     includeState.cladding &&
-    $("claddingDirection").value ===
+    $("claddingDirection")
+      .value ===
     "vertical" &&
-    $("claddingType").value !==
+    $("claddingType")
+      .value !==
     "galvMesh50"
   ) {
 
-    panels.forEach(panel => {
+    panels.forEach(
+      panel => {
 
-      if (
-        !panel.width ||
-        !panel.height
-      ) {
-        return;
+
+        if (
+          !panel.width ||
+          !panel.height
+        ) {
+
+          return;
+        }
+
+
+        const key =
+          PRICES.defaults
+            .frameType;
+
+
+        for (
+          let i = 0;
+          i < panel.railCount;
+          i++
+        ) {
+
+          addPiece(
+            key,
+            panel.width /
+            1000
+          );
+        }
+
       }
-
-
-      const key =
-        PRICES.defaults.frameType;
-
-
-      for (
-        let i = 0;
-        i < panel.railCount;
-        i++
-      ) {
-
-        addPiece(
-          key,
-          panel.width / 1000
-        );
-      }
-    });
+    );
   }
 
 
-  let required = 0;
-  let stockLengths = 0;
-  let waste = 0;
-  let costExGST = 0;
+  let required =
+    0;
+
+
+  let stockLengths =
+    0;
+
+
+  let waste =
+    0;
+
+
+  let costExGST =
+    0;
 
 
   const usageByType = {};
 
 
-  Object.entries(groups)
+  Object.entries(
+    groups
+  )
     .forEach(
-      ([key, pieces]) => {
+      (
+        [key, pieces]
+      ) => {
+
 
         const steel =
-          PRICES.steel.frame[key];
+          PRICES
+            .steel
+            .frame[
+              key
+            ];
 
 
         const stock =
@@ -4561,17 +5590,25 @@ function calculateFrameSteel(
             steel.pricePerStockLength,
             steel.priceIncludesGST
           );
+
       }
     );
 
 
   return {
+
     groups,
+
     usageByType,
+
     required,
+
     stockLengths,
+
     waste,
+
     costExGST
+
   };
 }
 
@@ -4585,55 +5622,76 @@ function calculatePostSteel(posts) {
   const groups = {};
 
 
-  if (includeState.posts) {
+  if (
+    includeState.posts
+  ) {
 
-    posts.forEach(post => {
-
-      if (
-        !post.cutLengthMm ||
-        post.fixing === "existing"
-      ) {
-        return;
-      }
+    posts.forEach(
+      post => {
 
 
-      if (
-        !groups[
-          post.steelKey
-        ]
-      ) {
+        if (
+          !post.cutLengthMm ||
+          post.fixing ===
+          "existing"
+        ) {
+
+          return;
+        }
+
+
+        if (
+          !groups[
+            post.steelKey
+          ]
+        ) {
+
+          groups[
+            post.steelKey
+          ] = [];
+        }
+
 
         groups[
           post.steelKey
-        ] = [];
+        ]
+          .push(
+            post.cutLengthMm /
+            1000
+          );
+
       }
-
-
-      groups[
-        post.steelKey
-      ].push(
-        post.cutLengthMm /
-        1000
-      );
-    });
+    );
   }
 
 
   let required = 0;
+
   let stockLengths = 0;
+
   let waste = 0;
+
   let costExGST = 0;
 
 
   const order = {};
 
 
-  Object.entries(groups)
+  Object.entries(
+    groups
+  )
     .forEach(
-      ([key, pieces]) => {
+      (
+        [key, pieces]
+      ) => {
+
 
         const steel =
-          PRICES.steel.posts[key];
+          PRICES
+            .steel
+            .posts[
+              key
+            ];
 
 
         const stock =
@@ -4665,17 +5723,25 @@ function calculatePostSteel(posts) {
             steel.pricePerStockLength,
             steel.priceIncludesGST
           );
+
       }
     );
 
 
   return {
+
     groups,
+
     order,
+
     required,
+
     stockLengths,
+
     waste,
+
     costExGST
+
   };
 }
 
@@ -4690,124 +5756,156 @@ function calculateFixings(
   panels
 ) {
 
-  let dynaboltCount = 0;
-  let concreteBags = 0;
-  let baseplateCount = 0;
+  let dynaboltCount =
+    0;
 
 
-  if (includeState.posts) {
+  let concreteBags =
+    0;
 
-    posts.forEach(post => {
 
-      if (
-        post.fixing === "brick"
-      ) {
-        dynaboltCount +=
-          post.holes.length;
+  let baseplateCount =
+    0;
+
+
+  if (
+    includeState.posts
+  ) {
+
+    posts.forEach(
+      post => {
+
+
+        if (
+          post.fixing ===
+          "brick"
+        ) {
+
+          dynaboltCount +=
+            post.holes.length;
+        }
+
+
+        if (
+          post.topHole
+        ) {
+
+          dynaboltCount++;
+        }
+
+
+        if (
+          [
+            "concreteHouse",
+            "concreteFloating",
+            "fixedPanelLeft",
+            "fixedPanelCentre",
+            "fixedPanelRight"
+          ]
+            .includes(
+              post.fixing
+            )
+        ) {
+
+          concreteBags +=
+            PRICES
+              .concrete
+              .defaultBagsPerPost;
+        }
+
+
+        if (
+          post.fixing ===
+          "baseplate"
+        ) {
+
+          baseplateCount++;
+        }
+
       }
-
-
-      if (post.topHole) {
-        dynaboltCount++;
-      }
-
-
-      if (
-        [
-          "concreteHouse",
-          "concreteFloating",
-          "fixedPanelLeft",
-          "fixedPanelCentre",
-          "fixedPanelRight"
-        ].includes(
-          post.fixing
-        )
-      ) {
-
-        concreteBags +=
-          PRICES.concrete
-            .defaultBagsPerPost;
-      }
-
-
-      if (
-        post.fixing ===
-        "baseplate"
-      ) {
-        baseplateCount++;
-      }
-    });
+    );
   }
 
 
-  let gateHardwareExGST = 0;
+  let gateHardwareExGST =
+    0;
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    gates.forEach(gate => {
+    gates.forEach(
+      gate => {
 
-      gateHardwareExGST +=
-        toExGST(
-          PRICES.hardware
-            .hinges
-            .lockout
-            .pricePerSet,
-
-          true
-        );
-
-
-      if (includeState.cladding) {
 
         gateHardwareExGST +=
           toExGST(
-            PRICES.fixings
-              .screws
-              .defaultPerItem,
-
+            PRICES
+              .hardware
+              .hinges
+              .lockout
+              .pricePerSet,
             true
           );
-      }
 
 
-      if (
-        gate.latch === "other"
-      ) {
-
-        gateHardwareExGST +=
-          toExGST(
-            gate.otherLatchCost,
-            true
-          );
-      }
-
-
-      else {
-
-        const latch =
-          PRICES.hardware
-            .latches[
-              gate.latch
-            ];
-
-
-        if (latch) {
+        if (
+          includeState.cladding
+        ) {
 
           gateHardwareExGST +=
-            latch.priceIncludesGST
-
-              ? toExGST(
-                  latch.price,
-                  true
-                )
-
-              : num(
-                  latch.priceExGST
-                );
+            toExGST(
+              PRICES
+                .fixings
+                .screws
+                .defaultPerItem,
+              true
+            );
         }
+
+
+        if (
+          gate.latch ===
+          "other"
+        ) {
+
+          gateHardwareExGST +=
+            toExGST(
+              gate.otherLatchCost,
+              true
+            );
+        }
+
+
+        else {
+
+          const latch =
+            PRICES
+              .hardware
+              .latches[
+                gate.latch
+              ];
+
+
+          if (latch) {
+
+            gateHardwareExGST +=
+              latch.priceIncludesGST
+
+                ? toExGST(
+                    latch.price,
+                    true
+                  )
+
+                : num(
+                    latch.priceExGST
+                  );
+          }
+        }
+
       }
-    });
+    );
   }
 
 
@@ -4815,11 +5913,13 @@ function calculateFixings(
     includeState.cladding
 
       ? toExGST(
-          panels.length *
-          PRICES.fixings
-            .screws
-            .defaultPerItem,
-
+          (
+            panels.length *
+            PRICES
+              .fixings
+              .screws
+              .defaultPerItem
+          ),
           true
         )
 
@@ -4829,42 +5929,347 @@ function calculateFixings(
   return {
 
     dynaboltCount,
+
     concreteBags,
+
     baseplateCount,
 
     dynaboltCostExGST:
       toExGST(
-        dynaboltCount *
-        PRICES.fixings
-          .dynabolt
-          .priceEach,
-
+        (
+          dynaboltCount *
+          PRICES
+            .fixings
+            .dynabolt
+            .priceEach
+        ),
         true
       ),
 
     concreteCostExGST:
       toExGST(
-        concreteBags *
-        PRICES.concrete
-          .pricePerBag,
-
+        (
+          concreteBags *
+          PRICES
+            .concrete
+            .pricePerBag
+        ),
         true
       ),
 
     baseplateCostExGST:
       toExGST(
-        baseplateCount *
-        PRICES.fixings
-          .baseplate
-          .allowanceEach,
-
+        (
+          baseplateCount *
+          PRICES
+            .fixings
+            .baseplate
+            .allowanceEach
+        ),
         true
       ),
 
     gateHardwareExGST,
 
     panelScrewCostExGST
+
   };
+}
+
+
+/* ==========================================================
+   POWDER COATING
+   ========================================================== */
+
+function calculatePowderCoating(
+  posts,
+  gates,
+  panels
+) {
+
+  if (
+    $("powderDecision")
+      .value !==
+    "yes"
+  ) {
+
+    return {
+
+      rawCostExGST: 0,
+
+      customerOptionExGST: 0,
+
+      customerOptionIncGST: 0
+
+    };
+  }
+
+
+  let rawCostExGST =
+    0;
+
+
+  if (
+    includeState.posts
+  ) {
+
+    posts.forEach(
+      post => {
+
+
+        if (
+          !post.cutLengthMm ||
+          post.fixing ===
+          "existing"
+        ) {
+
+          return;
+        }
+
+
+        const rate =
+          PRICES
+            .powderCoating
+            .postRatePerLm[
+              post.steelKey
+            ]
+          ||
+          0;
+
+
+        rawCostExGST +=
+          (
+            post.cutLengthMm /
+            1000
+          )
+          *
+          rate;
+
+      }
+    );
+  }
+
+
+  if (
+    includeState.gate
+  ) {
+
+    gates.forEach(
+      gate => {
+
+
+        if (
+          !gate.width ||
+          !gate.height
+        ) {
+
+          return;
+        }
+
+
+        rawCostExGST +=
+          (
+            gate.width /
+            1000
+          )
+          *
+          (
+            gate.height /
+            1000
+          )
+          *
+          PRICES
+            .powderCoating
+            .openFrameRatePerM2;
+
+      }
+    );
+  }
+
+
+  if (
+    includeState.cladding &&
+    $("claddingDirection")
+      .value ===
+    "vertical" &&
+    $("claddingType")
+      .value !==
+    "galvMesh50"
+  ) {
+
+    panels.forEach(
+      panel => {
+
+
+        if (
+          !panel.width ||
+          !panel.height
+        ) {
+
+          return;
+        }
+
+
+        rawCostExGST +=
+          (
+            panel.width /
+            1000
+          )
+          *
+          (
+            panel.height /
+            1000
+          )
+          *
+          PRICES
+            .powderCoating
+            .openFrameRatePerM2;
+
+      }
+    );
+  }
+
+
+  rawCostExGST +=
+    PRICES
+      .powderCoating
+      .jobTravelAllowanceExGST;
+
+
+  const customerOptionExGST =
+    rawCostExGST *
+    (
+      1 +
+      PRICES.business
+        .materialMarkup
+    );
+
+
+  const customerOptionIncGST =
+    customerOptionExGST *
+    (
+      1 +
+      PRICES.business.gst
+    );
+
+
+  return {
+
+    rawCostExGST,
+
+    customerOptionExGST,
+
+    customerOptionIncGST
+
+  };
+}
+
+
+/* ==========================================================
+   NON POWDER FINISH
+   ========================================================== */
+
+function calculateNonPowderFinish(
+  frameUsageByType,
+  posts
+) {
+
+  if (
+    $("powderDecision")
+      .value !==
+    "no"
+  ) {
+
+    return 0;
+  }
+
+
+  let surfaceAreaM2 =
+    0;
+
+
+  Object.entries(
+    frameUsageByType
+  )
+    .forEach(
+      (
+        [key, metres]
+      ) => {
+
+
+        const steel =
+          PRICES
+            .steel
+            .frame[
+              key
+            ];
+
+
+        const perimeterM =
+          2 *
+          (
+            steel.widthMm +
+            steel.depthMm
+          )
+          /
+          1000;
+
+
+        surfaceAreaM2 +=
+          perimeterM *
+          metres;
+
+      }
+    );
+
+
+  if (
+    includeState.posts
+  ) {
+
+    posts.forEach(
+      post => {
+
+
+        if (
+          !post.cutLengthMm ||
+          post.fixing ===
+          "existing"
+        ) {
+
+          return;
+        }
+
+
+        const perimeterM =
+          2 *
+          (
+            post.widthMm +
+            post.depthMm
+          )
+          /
+          1000;
+
+
+        surfaceAreaM2 +=
+          perimeterM *
+          (
+            post.cutLengthMm /
+            1000
+          );
+
+      }
+    );
+  }
+
+
+  return (
+    surfaceAreaM2 *
+    PRICES
+      .finishing
+      .duragalvTouchUp
+      .ratePerM2
+  );
 }
 
 
@@ -4879,98 +6284,124 @@ function calculateLabour(
   cladding
 ) {
 
-  let autoFabrication = 0;
-  let autoInstallation = 0;
+  let autoFabrication =
+    0;
 
 
-  if (includeState.gate) {
+  let autoInstallation =
+    0;
+
+
+  if (
+    includeState.gate
+  ) {
 
     autoFabrication +=
       gates.length *
-      PRICES.labour
+      PRICES
+        .labour
         .gateFabricationHoursEach;
 
 
     autoInstallation +=
       gates.length *
-      PRICES.labour
+      PRICES
+        .labour
         .hangGateHoursEach;
   }
 
 
-  if (includeState.posts) {
+  if (
+    includeState.posts
+  ) {
 
-    posts.forEach(post => {
+    posts.forEach(
+      post => {
 
-      if (
-        post.fixing &&
-        post.fixing !== "existing"
-      ) {
 
-        autoFabrication +=
-          PRICES.labour
-            .postFabricationHoursEach;
+        if (
+          post.fixing &&
+          post.fixing !==
+          "existing"
+        ) {
+
+          autoFabrication +=
+            PRICES
+              .labour
+              .postFabricationHoursEach;
+        }
+
+
+        if (
+          post.fixing ===
+          "brick"
+        ) {
+
+          autoFabrication +=
+            post.holes.length *
+            PRICES
+              .labour
+              .drilledHoleHoursEach;
+        }
+
+
+        if (
+          post.topHole
+        ) {
+
+          autoFabrication +=
+            PRICES
+              .labour
+              .drilledHoleHoursEach;
+        }
+
+
+        if (
+          [
+            "concreteHouse",
+            "concreteFloating",
+            "fixedPanelLeft",
+            "fixedPanelCentre",
+            "fixedPanelRight"
+          ]
+            .includes(
+              post.fixing
+            )
+        ) {
+
+          autoInstallation +=
+            PRICES
+              .labour
+              .concretePostInstallHoursEach;
+        }
+
+
+        if (
+          post.fixing ===
+          "baseplate"
+        ) {
+
+          autoInstallation +=
+            PRICES
+              .labour
+              .baseplatePostInstallHoursEach;
+        }
+
       }
-
-
-      if (
-        post.fixing === "brick"
-      ) {
-
-        autoFabrication +=
-          post.holes.length *
-          PRICES.labour
-            .drilledHoleHoursEach;
-      }
-
-
-      if (post.topHole) {
-
-        autoFabrication +=
-          PRICES.labour
-            .drilledHoleHoursEach;
-      }
-
-
-      if (
-        [
-          "concreteHouse",
-          "concreteFloating",
-          "fixedPanelLeft",
-          "fixedPanelCentre",
-          "fixedPanelRight"
-        ].includes(
-          post.fixing
-        )
-      ) {
-
-        autoInstallation +=
-          PRICES.labour
-            .concretePostInstallHoursEach;
-      }
-
-
-      if (
-        post.fixing ===
-        "baseplate"
-      ) {
-
-        autoInstallation +=
-          PRICES.labour
-            .baseplatePostInstallHoursEach;
-      }
-    });
+    );
   }
 
 
   if (
-    $("claddingType").value !==
+    $("claddingType")
+      .value !==
     "treatedPinePalings"
   ) {
 
     autoFabrication +=
       panels.length *
-      PRICES.labour
+      PRICES
+        .labour
         .fixedPanelHoursEach;
   }
 
@@ -5020,12 +6451,15 @@ function calculateLabour(
   return {
 
     autoFabrication,
+
     autoInstallation,
 
     additionalFabrication,
+
     additionalInstallation,
 
     fabricationTotal,
+
     installationTotal,
 
     totalHours,
@@ -5036,21 +6470,22 @@ function calculateLabour(
         .labourRate,
 
     specialCladdingLabourExGST:
-      cladding.specialLabourExGST,
+      cladding
+        .specialLabourExGST,
 
     totalLabourExGST:
-      totalHours *
-      PRICES.business
-        .labourRate
+      (
+        totalHours *
+        PRICES.business
+          .labourRate
+      )
       +
-      cladding.specialLabourExGST
+      cladding
+        .specialLabourExGST
+
   };
 }
 
-
-/* ==========================================================
-   LABOUR DISPLAY
-   ========================================================== */
 
 function updateLabourDisplay(labour) {
 
@@ -5065,7 +6500,8 @@ function updateLabourDisplay(labour) {
 
 
   $("additionalLabourFields")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
 
       !$("additionalLabourEnabled")
@@ -5073,22 +6509,30 @@ function updateLabourDisplay(labour) {
     );
 
 
-  let special = "";
+  let special =
+    "";
 
 
   if (
-    labour.specialCladdingLabourExGST >
+    labour
+      .specialCladdingLabourExGST >
     0
   ) {
 
     special =
       `
       <div>
-        <span>Treated pine labour</span>
+
+        <span>
+          Treated pine labour
+        </span>
 
         <strong>
-          ${money(labour.specialCladdingLabourExGST)}
+          ${money(
+            labour.specialCladdingLabourExGST
+          )}
         </strong>
+
       </div>
       `;
   }
@@ -5098,47 +6542,103 @@ function updateLabourDisplay(labour) {
     .innerHTML =
       `
       <div>
-        <span>Auto fabrication</span>
-        <strong>${labour.autoFabrication.toFixed(2)} hrs</strong>
+
+        <span>
+          Auto fabrication
+        </span>
+
+        <strong>
+          ${labour.autoFabrication.toFixed(2)} hrs
+        </strong>
+
       </div>
 
+
       <div>
-        <span>Additional fabrication</span>
-        <strong>+${labour.additionalFabrication.toFixed(2)} hrs</strong>
+
+        <span>
+          Additional fabrication
+        </span>
+
+        <strong>
+          +${labour.additionalFabrication.toFixed(2)} hrs
+        </strong>
+
       </div>
+
 
       <div class="labour-subtotal">
-        <span>Fabrication total</span>
-        <strong>${labour.fabricationTotal.toFixed(2)} hrs</strong>
+
+        <span>
+          Fabrication total
+        </span>
+
+        <strong>
+          ${labour.fabricationTotal.toFixed(2)} hrs
+        </strong>
+
       </div>
 
-      <div>
-        <span>Auto installation</span>
-        <strong>${labour.autoInstallation.toFixed(2)} hrs</strong>
-      </div>
 
       <div>
-        <span>Additional installation</span>
-        <strong>+${labour.additionalInstallation.toFixed(2)} hrs</strong>
+
+        <span>
+          Auto installation
+        </span>
+
+        <strong>
+          ${labour.autoInstallation.toFixed(2)} hrs
+        </strong>
+
       </div>
+
+
+      <div>
+
+        <span>
+          Additional installation
+        </span>
+
+        <strong>
+          +${labour.additionalInstallation.toFixed(2)} hrs
+        </strong>
+
+      </div>
+
 
       <div class="labour-subtotal">
-        <span>Installation total</span>
-        <strong>${labour.installationTotal.toFixed(2)} hrs</strong>
+
+        <span>
+          Installation total
+        </span>
+
+        <strong>
+          ${labour.installationTotal.toFixed(2)} hrs
+        </strong>
+
       </div>
+
 
       ${special}
 
+
       <div class="labour-grand-total">
-        <span>TOTAL HOURS</span>
-        <strong>${labour.totalHours.toFixed(2)} hrs</strong>
+
+        <span>
+          TOTAL HOURS
+        </span>
+
+        <strong>
+          ${labour.totalHours.toFixed(2)} hrs
+        </strong>
+
       </div>
       `;
 }
 
 
 /* ==========================================================
-   MAIN QUOTE CALCULATION
+   MAIN QUOTE CALC
    ========================================================== */
 
 function calculateQuote() {
@@ -5149,8 +6649,10 @@ function calculateQuote() {
   const posts =
     readPosts();
 
+
   const gates =
     readGates();
+
 
   const panels =
     readPanels();
@@ -5218,49 +6720,74 @@ function calculateQuote() {
   const extraHardwareExGST =
     toExGST(
       num(
-        $("extraHardware").value
+        $("extraHardware")
+          .value
       ),
       true
     );
 
 
   const materialsExGST =
+
     frame.costExGST
+
     +
+
     postSteel.costExGST
+
     +
+
     fixings.dynaboltCostExGST
+
     +
+
     fixings.concreteCostExGST
+
     +
+
     fixings.baseplateCostExGST
+
     +
+
     fixings.gateHardwareExGST
+
     +
+
     fixings.panelScrewCostExGST
+
     +
+
     cladding.materialCostExGST
+
     +
+
     powder.rawCostExGST
+
     +
+
     nonPowderFinishExGST
+
     +
+
     extraHardwareExGST;
 
 
   const oneWayKm =
     num(
-      $("travelKm").value
+      $("travelKm")
+        .value
     );
 
 
   const chargeableOneWay =
     Math.max(
+
       0,
 
       oneWayKm -
       PRICES.business
         .includedTravelKm
+
     );
 
 
@@ -5274,7 +6801,8 @@ function calculateQuote() {
   const otherDirectCostExGST =
     toExGST(
       num(
-        $("otherCosts").value
+        $("otherCosts")
+          .value
       ),
       true
     );
@@ -5287,14 +6815,23 @@ function calculateQuote() {
 
 
   const autoExGST =
+
     materialsExGST
+
     +
+
     labour.totalLabourExGST
+
     +
+
     travelExGST
+
     +
+
     otherDirectCostExGST
+
     +
+
     markup;
 
 
@@ -5317,40 +6854,61 @@ function calculateQuote() {
   lastCalculation = {
 
     posts,
+
     gates,
+
     panels,
 
     frame,
+
     postSteel,
+
     fixings,
+
     cladding,
+
     powder,
 
     nonPowderFinishIncGST,
+
     nonPowderFinishExGST,
 
     labour,
 
     materialsExGST,
+
     travelExGST,
+
     otherDirectCostExGST,
+
     markup,
 
     autoExGST,
+
     autoGST,
+
     autoIncGST,
+
     autoFinalPrice
+
   };
 
 
-  if (!manualQuoteActive) {
+  if (
+    !manualQuoteActive
+  ) {
 
-    suppressQuoteReset = true;
+    suppressQuoteReset =
+      true;
 
-    $("quotePrice").value =
-      autoFinalPrice;
 
-    suppressQuoteReset = false;
+    $("quotePrice")
+      .value =
+        autoFinalPrice;
+
+
+    suppressQuoteReset =
+      false;
   }
 
 
@@ -5405,7 +6963,9 @@ function calculateQuote() {
 
   $("materialsTotal")
     .textContent =
-      money(materialsExGST);
+      money(
+        materialsExGST
+      );
 
 
   $("labourTotal")
@@ -5484,6 +7044,7 @@ function getCurrentQuotePrice() {
   if (
     manualQuoteActive
   ) {
+
     return manualQuoteValue;
   }
 
@@ -5499,7 +7060,9 @@ function getCurrentQuotePrice() {
 
 function updateQuoteMetrics() {
 
-  if (!lastCalculation) {
+  if (
+    !lastCalculation
+  ) {
     return;
   }
 
@@ -5511,26 +7074,38 @@ function updateQuoteMetrics() {
   $("quoteModeDisplay")
     .textContent =
       manualQuoteActive
+
         ? "MANUAL"
+
         : "AUTO";
 
 
   $("quoteModeDisplay")
-    .classList.toggle(
+    .classList
+    .toggle(
       "manual",
       manualQuoteActive
     );
 
 
   const actualCostsExGST =
-    lastCalculation.materialsExGST
+
+    lastCalculation
+      .materialsExGST
+
     +
+
     lastCalculation
       .labour
       .totalLabourExGST
+
     +
-    lastCalculation.travelExGST
+
+    lastCalculation
+      .travelExGST
+
     +
+
     lastCalculation
       .otherDirectCostExGST;
 
@@ -5557,7 +7132,8 @@ function updateQuoteMetrics() {
 
   const cavityWidthM =
     num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     )
     /
     1000;
@@ -5565,7 +7141,8 @@ function updateQuoteMetrics() {
 
   const cavityHeightM =
     num(
-      $("overallHeight").value
+      $("overallHeight")
+        .value
     )
     /
     1000;
@@ -5630,34 +7207,43 @@ function updateQuoteMetrics() {
 function updatePowderUI() {
 
   const decision =
-    $("powderDecision").value;
+    $("powderDecision")
+      .value;
 
 
   $("powderYesBtn")
-    .classList.toggle(
+    .classList
+    .toggle(
       "selected",
-      decision === "yes"
+      decision ===
+      "yes"
     );
 
 
   $("powderNoBtn")
-    .classList.toggle(
+    .classList
+    .toggle(
       "selected",
-      decision === "no"
+      decision ===
+      "no"
     );
 
 
   $("powderYesOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      decision !== "yes"
+      decision !==
+      "yes"
     );
 
 
   $("powderNoOptions")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
-      decision !== "no"
+      decision !==
+      "no"
     );
 
 
@@ -5668,19 +7254,23 @@ function updatePowderUI() {
 function powderSelectionComplete() {
 
   if (
-    $("powderDecision").value ===
+    $("powderDecision")
+      .value ===
     "no"
   ) {
+
     return true;
   }
 
 
   return (
-    $("powderDecision").value ===
+    $("powderDecision")
+      .value ===
     "yes"
     &&
     Boolean(
-      $("powderColour").value
+      $("powderColour")
+        .value
     )
   );
 }
@@ -5689,7 +7279,8 @@ function powderSelectionComplete() {
 function updatePowderSummary() {
 
   const decision =
-    $("powderDecision").value;
+    $("powderDecision")
+      .value;
 
 
   if (!decision) {
@@ -5702,7 +7293,10 @@ function updatePowderSummary() {
   }
 
 
-  if (decision === "no") {
+  if (
+    decision ===
+    "no"
+  ) {
 
     $("powderSummary")
       .textContent =
@@ -5714,7 +7308,8 @@ function updatePowderSummary() {
 
   if (
     decision === "yes" &&
-    !$("powderColour").value
+    !$("powderColour")
+      .value
   ) {
 
     $("powderSummary")
@@ -5743,21 +7338,25 @@ function maybeCollapsePowder() {
     powderSelectionComplete()
   ) {
 
-    $("powderCard").open =
-      false;
+    $("powderCard")
+      .open =
+        false;
   }
 }
 
 
 /* ==========================================================
-   COMPONENT COMPLETE
+   COMPLETION
    ========================================================== */
 
 function componentComplete(component) {
 
   if (
-    !componentIsActive(component)
+    !componentIsActive(
+      component
+    )
   ) {
+
     return true;
   }
 
@@ -5774,13 +7373,16 @@ function componentComplete(component) {
 
 
   if (
-    component.type === "post"
+    component.type ===
+    "post"
   ) {
 
     const fixing =
-      card.querySelector(
-        ".post-fixing"
-      ).value;
+      card
+        .querySelector(
+          ".post-fixing"
+        )
+        .value;
 
 
     if (!fixing) {
@@ -5789,22 +7391,27 @@ function componentComplete(component) {
 
 
     if (
-      fixing === "existing"
+      fixing ===
+      "existing"
     ) {
+
       return true;
     }
 
 
     if (
-      getPostFinishedHeight(card) <=
-      0
+      getPostFinishedHeight(
+        card
+      ) <= 0
     ) {
+
       return false;
     }
 
 
     if (
-      fixing === "brick"
+      fixing ===
+      "brick"
     ) {
 
       const holes =
@@ -5813,32 +7420,44 @@ function componentComplete(component) {
             ".hole-position"
           )
         ]
+
           .map(
             input =>
-              num(input.value)
+              num(
+                input.value
+              )
           )
+
           .filter(
             value =>
               value > 0
           );
 
 
-      return holes.length > 0;
+      return (
+        holes.length >
+        0
+      );
     }
 
 
     if (
-      fixing === "concreteHouse" &&
-      card.querySelector(
-        ".house-bolt-enabled"
-      ).checked
+      fixing ===
+      "concreteHouse" &&
+      card
+        .querySelector(
+          ".house-bolt-enabled"
+        )
+        .checked
     ) {
 
       return (
         num(
-          card.querySelector(
-            ".top-hole-position"
-          ).value
+          card
+            .querySelector(
+              ".top-hole-position"
+            )
+            .value
         ) > 0
       );
     }
@@ -5849,137 +7468,171 @@ function componentComplete(component) {
 
 
   if (
-    component.type === "gate"
+    component.type ===
+    "gate"
   ) {
 
     const manual =
-      card.dataset.widthMode ===
+      card.dataset
+        .widthMode ===
       "manual";
 
 
     if (
       manual &&
       num(
-        card.querySelector(
-          ".gate-manual-width"
-        ).value
+        card
+          .querySelector(
+            ".gate-manual-width"
+          )
+          .value
       ) <= 0
     ) {
+
       return false;
     }
 
 
     return Boolean(
+
       num(
         card.dataset
           .calculatedWidth
       ) > 0
+
       &&
+
       num(
         card.dataset
           .calculatedHeight
       ) > 0
+
       &&
-      card.querySelector(
-        ".hinge-side"
-      ).value
+
+      card
+        .querySelector(
+          ".hinge-side"
+        )
+        .value
+
       &&
-      card.querySelector(
-        ".open-direction"
-      ).value
+
+      card
+        .querySelector(
+          ".open-direction"
+        )
+        .value
+
       &&
-      card.querySelector(
-        ".gate-latch"
-      ).value
+
+      card
+        .querySelector(
+          ".gate-latch"
+        )
+        .value
+
     );
   }
 
 
   return Boolean(
+
     num(
-      card.querySelector(
-        ".panel-width"
-      ).value
+      card
+        .querySelector(
+          ".panel-width"
+        )
+        .value
     ) > 0
+
     &&
+
     num(
-      card.querySelector(
-        ".panel-height"
-      ).value
+      card
+        .querySelector(
+          ".panel-height"
+        )
+        .value
     ) > 0
+
+  );
+}
+
+
+function updateComponentStatus() {
+
+  components.forEach(
+    component => {
+
+
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
+
+
+      if (!card) {
+        return;
+      }
+
+
+      const complete =
+        componentComplete(
+          component
+        );
+
+
+      const badge =
+        card
+          .querySelector(
+            ".component-status"
+          );
+
+
+      badge.textContent =
+        complete
+
+          ? "COMPLETE"
+
+          : "INCOMPLETE";
+
+
+      badge.classList
+        .toggle(
+          "complete",
+          complete
+        );
+
+
+      badge.classList
+        .toggle(
+          "incomplete",
+          !complete
+        );
+
+    }
   );
 }
 
 
 /* ==========================================================
-   COMPONENT STATUS
-   ========================================================== */
-
-function updateComponentStatus() {
-
-  components.forEach(component => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
-
-
-    if (!card) {
-      return;
-    }
-
-
-    const complete =
-      componentComplete(
-        component
-      );
-
-
-    const badge =
-      card.querySelector(
-        ".component-status"
-      );
-
-
-    badge.textContent =
-      complete
-        ? "COMPLETE"
-        : "INCOMPLETE";
-
-
-    badge.classList.toggle(
-      "complete",
-      complete
-    );
-
-
-    badge.classList.toggle(
-      "incomplete",
-      !complete
-    );
-  });
-}
-
-
-/* ==========================================================
    MUD MAP
-   PROPORTIONAL + SCROLLABLE
    ========================================================== */
 
-function getMudMapWidth(
-  component
-) {
+function getMudMapWidth(component) {
 
   if (
-    component.type === "post"
+    component.type ===
+    "post"
   ) {
+
     return 88;
   }
 
 
   if (
-    component.type === "gate"
+    component.type ===
+    "gate"
   ) {
 
     const gate =
@@ -5992,14 +7645,20 @@ function getMudMapWidth(
         );
 
 
-    if (gate?.width) {
+    if (
+      gate?.width
+    ) {
 
       return Math.max(
+
         180,
+
         Math.min(
           330,
-          gate.width * 0.22
+          gate.width *
+          0.22
         )
+
       );
     }
 
@@ -6009,7 +7668,8 @@ function getMudMapWidth(
 
 
   if (
-    component.type === "panel"
+    component.type ===
+    "panel"
   ) {
 
     const panel =
@@ -6022,14 +7682,20 @@ function getMudMapWidth(
         );
 
 
-    if (panel?.width) {
+    if (
+      panel?.width
+    ) {
 
       return Math.max(
+
         140,
+
         Math.min(
           280,
-          panel.width * 0.22
+          panel.width *
+          0.22
         )
+
       );
     }
 
@@ -6042,21 +7708,24 @@ function getMudMapWidth(
 }
 
 
-function getMudMapSecondLine(
-  component
-) {
+function getMudMapSecondLine(component) {
 
-  if (!lastCalculation) {
+  if (
+    !lastCalculation
+  ) {
+
     return "";
   }
 
 
   if (
-    component.type === "post"
+    component.type ===
+    "post"
   ) {
 
     const post =
-      lastCalculation.posts
+      lastCalculation
+        .posts
         .find(
           item =>
             item.id ===
@@ -6075,18 +7744,22 @@ function getMudMapSecondLine(
 
       : (
           post.finishedHeight
+
             ? `${post.finishedHeight}mm`
+
             : ""
         );
   }
 
 
   if (
-    component.type === "gate"
+    component.type ===
+    "gate"
   ) {
 
     const gate =
-      lastCalculation.gates
+      lastCalculation
+        .gates
         .find(
           item =>
             item.id ===
@@ -6111,7 +7784,8 @@ function getMudMapSecondLine(
 
 
   const panel =
-    lastCalculation.panels
+    lastCalculation
+      .panels
       .find(
         item =>
           item.id ===
@@ -6136,14 +7810,17 @@ function renderMudMap() {
     $("mudMap");
 
 
-  map.innerHTML = "";
+  map.innerHTML =
+    "";
 
 
   const visible =
     activeComponents();
 
 
-  if (!visible.length) {
+  if (
+    !visible.length
+  ) {
 
     map.innerHTML =
       `
@@ -6152,12 +7829,17 @@ function renderMudMap() {
       </div>
       `;
 
+
     return;
   }
 
 
   visible.forEach(
-    (component, index) => {
+    (
+      component,
+      index
+    ) => {
+
 
       const colour =
         getComponentColour(
@@ -6193,16 +7875,18 @@ function renderMudMap() {
         "mud-component";
 
 
-      button.style.setProperty(
-        "--component-colour",
-        colour.bg
-      );
+      button.style
+        .setProperty(
+          "--component-colour",
+          colour.bg
+        );
 
 
-      button.style.setProperty(
-        "--component-text",
-        colour.text
-      );
+      button.style
+        .setProperty(
+          "--component-text",
+          colour.text
+        );
 
 
       if (
@@ -6210,9 +7894,10 @@ function renderMudMap() {
         component.id
       ) {
 
-        button.classList.add(
-          "selected"
-        );
+        button.classList
+          .add(
+            "selected"
+          );
       }
 
 
@@ -6252,12 +7937,6 @@ function renderMudMap() {
       );
 
 
-      /*
-        Completion dot is now placed
-        independently from hinge marker,
-        fixing the right-hinge collision.
-      */
-
       const status =
         document.createElement(
           "span"
@@ -6266,7 +7945,9 @@ function renderMudMap() {
 
       status.className =
         `mud-status ${
-          componentComplete(component)
+          componentComplete(
+            component
+          )
             ? "complete"
             : "incomplete"
         }`;
@@ -6278,7 +7959,8 @@ function renderMudMap() {
 
 
       if (
-        component.type === "gate"
+        component.type ===
+        "gate"
       ) {
 
         const card =
@@ -6288,9 +7970,11 @@ function renderMudMap() {
 
 
         const hinge =
-          card.querySelector(
-            ".hinge-side"
-          ).value;
+          card
+            .querySelector(
+              ".hinge-side"
+            )
+            .value;
 
 
         if (hinge) {
@@ -6316,22 +8000,25 @@ function renderMudMap() {
       }
 
 
-      button.addEventListener(
-        "click",
-        () => {
-
-          selectedComponentId =
-            component.id;
+      button
+        .addEventListener(
+          "click",
+          () => {
 
 
-          renderMudMap();
+            selectedComponentId =
+              component.id;
 
 
-          jumpToComponent(
-            component.id
-          );
-        }
-      );
+            renderMudMap();
+
+
+            jumpToComponent(
+              component.id
+            );
+
+          }
+        );
 
 
       wrapper.appendChild(
@@ -6363,6 +8050,7 @@ function renderMudMap() {
         left.type =
           "button";
 
+
         left.textContent =
           "◀";
 
@@ -6376,38 +8064,47 @@ function renderMudMap() {
         right.type =
           "button";
 
+
         right.textContent =
           "▶";
 
 
-        left.addEventListener(
-          "click",
-          event => {
-
-            event.stopPropagation();
-
-
-            moveComponent(
-              component.id,
-              -1
-            );
-          }
-        );
+        left
+          .addEventListener(
+            "click",
+            event => {
 
 
-        right.addEventListener(
-          "click",
-          event => {
-
-            event.stopPropagation();
+              event
+                .stopPropagation();
 
 
-            moveComponent(
-              component.id,
-              1
-            );
-          }
-        );
+              moveComponent(
+                component.id,
+                -1
+              );
+
+            }
+          );
+
+
+        right
+          .addEventListener(
+            "click",
+            event => {
+
+
+              event
+                .stopPropagation();
+
+
+              moveComponent(
+                component.id,
+                1
+              );
+
+            }
+          );
 
 
         controls.append(
@@ -6425,13 +8122,14 @@ function renderMudMap() {
       map.appendChild(
         wrapper
       );
+
     }
   );
 }
 
 
 /* ==========================================================
-   QUICK NAVIGATION
+   QUICK NAV
    ========================================================== */
 
 function renderQuickNav() {
@@ -6449,7 +8147,11 @@ function renderQuickNav() {
 
 
   visible.forEach(
-    (component, index) => {
+    (
+      component,
+      index
+    ) => {
+
 
       const colour =
         getComponentColour(
@@ -6475,37 +8177,42 @@ function renderQuickNav() {
         component.id;
 
 
-      button.style.setProperty(
-        "--component-colour",
-        colour.bg
-      );
+      button.style
+        .setProperty(
+          "--component-colour",
+          colour.bg
+        );
 
 
       button.textContent =
         component.label;
 
 
-      button.addEventListener(
-        "click",
-        () => {
-
-          selectedComponentId =
-            component.id;
+      button
+        .addEventListener(
+          "click",
+          () => {
 
 
-          jumpToComponent(
-            component.id
-          );
+            selectedComponentId =
+              component.id;
 
 
-          updateActiveQuickNav();
-        }
-      );
+            jumpToComponent(
+              component.id
+            );
+
+
+            updateActiveQuickNav();
+
+          }
+        );
 
 
       nav.appendChild(
         button
       );
+
     }
   );
 
@@ -6528,8 +8235,13 @@ function jumpToComponent(id) {
 
 
   card.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+
   });
 }
 
@@ -6546,106 +8258,136 @@ function jumpToSection(id) {
 
 
   if (
-    element.tagName === "DETAILS"
+    element.tagName ===
+    "DETAILS"
   ) {
+
     element.open =
       true;
   }
 
 
   element.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+
   });
 }
 
 
-/* ==========================================================
-   QUICK NAV ACTIVE HIGHLIGHT
-   ========================================================== */
-
 function getCurrentVisibleNavTarget() {
 
-  const headerOffset =
+  const sticky =
     document.querySelector(
       ".mud-map-shell"
-    )
+    );
+
+
+  const headerOffset =
+    sticky
       ?.getBoundingClientRect()
       .bottom
     ||
-    150;
+    230;
 
 
-  let best = null;
+  let best =
+    null;
 
 
   const candidates = [
+
     ...document.querySelectorAll(
       ".nav-section, .nav-component"
     )
+
   ];
 
 
-  candidates.forEach(element => {
+  candidates.forEach(
+    element => {
 
-    if (
-      element.classList.contains(
-        "hidden"
-      )
-    ) {
-      return;
+
+      if (
+        element.classList
+          .contains(
+            "hidden"
+          )
+      ) {
+
+        return;
+      }
+
+
+      const rect =
+        element
+          .getBoundingClientRect();
+
+
+      if (
+        rect.bottom <=
+        headerOffset + 5
+      ) {
+
+        return;
+      }
+
+
+      const distance =
+        Math.abs(
+          rect.top -
+          headerOffset -
+          8
+        );
+
+
+      if (
+        best === null ||
+        distance <
+        best.distance
+      ) {
+
+        best = {
+
+          element,
+
+          distance
+
+        };
+      }
+
     }
+  );
 
 
-    const rect =
-      element
-        .getBoundingClientRect();
-
-
-    const distance =
-      Math.abs(
-        rect.top -
-        headerOffset -
-        15
-      );
-
-
-    if (
-      rect.bottom <
-      headerOffset + 15
-    ) {
-      return;
-    }
-
-
-    if (
-      best === null ||
-      distance < best.distance
-    ) {
-
-      best = {
-        element,
-        distance
-      };
-    }
-  });
-
-
-  return best?.element || null;
+  return (
+    best?.element ||
+    null
+  );
 }
 
 
 function updateActiveQuickNav() {
 
-  document.querySelectorAll(
-    ".quick-nav-tab"
-  )
-    .forEach(button => {
+  document
+    .querySelectorAll(
+      ".quick-nav-tab"
+    )
+    .forEach(
+      button => {
 
-      button.classList.remove(
-        "active"
-      );
-    });
+
+        button.classList
+          .remove(
+            "active"
+          );
+
+      }
+    );
 
 
   const current =
@@ -6658,19 +8400,23 @@ function updateActiveQuickNav() {
 
 
   if (
-    current.classList.contains(
-      "nav-component"
-    )
+    current.classList
+      .contains(
+        "nav-component"
+      )
   ) {
 
     const id =
-      current.dataset.componentId;
+      current.dataset
+        .componentId;
 
 
-    document.querySelector(
-      `.component-quick-tab[data-component-id="${id}"]`
-    )
-      ?.classList.add(
+    document
+      .querySelector(
+        `.component-quick-tab[data-component-id="${id}"]`
+      )
+      ?.classList
+      .add(
         "active"
       );
 
@@ -6679,17 +8425,19 @@ function updateActiveQuickNav() {
   }
 
 
-  document.querySelector(
-    `.section-nav-tab[data-target="${current.id}"]`
-  )
-    ?.classList.add(
+  document
+    .querySelector(
+      `.section-nav-tab[data-target="${current.id}"]`
+    )
+    ?.classList
+    .add(
       "active"
     );
 }
 
 
 /* ==========================================================
-   MOVE / REMOVE COMPONENT
+   MOVE / REMOVE
    ========================================================== */
 
 function moveComponent(
@@ -6707,18 +8455,22 @@ function moveComponent(
   const index =
     components.findIndex(
       component =>
-        component.id === id
+        component.id ===
+        id
     );
 
 
   const target =
-    index + direction;
+    index +
+    direction;
 
 
   if (
     target < 0 ||
-    target >= components.length
+    target >=
+    components.length
   ) {
+
     return;
   }
 
@@ -6727,9 +8479,12 @@ function moveComponent(
 
 
   setUndoState({
+
     type: "move",
+
     order:
       beforeOrder
+
   });
 
 
@@ -6746,20 +8501,25 @@ function moveComponent(
     $("componentsContainer");
 
 
-  components.forEach(component => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
+  components.forEach(
+    component => {
 
 
-    if (card) {
-      container.appendChild(
-        card
-      );
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
+
+
+      if (card) {
+
+        container.appendChild(
+          card
+        );
+      }
+
     }
-  });
+  );
 
 
   renumberComponents();
@@ -6773,11 +8533,15 @@ function removeComponent(id) {
   const index =
     components.findIndex(
       component =>
-        component.id === id
+        component.id ===
+        id
     );
 
 
-  if (index < 0) {
+  if (
+    index < 0
+  ) {
+
     return;
   }
 
@@ -6796,7 +8560,9 @@ function removeComponent(id) {
 
 
   setUndoState({
-    type: "delete",
+
+    type:
+      "delete",
 
     id:
       component.id,
@@ -6805,6 +8571,7 @@ function removeComponent(id) {
 
     component:
       snapshot
+
   });
 
 
@@ -6814,15 +8581,18 @@ function removeComponent(id) {
   );
 
 
-  document.querySelector(
-    `[data-component-id="${id}"]`
-  )
+  document
+    .querySelector(
+      `[data-component-id="${id}"]`
+    )
     ?.remove();
 
 
   if (
-    selectedComponentId === id
+    selectedComponentId ===
+    id
   ) {
+
     selectedComponentId =
       null;
   }
@@ -6834,21 +8604,20 @@ function removeComponent(id) {
 }
 
 
-/* ==========================================================
-   RESTORE UNDO
-   ========================================================== */
-
 function restoreDeletedComponent(state) {
 
-  restoringJob = true;
+  restoringJob =
+    true;
 
 
   const component = {
+
     id:
       state.id,
 
     type:
       state.component.type
+
   };
 
 
@@ -6869,23 +8638,29 @@ function restoreDeletedComponent(state) {
     $("componentsContainer");
 
 
-  components.forEach(item => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${item.id}"]`
-      );
+  components.forEach(
+    item => {
 
 
-    if (card) {
-      container.appendChild(
-        card
-      );
+      const card =
+        document.querySelector(
+          `[data-component-id="${item.id}"]`
+        );
+
+
+      if (card) {
+
+        container.appendChild(
+          card
+        );
+      }
+
     }
-  });
+  );
 
 
-  restoringJob = false;
+  restoringJob =
+    false;
 
 
   renumberComponents();
@@ -6896,22 +8671,31 @@ function restoreDeletedComponent(state) {
 
 function restoreComponentOrder(order) {
 
-  const ordered = [];
+  const ordered =
+    [];
 
 
-  order.forEach(id => {
-
-    const component =
-      components.find(
-        item =>
-          item.id === id
-      );
+  order.forEach(
+    id => {
 
 
-    if (component) {
-      ordered.push(component);
+      const component =
+        components.find(
+          item =>
+            item.id ===
+            id
+        );
+
+
+      if (component) {
+
+        ordered.push(
+          component
+        );
+      }
+
     }
-  });
+  );
 
 
   components =
@@ -6922,20 +8706,25 @@ function restoreComponentOrder(order) {
     $("componentsContainer");
 
 
-  components.forEach(component => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
+  components.forEach(
+    component => {
 
 
-    if (card) {
-      container.appendChild(
-        card
-      );
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
+
+
+      if (card) {
+
+        container.appendChild(
+          card
+        );
+      }
+
     }
-  });
+  );
 
 
   renumberComponents();
@@ -6952,7 +8741,8 @@ function updateLayoutCheck() {
 
   const cavity =
     num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     );
 
 
@@ -6975,11 +8765,14 @@ function updateLayoutCheck() {
   const posts =
     readPosts();
 
+
   const gates =
     readGates();
 
+
   const panels =
     readPanels();
+
 
   const active =
     activeComponents();
@@ -6989,17 +8782,19 @@ function updateLayoutCheck() {
     includeState.posts
 
       ? posts.reduce(
-          (sum, post) => {
+          (
+            sum,
+            post
+          ) =>
+            sum +
+            (
+              post.fixing ===
+              "existing"
 
-            return (
-              sum +
-              (
-                post.fixing === "existing"
-                  ? 0
-                  : post.widthMm
-              )
-            );
-          },
+                ? 0
+
+                : post.widthMm
+            ),
           0
         )
 
@@ -7010,8 +8805,12 @@ function updateLayoutCheck() {
     includeState.gate
 
       ? gates.reduce(
-          (sum, gate) =>
-            sum + gate.width,
+          (
+            sum,
+            gate
+          ) =>
+            sum +
+            gate.width,
           0
         )
 
@@ -7020,8 +8819,12 @@ function updateLayoutCheck() {
 
   const panelWidth =
     panels.reduce(
-      (sum, panel) =>
-        sum + panel.width,
+      (
+        sum,
+        panel
+      ) =>
+        sum +
+        panel.width,
       0
     );
 
@@ -7032,7 +8835,8 @@ function updateLayoutCheck() {
       active.length - 1
     )
     *
-    PRICES.fabrication
+    PRICES
+      .fabrication
       .componentGapMm;
 
 
@@ -7049,7 +8853,9 @@ function updateLayoutCheck() {
 
 
   if (
-    Math.abs(difference) <= 2
+    Math.abs(
+      difference
+    ) <= 2
   ) {
 
     $("layoutCheck")
@@ -7093,7 +8899,7 @@ function updateLayoutCheck() {
 
 
 /* ==========================================================
-   REQUIRED FIELDS
+   FIELD STATUS
    ========================================================== */
 
 function setFieldStatus(
@@ -7108,295 +8914,357 @@ function setFieldStatus(
 
 
   element.classList.remove(
+
     "required",
     "complete",
     "optional"
+
   );
 
 
   if (!required) {
 
-    element.classList.add(
-      "optional"
-    );
+    element.classList
+      .add(
+        "optional"
+      );
+
 
     return;
   }
 
 
-  element.classList.add(
-    valid
-      ? "complete"
-      : "required"
-  );
+  element.classList
+    .add(
+      valid
+
+        ? "complete"
+
+        : "required"
+    );
 }
 
 
 function updateRequiredFields() {
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="cavityWidth"]'
     ),
 
     num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     ) > 0
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="overallHeight"]'
     ),
 
     num(
-      $("overallHeight").value
+      $("overallHeight")
+        .value
     ) > 0
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="referenceDirection"]'
     ),
 
     Boolean(
-      $("referenceDirection").value
+      $("referenceDirection")
+        .value
     )
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="referenceOther"]'
     ),
 
     Boolean(
-      $("referenceOther").value.trim()
+      $("referenceOther")
+        .value
+        .trim()
     ),
 
-    $("referenceDirection").value ===
+    $("referenceDirection")
+      .value ===
     "other"
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="claddingType"]'
     ),
 
     Boolean(
-      $("claddingType").value
+      $("claddingType")
+        .value
     ),
 
     includeState.cladding
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="claddingDirection"]'
     ),
 
     Boolean(
-      $("claddingDirection").value
+      $("claddingDirection")
+        .value
     ),
 
     includeState.cladding
     &&
-    $("claddingType").value !==
+    $("claddingType")
+      .value !==
     "galvMesh50"
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="clientName"]'
     ),
 
     Boolean(
-      $("clientName").value.trim()
+      $("clientName")
+        .value
+        .trim()
     )
+
   );
 
 
   setFieldStatus(
+
     document.querySelector(
       '[data-required-field="siteAddress"]'
     ),
 
     Boolean(
-      $("siteAddress").value.trim()
+      $("siteAddress")
+        .value
+        .trim()
     )
+
+  );
+
+
+  components.forEach(
+    component => {
+
+
+      const card =
+        document.querySelector(
+          `[data-component-id="${component.id}"]`
+        );
+
+
+      if (!card) {
+        return;
+      }
+
+
+      if (
+        component.type ===
+        "post"
+      ) {
+
+        const fixing =
+          card
+            .querySelector(
+              ".post-fixing"
+            )
+            .value;
+
+
+        setFieldStatus(
+
+          card.querySelector(
+            ".post-steel-label"
+          ),
+
+          Boolean(
+            card
+              .querySelector(
+                ".post-size"
+              )
+              .value
+          ),
+
+          includeState.posts
+
+        );
+
+
+        setFieldStatus(
+
+          card.querySelector(
+            ".post-fixing-label"
+          ),
+
+          Boolean(
+            fixing
+          ),
+
+          includeState.posts
+
+        );
+      }
+
+
+      if (
+        component.type ===
+        "gate"
+      ) {
+
+        const manual =
+          card.dataset
+            .widthMode ===
+          "manual";
+
+
+        setFieldStatus(
+
+          card.querySelector(
+            ".gate-manual-width-label"
+          ),
+
+          num(
+            card
+              .querySelector(
+                ".gate-manual-width"
+              )
+              .value
+          ) > 0,
+
+          manual &&
+          includeState.gate
+
+        );
+      }
+
+
+      if (
+        component.type ===
+        "panel"
+      ) {
+
+        setFieldStatus(
+
+          card.querySelector(
+            ".panel-width-label"
+          ),
+
+          num(
+            card
+              .querySelector(
+                ".panel-width"
+              )
+              .value
+          ) > 0
+
+        );
+
+
+        setFieldStatus(
+
+          card.querySelector(
+            ".panel-height-label"
+          ),
+
+          num(
+            card
+              .querySelector(
+                ".panel-height"
+              )
+              .value
+          ) > 0
+
+        );
+      }
+
+    }
   );
 
 
   setFieldStatus(
-    $("phoneLabel"),
-    validAustralianMobile(
-      rawPhone()
-    ),
-    false
-  );
 
-
-  setFieldStatus(
-    $("emailLabel"),
-    validEmail(
-      $("clientEmail").value
-    ),
-    false
-  );
-
-
-  components.forEach(component => {
-
-    const card =
-      document.querySelector(
-        `[data-component-id="${component.id}"]`
-      );
-
-
-    if (!card) {
-      return;
-    }
-
-
-    if (
-      component.type === "post"
-    ) {
-
-      const fixing =
-        card.querySelector(
-          ".post-fixing"
-        ).value;
-
-
-      setFieldStatus(
-        card.querySelector(
-          ".post-steel-label"
-        ),
-
-        Boolean(
-          card.querySelector(
-            ".post-size"
-          ).value
-        ),
-
-        includeState.posts
-      );
-
-
-      setFieldStatus(
-        card.querySelector(
-          ".post-fixing-label"
-        ),
-
-        Boolean(
-          fixing
-        ),
-
-        includeState.posts
-      );
-    }
-
-
-    if (
-      component.type === "gate"
-    ) {
-
-      const manual =
-        card.dataset.widthMode ===
-        "manual";
-
-
-      setFieldStatus(
-        card.querySelector(
-          ".gate-manual-width-label"
-        ),
-
-        num(
-          card.querySelector(
-            ".gate-manual-width"
-          ).value
-        ) > 0,
-
-        manual &&
-        includeState.gate
-      );
-    }
-
-
-    if (
-      component.type === "panel"
-    ) {
-
-      setFieldStatus(
-        card.querySelector(
-          ".panel-width-label"
-        ),
-
-        num(
-          card.querySelector(
-            ".panel-width"
-          ).value
-        ) > 0
-      );
-
-
-      setFieldStatus(
-        card.querySelector(
-          ".panel-height-label"
-        ),
-
-        num(
-          card.querySelector(
-            ".panel-height"
-          ).value
-        ) > 0
-      );
-    }
-  });
-
-
-  setFieldStatus(
     document.querySelector(
       '[data-required-field="powderColour"]'
     ),
 
     Boolean(
-      $("powderColour").value
+      $("powderColour")
+        .value
     ),
 
-    $("powderDecision").value ===
+    $("powderDecision")
+      .value ===
     "yes"
+
   );
 }
 
 
 /* ==========================================================
-   CONSUMABLES / ORDER LIST
+   CONSUMABLES
    ========================================================== */
 
 function updateConsumablesList() {
 
-  if (!lastCalculation) {
+  if (
+    !lastCalculation
+  ) {
     return;
   }
 
 
-  const rows = [];
+  const rows =
+    [];
 
 
   Object.entries(
-    lastCalculation.frame.groups
+    lastCalculation
+      .frame
+      .groups
   )
     .forEach(
-      ([key, pieces]) => {
+      (
+        [key, pieces]
+      ) => {
+
 
         const steel =
-          PRICES.steel.frame[key];
+          PRICES
+            .steel
+            .frame[
+              key
+            ];
 
 
         const stock =
@@ -7413,15 +9281,20 @@ function updateConsumablesList() {
           rows.push(
             `
             <div>
-              <span>${steel.label}</span>
+
+              <span>
+                ${steel.label}
+              </span>
 
               <strong>
                 ${stock.lengths} × ${steel.stockLengthM}m
               </strong>
+
             </div>
             `
           );
         }
+
       }
     );
 
@@ -7432,23 +9305,35 @@ function updateConsumablesList() {
       .order
   )
     .forEach(
-      ([key, quantity]) => {
+      (
+        [key, quantity]
+      ) => {
+
 
         const steel =
-          PRICES.steel.posts[key];
+          PRICES
+            .steel
+            .posts[
+              key
+            ];
 
 
         rows.push(
           `
           <div>
-            <span>${steel.label}</span>
+
+            <span>
+              ${steel.label}
+            </span>
 
             <strong>
               ${quantity} × ${steel.stockLengthM}m
             </strong>
+
           </div>
           `
         );
+
       }
     );
 
@@ -7468,53 +9353,20 @@ function updateConsumablesList() {
     rows.push(
       `
       <div>
+
         <span>
           Treated Pine Palings
-          ${pine.palingLengthMm} × ${pine.palingWidthMm}
+          ${pine.palingLengthMm} ×
+          ${pine.palingWidthMm}
         </span>
 
         <strong>
           ${pine.palingCount}
         </strong>
+
       </div>
       `
     );
-
-
-    if (
-      treatedPineState.capping
-    ) {
-
-      rows.push(
-        `
-        <div>
-          <span>Capping</span>
-
-          <strong>
-            ${pine.cappingMetres.toFixed(2)}m
-          </strong>
-        </div>
-        `
-      );
-    }
-
-
-    if (
-      treatedPineState.plinth
-    ) {
-
-      rows.push(
-        `
-        <div>
-          <span>Plinth board</span>
-
-          <strong>
-            ${pine.plinthMetres.toFixed(2)}m
-          </strong>
-        </div>
-        `
-      );
-    }
   }
 
 
@@ -7531,11 +9383,16 @@ function updateConsumablesList() {
 
 
     mesh.orders.forEach(
-      (order, index) => {
+      (
+        order,
+        index
+      ) => {
+
 
         rows.push(
           `
           <div>
+
             <span>
               Mesh sheet ${index + 1}
             </span>
@@ -7543,9 +9400,11 @@ function updateConsumablesList() {
             <strong>
               ${order.label}
             </strong>
+
           </div>
           `
         );
+
       }
     );
   }
@@ -7560,11 +9419,15 @@ function updateConsumablesList() {
     rows.push(
       `
       <div>
-        <span>75x10mm Dynabolts</span>
+
+        <span>
+          75x10mm Dynabolts
+        </span>
 
         <strong>
           ${lastCalculation.fixings.dynaboltCount}
         </strong>
+
       </div>
       `
     );
@@ -7580,11 +9443,15 @@ function updateConsumablesList() {
     rows.push(
       `
       <div>
-        <span>Concrete</span>
+
+        <span>
+          Concrete
+        </span>
 
         <strong>
           ${lastCalculation.fixings.concreteBags} bags
         </strong>
+
       </div>
       `
     );
@@ -7600,87 +9467,88 @@ function updateConsumablesList() {
     rows.push(
       `
       <div>
-        <span>Fabricated baseplates</span>
+
+        <span>
+          Fabricated baseplates
+        </span>
 
         <strong>
           ${lastCalculation.fixings.baseplateCount}
         </strong>
+
       </div>
       `
     );
   }
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    lastCalculation.gates
-      .forEach(gate => {
-
-        rows.push(
-          `
-          <div>
-            <span>${gate.label} hinges</span>
-
-            <strong>
-              Lock-out galvanised,
-              ${gate.hinge.toUpperCase()}
-            </strong>
-          </div>
-          `
-        );
+    lastCalculation
+      .gates
+      .forEach(
+        gate => {
 
 
-        const latch =
-          gate.latch === "other"
+          rows.push(
+            `
+            <div>
 
-            ? (
-                gate.otherLatch ||
-                "Other latch"
-              )
+              <span>
+                ${gate.label} hinges
+              </span>
 
-            : (
-                PRICES.hardware
-                  .latches[
-                    gate.latch
-                  ]
-                  ?.label
-                ||
-                ""
-              );
+              <strong>
+                Lock-out galvanised,
+                ${gate.hinge.toUpperCase()}
+              </strong>
 
-
-        rows.push(
-          `
-          <div>
-            <span>${gate.label} latch</span>
-
-            <strong>
-              ${latch}
-            </strong>
-          </div>
-          `
-        );
-      });
+            </div>
+            `
+          );
 
 
-    if (
-      lastCalculation
-        .gates
-        .length > 1
-    ) {
+          const latch =
+            gate.latch ===
+            "other"
 
-      rows.push(
-        `
-        <div>
-          <span>Latch keys</span>
+              ? (
+                  gate.otherLatch ||
+                  "Other latch"
+                )
 
-          <strong>
-            Key alike where required
-          </strong>
-        </div>
-        `
+              : (
+                  PRICES
+                    .hardware
+                    .latches[
+                      gate.latch
+                    ]
+                    ?.label
+                  ||
+                  ""
+                );
+
+
+          rows.push(
+            `
+            <div>
+
+              <span>
+                ${gate.label} latch
+              </span>
+
+              <strong>
+                ${latch}
+              </strong>
+
+            </div>
+            `
+          );
+
+        }
       );
-    }
   }
 
 
@@ -7699,24 +9567,32 @@ function updateConsumablesList() {
 
 
 /* ==========================================================
-   FABRICATION / CUT LIST
+   FABRICATION LIST
    ========================================================== */
 
 function updateFabricationList() {
 
-  if (!lastCalculation) {
+  if (
+    !lastCalculation
+  ) {
     return;
   }
 
 
-  const rows = [];
+  const rows =
+    [];
 
 
   rows.push(
     `
     <div class="fabrication-reference">
-      <strong>VIEW:</strong>
+
+      <strong>
+        VIEW:
+      </strong>
+
       ${selectedReferenceDescription().toUpperCase()}
+
     </div>
     `
   );
@@ -7727,7 +9603,11 @@ function updateFabricationList() {
 
 
   visible.forEach(
-    (component, index) => {
+    (
+      component,
+      index
+    ) => {
+
 
       const colour =
         getComponentColour(
@@ -7736,11 +9616,13 @@ function updateFabricationList() {
 
 
       if (
-        component.type === "post"
+        component.type ===
+        "post"
       ) {
 
         const post =
-          lastCalculation.posts
+          lastCalculation
+            .posts
             .find(
               item =>
                 item.id ===
@@ -7785,15 +9667,6 @@ function updateFabricationList() {
         }
 
 
-        if (
-          post.topHole
-        ) {
-
-          details +=
-            ` | top hole ${post.topHole} from top`;
-        }
-
-
         rows.push(
           `
           <div
@@ -7803,9 +9676,11 @@ function updateFabricationList() {
               --component-text:${colour.text};
             "
           >
+
             <strong>
               ${details}
             </strong>
+
           </div>
           `
         );
@@ -7813,11 +9688,13 @@ function updateFabricationList() {
 
 
       if (
-        component.type === "gate"
+        component.type ===
+        "gate"
       ) {
 
         const gate =
-          lastCalculation.gates
+          lastCalculation
+            .gates
             .find(
               item =>
                 item.id ===
@@ -7830,12 +9707,14 @@ function updateFabricationList() {
         }
 
 
-        let extra = "";
+        let extra =
+          "";
 
 
         if (
           includeState.cladding &&
-          $("claddingType").value !==
+          $("claddingType")
+            .value !==
           "galvMesh50"
         ) {
 
@@ -7870,28 +9749,6 @@ function updateFabricationList() {
         }
 
 
-        if (
-          $("claddingDirection").value ===
-          "horizontal" &&
-          gate.verticalRails
-        ) {
-
-          extra +=
-            ` | ${gate.verticalRails} Vert rail${gate.verticalRails > 1 ? "s" : ""}`;
-        }
-
-
-        if (
-          $("claddingDirection").value ===
-          "vertical" &&
-          gate.horizontalRails
-        ) {
-
-          extra +=
-            ` | ${gate.horizontalRails} Hori rail${gate.horizontalRails > 1 ? "s" : ""}`;
-        }
-
-
         rows.push(
           `
           <div
@@ -7901,13 +9758,21 @@ function updateFabricationList() {
               --component-text:${colour.text};
             "
           >
+
             <strong>
+
               ${gate.label}
+
               | STEEL ${gate.width} × ${gate.height}
+
               | ${PRICES.steel.frame[gate.frame].label.replace(" Duragalv", "")}
+
               | Hinge ${gate.hinge.charAt(0).toUpperCase()}
+
               ${extra}
+
             </strong>
+
           </div>
           `
         );
@@ -7915,11 +9780,13 @@ function updateFabricationList() {
 
 
       if (
-        component.type === "panel"
+        component.type ===
+        "panel"
       ) {
 
         const panel =
-          lastCalculation.panels
+          lastCalculation
+            .panels
             .find(
               item =>
                 item.id ===
@@ -7932,7 +9799,8 @@ function updateFabricationList() {
         }
 
 
-        let extra = "";
+        let extra =
+          "";
 
 
         if (
@@ -7970,83 +9838,24 @@ function updateFabricationList() {
               --component-text:${colour.text};
             "
           >
+
             <strong>
+
               ${panel.label}
+
               | ${panel.width} × ${panel.height}
+
               ${extra}
+
             </strong>
+
           </div>
           `
         );
       }
+
     }
   );
-
-
-  /*
-    Add calculated cut-length guidance
-    for normal board cladding.
-  */
-
-  if (
-    lastCalculation
-      .cladding
-      .cutPieces
-      ?.length &&
-    !$("claddingType").value.includes(
-      "treatedPine"
-    ) &&
-    $("claddingType").value !==
-    "galvMesh50"
-  ) {
-
-    const grouped = {};
-
-
-    lastCalculation
-      .cladding
-      .cutPieces
-      .forEach(piece => {
-
-        const key =
-          `${piece.label}|${piece.cutLengthMm}`;
-
-
-        if (!grouped[key]) {
-
-          grouped[key] = {
-            label:
-              piece.label,
-
-            cutLengthMm:
-              piece.cutLengthMm,
-
-            quantity: 0
-          };
-        }
-
-
-        grouped[key].quantity++;
-      });
-
-
-    Object.values(grouped)
-      .forEach(item => {
-
-        rows.push(
-          `
-          <div class="fabrication-cladding-cut">
-            <strong>
-              ${item.label} cladding:
-              ${item.quantity} ×
-              ${item.cutLengthMm}mm
-              cut allowance
-            </strong>
-          </div>
-          `
-        );
-      });
-  }
 
 
   $("fabricationView")
@@ -8056,97 +9865,82 @@ function updateFabricationList() {
 
 
 /* ==========================================================
-   CLIENT QUOTE
+   FORMAL QUOTE
    ========================================================== */
 
 function buildQuote() {
 
-  if (!lastCalculation) {
+  if (
+    !lastCalculation
+  ) {
     return;
   }
 
 
-  const html = [];
-
-
-  html.push(
-    `
-    <div class="quote-section">
-
-      <h4>
-        PROJECT DESCRIPTION
-      </h4>
-
-      <p>
-        Supply, fabricate and install
-        ${projectDescriptionText()}.
-      </p>
-
-    </div>
-    `
-  );
-
-
-  html.push(
-    `
-    <div class="quote-section">
-
-      <h4>
-        FABRICATION
-      </h4>
-
-      ${fabricationQuoteText()}
-
-    </div>
-    `
-  );
-
-
-  html.push(
-    `
-    <div class="quote-section">
-
-      <h4>
-        INSTALLATION
-      </h4>
-
-      <p>
-        <strong>
-          All left and right orientation references are based on
-          ${selectedReferenceDescription().toLowerCase()}.
-        </strong>
-      </p>
-
-      ${installationQuoteText()}
-
-    </div>
-    `
-  );
-
-
-  html.push(
-    `
-    <div class="quote-section">
-
-      <h4>
-        FINISH
-      </h4>
-
-      ${finishQuoteText()}
-
-    </div>
-    `
-  );
-
-
   $("quoteDescription")
     .innerHTML =
-      html.join("");
+      `
+      <div class="quote-section">
+
+        <h4>
+          PROJECT DESCRIPTION
+        </h4>
+
+        <p>
+          Supply, fabricate and install
+          ${projectDescriptionText()}.
+        </p>
+
+      </div>
+
+
+      <div class="quote-section">
+
+        <h4>
+          FABRICATION
+        </h4>
+
+        ${fabricationQuoteText()}
+
+      </div>
+
+
+      <div class="quote-section">
+
+        <h4>
+          INSTALLATION
+        </h4>
+
+        <p>
+
+          <strong>
+            All left and right orientation references are based on
+            ${selectedReferenceDescription().toLowerCase()}.
+          </strong>
+
+        </p>
+
+        ${installationQuoteText()}
+
+      </div>
+
+
+      <div class="quote-section">
+
+        <h4>
+          FINISH
+        </h4>
+
+        ${finishQuoteText()}
+
+      </div>
+      `;
 
 
   $("bankReference")
     .textContent =
-      $("projectNumber").value;
+      $("projectNumber")
+        .value;
 }
 
 
@@ -8154,9 +9948,11 @@ function projectDescriptionText() {
 
   const gateCount =
     includeState.gate
+
       ? lastCalculation
           .gates
           .length
+
       : 0;
 
 
@@ -8168,17 +9964,20 @@ function projectDescriptionText() {
 
   const cavity =
     num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     );
 
 
   const height =
     num(
-      $("overallHeight").value
+      $("overallHeight")
+        .value
     );
 
 
-  let objectText = "";
+  let objectText =
+    "";
 
 
   if (
@@ -8189,11 +9988,15 @@ function projectDescriptionText() {
     objectText =
       `${
         gateCount === 1
+
           ? "a custom steel-framed pedestrian gate"
+
           : `${gateCount} custom steel-framed gates`
       } and ${
         panelCount === 1
+
           ? "a fixed panel"
+
           : `${panelCount} fixed panels`
       }`;
   }
@@ -8205,7 +10008,9 @@ function projectDescriptionText() {
 
     objectText =
       gateCount === 1
+
         ? "a custom steel-framed pedestrian gate"
+
         : `${gateCount} custom steel-framed gates`;
   }
 
@@ -8216,7 +10021,9 @@ function projectDescriptionText() {
 
     objectText =
       panelCount === 1
+
         ? "a custom fixed panel"
+
         : `${panelCount} custom fixed panels`;
   }
 
@@ -8257,53 +10064,75 @@ function projectDescriptionText() {
 
 function fabricationQuoteText() {
 
-  const lines = [];
+  const lines =
+    [];
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    lastCalculation.gates
-      .forEach(gate => {
-
-        const latchName =
-          gate.latch === "other"
-
-            ? (
-                gate.otherLatch ||
-                "nominated latch"
-              )
-
-            : (
-                PRICES.hardware
-                  .latches[
-                    gate.latch
-                  ]
-                  ?.label
-                ||
-                "gate latch"
-              );
+    lastCalculation
+      .gates
+      .forEach(
+        gate => {
 
 
-        lines.push(
-          `
-          <p>
-            <strong>${gate.label}:</strong>
-            ${gate.width}mm wide × ${gate.height}mm high steel frame,
-            fabricated from ${PRICES.steel.frame[gate.frame].label}.
-            Hinged on the ${gate.hinge},
-            opening ${gate.opens}.
-            ${latchName}.
-          </p>
-          `
-        );
-      });
+          const latchName =
+            gate.latch ===
+            "other"
+
+              ? (
+                  gate.otherLatch ||
+                  "nominated latch"
+                )
+
+              : (
+                  PRICES
+                    .hardware
+                    .latches[
+                      gate.latch
+                    ]
+                    ?.label
+                  ||
+                  "gate latch"
+                );
+
+
+          lines.push(
+            `
+            <p>
+
+              <strong>
+                ${gate.label}:
+              </strong>
+
+              ${gate.width}mm wide ×
+              ${gate.height}mm high steel frame,
+              fabricated from
+              ${PRICES.steel.frame[gate.frame].label}.
+
+              Hinged on the ${gate.hinge},
+              opening ${gate.opens}.
+
+              ${latchName}.
+
+            </p>
+            `
+          );
+
+        }
+      );
   }
 
 
-  if (includeState.posts) {
+  if (
+    includeState.posts
+  ) {
 
     const count =
-      lastCalculation.posts
+      lastCalculation
+        .posts
         .filter(
           post =>
             post.fixing &&
@@ -8318,29 +10147,17 @@ function fabricationQuoteText() {
       lines.push(
         `
         <p>
+
           Fabricate ${count}
           custom Duragalv steel
           ${count === 1 ? "post" : "posts"}
           to suit the nominated installation.
+
         </p>
         `
       );
     }
   }
-
-
-  lastCalculation.panels
-    .forEach(panel => {
-
-      lines.push(
-        `
-        <p>
-          <strong>${panel.label}:</strong>
-          ${panel.width}mm wide × ${panel.height}mm high.
-        </p>
-        `
-      );
-    });
 
 
   if (
@@ -8363,33 +10180,47 @@ function fabricationQuoteText() {
 
 function installationQuoteText() {
 
-  const lines = [];
+  const lines =
+    [];
 
 
-  if (includeState.gate) {
+  if (
+    includeState.gate
+  ) {
 
-    lastCalculation.gates
-      .forEach(gate => {
-
-        const openWord =
-          gate.opens === "in"
-            ? "inward"
-            : "outward";
+    lastCalculation
+      .gates
+      .forEach(
+        gate => {
 
 
-        lines.push(
-          `
-          <p>
-            ${gate.label} fitted with
-            heavy-duty galvanised lock-out hinges,
-            hinged on the ${gate.hinge}
-            and opening ${openWord}
-            when viewed from the nominated reference direction.
-            The latch is fitted to the opposite side.
-          </p>
-          `
-        );
-      });
+          const openWord =
+            gate.opens ===
+            "in"
+
+              ? "inward"
+
+              : "outward";
+
+
+          lines.push(
+            `
+            <p>
+
+              ${gate.label} fitted with
+              heavy-duty galvanised lock-out hinges,
+              hinged on the ${gate.hinge}
+              and opening ${openWord}
+              when viewed from the nominated reference direction.
+
+              The latch is fitted to the opposite side.
+
+            </p>
+            `
+          );
+
+        }
+      );
   }
 
 
@@ -8400,15 +10231,20 @@ function installationQuoteText() {
 function finishQuoteText() {
 
   if (
-    $("powderDecision").value ===
+    $("powderDecision")
+      .value ===
     "yes"
   ) {
 
     return (
       `
       <p>
+
         Steelwork powder coated
-        <strong>${$("powderColour").value || "colour to be confirmed"}</strong>.
+        <strong>
+          ${$("powderColour").value || "colour to be confirmed"}
+        </strong>.
+
       </p>
 
       <p>
@@ -8420,15 +10256,18 @@ function finishQuoteText() {
 
 
   if (
-    $("powderDecision").value ===
+    $("powderDecision")
+      .value ===
     "no"
   ) {
 
     return (
       `
       <p>
+
         Duragalv steel with exposed fabrication areas
         treated with etch primer and silver galvanising spray.
+
       </p>
       `
     );
@@ -8449,14 +10288,16 @@ function finishQuoteText() {
    WARNINGS
    ========================================================== */
 
-function getWarnings() {
+function updateWarnings() {
 
-  const warnings = [];
+  const warnings =
+    [];
 
 
   if (
     !num(
-      $("cavityWidth").value
+      $("cavityWidth")
+        .value
     )
   ) {
 
@@ -8468,7 +10309,8 @@ function getWarnings() {
 
   if (
     !num(
-      $("overallHeight").value
+      $("overallHeight")
+        .value
     )
   ) {
 
@@ -8479,7 +10321,9 @@ function getWarnings() {
 
 
   if (
-    !$("clientName").value.trim()
+    !$("clientName")
+      .value
+      .trim()
   ) {
 
     warnings.push(
@@ -8488,85 +10332,32 @@ function getWarnings() {
   }
 
 
-  if (
-    !$("siteAddress").value.trim()
-  ) {
-
-    warnings.push(
-      "Client address is incomplete."
-    );
-  }
+  components.forEach(
+    component => {
 
 
-  if (
-    !$("powderDecision").value
-  ) {
+      if (
+        componentIsActive(
+          component
+        )
+        &&
+        !componentComplete(
+          component
+        )
+      ) {
 
-    warnings.push(
-      "Powder-coating decision has not been completed."
-    );
-  }
+        warnings.push(
+          `${component.label} is incomplete.`
+        );
+      }
 
-
-  if (
-    $("powderDecision").value ===
-    "yes" &&
-    !$("powderColour").value
-  ) {
-
-    warnings.push(
-      "Powder-coating colour is required."
-    );
-  }
-
-
-  components.forEach(component => {
-
-    if (
-      componentIsActive(component) &&
-      !componentComplete(component)
-    ) {
-
-      warnings.push(
-        `${component.label} is incomplete.`
-      );
     }
-  });
-
-
-  const check =
-    $("layoutCheck")
-      .textContent;
-
-
-  if (
-    check.includes(
-      "unallocated"
-    )
-    ||
-    check.includes(
-      "exceeds"
-    )
-  ) {
-
-    warnings.push(
-      `Layout check: ${check}`
-    );
-  }
-
-
-  return warnings;
-}
-
-
-function updateWarnings() {
-
-  const warnings =
-    getWarnings();
+  );
 
 
   $("warningSection")
-    .classList.toggle(
+    .classList
+    .toggle(
       "hidden",
       !warnings.length
     );
@@ -8591,7 +10382,8 @@ function updateHeader() {
 
   $("topClientName")
     .textContent =
-      $("clientName").value
+      $("clientName")
+        .value
       ||
       "New Client";
 
@@ -8605,7 +10397,8 @@ function updateHeader() {
 
   $("topProjectNumber")
     .textContent =
-      $("projectNumber").value;
+      $("projectNumber")
+        .value;
 }
 
 
@@ -8618,95 +10411,123 @@ function serializeCurrentJob() {
   return {
 
     project:
-      $("projectNumber").value,
+      $("projectNumber")
+        .value,
 
     clientName:
-      $("clientName").value,
+      $("clientName")
+        .value,
 
     address:
-      $("siteAddress").value,
+      $("siteAddress")
+        .value,
 
     phone:
       rawPhone(),
 
     email:
-      $("clientEmail").value,
+      $("clientEmail")
+        .value,
 
     cavityWidth:
-      $("cavityWidth").value,
+      $("cavityWidth")
+        .value,
 
     overallHeight:
-      $("overallHeight").value,
+      $("overallHeight")
+        .value,
 
     referenceDirection:
-      $("referenceDirection").value,
+      $("referenceDirection")
+        .value,
 
     referenceOther:
-      $("referenceOther").value,
+      $("referenceOther")
+        .value,
 
     includeState,
 
     cladding: {
 
       type:
-        $("claddingType").value,
+        $("claddingType")
+          .value,
 
       direction:
-        $("claddingDirection").value,
+        $("claddingDirection")
+          .value,
 
       ekodeckColour:
-        $("ekodeckColour").value,
+        $("ekodeckColour")
+          .value,
 
       cypressFinish:
-        $("cypressFinish").value,
+        $("cypressFinish")
+          .value,
 
       cypressColour:
-        $("cypressColour").value,
+        $("cypressColour")
+          .value,
 
       lospFinish:
-        $("lospFinish").value,
+        $("lospFinish")
+          .value,
 
       lospColour:
-        $("lospColour").value,
+        $("lospColour")
+          .value,
 
       merbauFinish:
-        $("merbauFinish").value,
+        $("merbauFinish")
+          .value,
 
       treatedPineLength:
-        $("treatedPineLength").value,
+        $("treatedPineLength")
+          .value,
 
       treatedPineWidth:
-        $("treatedPineWidth").value,
+        $("treatedPineWidth")
+          .value,
 
       treatedPineState,
 
       cappingMetres:
-        $("pineCappingMetres").value,
+        $("pineCappingMetres")
+          .value,
 
       plinthMetres:
-        $("pinePlinthMetres").value,
+        $("pinePlinthMetres")
+          .value,
 
       meshPreferredSheet:
-        $("meshPreferredSheet").value,
+        $("meshPreferredSheet")
+          .value,
 
       colorbondProfile:
-        $("colorbondProfile").value,
+        $("colorbondProfile")
+          .value,
 
       colorbondColour:
-        $("colorbondColour").value,
+        $("colorbondColour")
+          .value,
 
       customDescription:
-        $("customDescription").value,
+        $("customDescription")
+          .value,
 
       customCost:
-        $("customCost").value
+        $("customCost")
+          .value
+
     },
 
     powderDecision:
-      $("powderDecision").value,
+      $("powderDecision")
+        .value,
 
     powderColour:
-      $("powderColour").value,
+      $("powderColour")
+        .value,
 
     additionalLabour: {
 
@@ -8721,16 +10542,20 @@ function serializeCurrentJob() {
       installation:
         $("additionalInstallationHours")
           .value
+
     },
 
     travelKm:
-      $("travelKm").value,
+      $("travelKm")
+        .value,
 
     extraHardware:
-      $("extraHardware").value,
+      $("extraHardware")
+        .value,
 
     otherCosts:
-      $("otherCosts").value,
+      $("otherCosts")
+        .value,
 
     manualQuoteActive,
 
@@ -8739,12 +10564,14 @@ function serializeCurrentJob() {
     components:
       components.map(
         component => ({
+
           id:
             component.id,
 
           ...snapshotComponent(
             component
           )
+
         })
       ),
 
@@ -8754,6 +10581,7 @@ function serializeCurrentJob() {
     updatedAt:
       new Date()
         .toISOString()
+
   };
 }
 
@@ -8764,6 +10592,7 @@ function autoSaveJob() {
     restoringJob ||
     !lastCalculation
   ) {
+
     return;
   }
 
@@ -8797,7 +10626,7 @@ function autoSaveJob() {
 
 
 /* ==========================================================
-   SAVED JOB LIST
+   SAVED JOB DISPLAY
    ========================================================== */
 
 function renderSavedJobs() {
@@ -8816,7 +10645,9 @@ function renderSavedJobs() {
       .reverse();
 
 
-  if (!keys.length) {
+  if (
+    !keys.length
+  ) {
 
     list.innerHTML =
       `
@@ -8833,96 +10664,109 @@ function renderSavedJobs() {
     "";
 
 
-  keys.forEach(project => {
-
-    const job =
-      jobs[project];
+  keys.forEach(
+    project => {
 
 
-    const row =
-      document.createElement(
-        "div"
-      );
+      const job =
+        jobs[
+          project
+        ];
 
 
-    row.className =
-      "saved-job-row";
+      const row =
+        document.createElement(
+          "div"
+        );
 
 
-    row.innerHTML =
-      `
-      <div class="saved-job-info">
-
-        <strong>
-          ${project}
-        </strong>
-
-        <span>
-          ${job.clientName || "Unnamed client"}
-        </span>
-
-        <small>
-          ${
-            job.finalPrice
-              ? money(job.finalPrice)
-              : "No price yet"
-          }
-        </small>
-
-      </div>
-
-      <div class="saved-job-actions">
-
-        <button
-          type="button"
-          class="open-saved-job"
-        >
-          Open
-        </button>
-
-        <button
-          type="button"
-          class="delete-saved-job"
-        >
-          Delete
-        </button>
-
-      </div>
-      `;
+      row.className =
+        "saved-job-row";
 
 
-    row.querySelector(
-      ".open-saved-job"
-    )
-      .addEventListener(
-        "click",
-        () => {
+      row.innerHTML =
+        `
+        <div class="saved-job-info">
 
-          loadJob(
-            project
-          );
-        }
-      );
+          <strong>
+            ${project}
+          </strong>
+
+          <span>
+            ${job.clientName || "Unnamed client"}
+          </span>
+
+          <small>
+            ${
+              job.finalPrice
+
+                ? money(
+                    job.finalPrice
+                  )
+
+                : "No price yet"
+            }
+          </small>
+
+        </div>
 
 
-    row.querySelector(
-      ".delete-saved-job"
-    )
-      .addEventListener(
-        "click",
-        () => {
+        <div class="saved-job-actions">
 
-          deleteSavedJob(
-            project
-          );
-        }
-      );
+          <button
+            type="button"
+            class="open-saved-job"
+          >
+            Open
+          </button>
+
+          <button
+            type="button"
+            class="delete-saved-job"
+          >
+            Delete
+          </button>
+
+        </div>
+        `;
 
 
-    list.appendChild(
       row
-    );
-  });
+        .querySelector(
+          ".open-saved-job"
+        )
+        .addEventListener(
+          "click",
+          () => {
+
+            loadJob(
+              project
+            );
+          }
+        );
+
+
+      row
+        .querySelector(
+          ".delete-saved-job"
+        )
+        .addEventListener(
+          "click",
+          () => {
+
+            deleteSavedJob(
+              project
+            );
+          }
+        );
+
+
+      list.appendChild(
+        row
+      );
+
+    }
+  );
 }
 
 
@@ -8937,7 +10781,9 @@ function loadJob(project) {
 
 
   const job =
-    jobs[project];
+    jobs[
+      project
+    ];
 
 
   if (!job) {
@@ -8945,13 +10791,24 @@ function loadJob(project) {
   }
 
 
-  restoringJob = true;
-  suppressQuoteReset = true;
+  restoringJob =
+    true;
 
 
-  components = [];
-  componentCounter = 0;
-  selectedComponentId = null;
+  suppressQuoteReset =
+    true;
+
+
+  components =
+    [];
+
+
+  componentCounter =
+    0;
+
+
+  selectedComponentId =
+    null;
 
 
   $("componentsContainer")
@@ -8966,43 +10823,52 @@ function loadJob(project) {
       `;
 
 
-  $("projectNumber").value =
-    job.project;
+  $("projectNumber")
+    .value =
+      job.project;
 
 
-  $("clientName").value =
-    job.clientName || "";
+  $("clientName")
+    .value =
+      job.clientName || "";
 
 
-  $("siteAddress").value =
-    job.address || "";
+  $("siteAddress")
+    .value =
+      job.address || "";
 
 
-  $("clientPhone").value =
-    job.phone || "04";
+  $("clientPhone")
+    .value =
+      job.phone || "04";
 
 
-  $("clientEmail").value =
-    job.email || "";
+  $("clientEmail")
+    .value =
+      job.email || "";
 
 
-  $("cavityWidth").value =
-    job.cavityWidth || "";
+  $("cavityWidth")
+    .value =
+      job.cavityWidth || "";
 
 
-  $("overallHeight").value =
-    job.overallHeight || "";
+  $("overallHeight")
+    .value =
+      job.overallHeight || "";
 
 
-  $("referenceDirection").value =
-    job.referenceDirection
-    ||
-    PRICES.defaults
-      .referenceDirection;
+  $("referenceDirection")
+    .value =
+      job.referenceDirection
+      ||
+      PRICES.defaults
+        .referenceDirection;
 
 
-  $("referenceOther").value =
-    job.referenceOther || "";
+  $("referenceOther")
+    .value =
+      job.referenceOther || "";
 
 
   includeState = {
@@ -9021,6 +10887,7 @@ function loadJob(project) {
       job.includeState?.cladding
       ??
       true
+
   };
 
 
@@ -9028,59 +10895,70 @@ function loadJob(project) {
     job.cladding || {};
 
 
-  $("claddingType").value =
-    cladding.type
-    ||
-    PRICES.defaults
-      .claddingType;
+  $("claddingType")
+    .value =
+      cladding.type
+      ||
+      PRICES.defaults
+        .claddingType;
 
 
-  $("claddingDirection").value =
-    cladding.direction || "";
+  $("claddingDirection")
+    .value =
+      cladding.direction || "";
 
 
-  $("ekodeckColour").value =
-    cladding.ekodeckColour
-    ||
-    $("ekodeckColour").value;
+  $("ekodeckColour")
+    .value =
+      cladding.ekodeckColour
+      ||
+      $("ekodeckColour")
+        .value;
 
 
-  $("cypressFinish").value =
-    cladding.cypressFinish
-    ||
-    "Raw";
+  $("cypressFinish")
+    .value =
+      cladding.cypressFinish
+      ||
+      "Raw";
 
 
-  $("cypressColour").value =
-    cladding.cypressColour || "";
+  $("cypressColour")
+    .value =
+      cladding.cypressColour || "";
 
 
-  $("lospFinish").value =
-    cladding.lospFinish
-    ||
-    "Primed";
+  $("lospFinish")
+    .value =
+      cladding.lospFinish
+      ||
+      "Primed";
 
 
-  $("lospColour").value =
-    cladding.lospColour || "";
+  $("lospColour")
+    .value =
+      cladding.lospColour || "";
 
 
-  $("merbauFinish").value =
-    cladding.merbauFinish
-    ||
-    "Raw";
+  $("merbauFinish")
+    .value =
+      cladding.merbauFinish
+      ||
+      "Raw";
 
 
-  $("treatedPineLength").value =
-    cladding.treatedPineLength
-    ||
-    "1800";
+  $("treatedPineLength")
+    .value =
+      cladding.treatedPineLength
+      ||
+      "1800";
 
 
-  $("treatedPineWidth").value =
-    cladding.treatedPineWidth
-    ||
-    "100";
+  $("treatedPineWidth")
+    .value =
+      cladding.treatedPineWidth
+      ||
+      "100";
 
 
   treatedPineState =
@@ -9092,57 +10970,67 @@ function loadJob(project) {
     };
 
 
-  $("pineCappingMetres").value =
-    cladding.cappingMetres
-    ||
-    "";
+  $("pineCappingMetres")
+    .value =
+      cladding.cappingMetres
+      ||
+      "";
 
 
-  $("pinePlinthMetres").value =
-    cladding.plinthMetres
-    ||
-    "";
+  $("pinePlinthMetres")
+    .value =
+      cladding.plinthMetres
+      ||
+      "";
 
 
-  $("meshPreferredSheet").value =
-    cladding.meshPreferredSheet
-    ||
-    "auto";
+  $("meshPreferredSheet")
+    .value =
+      cladding.meshPreferredSheet
+      ||
+      "auto";
 
 
-  $("colorbondProfile").value =
-    cladding.colorbondProfile
-    ||
-    $("colorbondProfile").value;
+  $("colorbondProfile")
+    .value =
+      cladding.colorbondProfile
+      ||
+      $("colorbondProfile")
+        .value;
 
 
   if (
     cladding.colorbondColour
   ) {
 
-    $("colorbondColour").value =
-      cladding.colorbondColour;
+    $("colorbondColour")
+      .value =
+        cladding.colorbondColour;
   }
 
 
-  $("customDescription").value =
-    cladding.customDescription
-    ||
-    "";
+  $("customDescription")
+    .value =
+      cladding.customDescription
+      ||
+      "";
 
 
-  $("customCost").value =
-    cladding.customCost
-    ||
-    "";
+  $("customCost")
+    .value =
+      cladding.customCost
+      ||
+      "";
 
 
-  $("powderDecision").value =
-    job.powderDecision || "";
+  $("powderDecision")
+    .value =
+      job.powderDecision || "";
 
 
-  $("powderColour").value =
-    job.powderColour || "";
+  $("powderColour")
+    .value =
+      job.powderColour || "";
 
 
   $("additionalLabourEnabled")
@@ -9169,16 +11057,19 @@ function loadJob(project) {
       "";
 
 
-  $("travelKm").value =
-    job.travelKm || "";
+  $("travelKm")
+    .value =
+      job.travelKm || "";
 
 
-  $("extraHardware").value =
-    job.extraHardware || "";
+  $("extraHardware")
+    .value =
+      job.extraHardware || "";
 
 
-  $("otherCosts").value =
-    job.otherCosts || "";
+  $("otherCosts")
+    .value =
+      job.otherCosts || "";
 
 
   manualQuoteActive =
@@ -9196,13 +11087,17 @@ function loadJob(project) {
   (
     job.components || []
   )
-    .forEach(saved => {
+    .forEach(
+      saved => {
 
-      addComponent(
-        saved.type,
-        saved
-      );
-    });
+
+        addComponent(
+          saved.type,
+          saved
+        );
+
+      }
+    );
 
 
   localStorage.setItem(
@@ -9211,8 +11106,12 @@ function loadJob(project) {
   );
 
 
-  restoringJob = false;
-  suppressQuoteReset = false;
+  restoringJob =
+    false;
+
+
+  suppressQuoteReset =
+    false;
 
 
   clearUndoState();
@@ -9226,18 +11125,15 @@ function loadJob(project) {
     manualQuoteValue > 0
   ) {
 
-    $("quotePrice").value =
-      manualQuoteValue;
+    $("quotePrice")
+      .value =
+        manualQuoteValue;
   }
 
 
   updateQuoteMetrics();
 }
 
-
-/* ==========================================================
-   DELETE SAVED JOB
-   ========================================================== */
 
 function deleteSavedJob(project) {
 
@@ -9297,14 +11193,28 @@ function newJob() {
   );
 
 
-  components = [];
-  componentCounter = 0;
-  selectedComponentId = null;
+  components =
+    [];
 
-  lastCalculation = null;
 
-  manualQuoteActive = false;
-  manualQuoteValue = 0;
+  componentCounter =
+    0;
+
+
+  selectedComponentId =
+    null;
+
+
+  lastCalculation =
+    null;
+
+
+  manualQuoteActive =
+    false;
+
+
+  manualQuoteValue =
+    0;
 
 
   $("componentsContainer")
@@ -9319,151 +11229,162 @@ function newJob() {
       `;
 
 
-  $("projectNumber").value =
-    next;
+  $("projectNumber")
+    .value =
+      next;
 
 
-  $("clientName").value = "";
-  $("siteAddress").value = "";
-  $("clientPhone").value = "04";
-  $("clientEmail").value = "";
+  $("clientName").value =
+    "";
 
-  $("cavityWidth").value = "";
-  $("overallHeight").value = "";
 
-  $("referenceDirection").value =
-    PRICES.defaults
-      .referenceDirection;
+  $("siteAddress").value =
+    "";
 
-  $("referenceOther").value = "";
+
+  $("clientPhone").value =
+    "04";
+
+
+  $("clientEmail").value =
+    "";
+
+
+  $("cavityWidth").value =
+    "";
+
+
+  $("overallHeight").value =
+    "";
+
+
+  $("referenceDirection")
+    .value =
+      PRICES.defaults
+        .referenceDirection;
+
+
+  $("referenceOther").value =
+    "";
+
 
   includeState = {
+
     gate: true,
+
     posts: true,
+
     cladding: true
+
   };
 
-  $("claddingType").value =
-    PRICES.defaults
-      .claddingType;
 
-  $("claddingDirection").value = "";
+  $("claddingType")
+    .value =
+      PRICES.defaults
+        .claddingType;
 
-  $("treatedPineLength").value =
-    "1800";
 
-  $("treatedPineWidth").value =
-    "100";
+  $("claddingDirection")
+    .value =
+      "";
 
-  $("meshPreferredSheet").value =
-    "auto";
+
+  $("treatedPineLength")
+    .value =
+      "1800";
+
+
+  $("treatedPineWidth")
+    .value =
+      "100";
+
+
+  $("meshPreferredSheet")
+    .value =
+      "auto";
+
 
   treatedPineState = {
+
     capping: true,
+
     plinth: true
+
   };
 
-  $("pineCappingMetres").value = "";
-  $("pinePlinthMetres").value = "";
 
-  $("powderDecision").value = "";
-  $("powderColour").value = "";
+  $("pineCappingMetres")
+    .value =
+      "";
+
+
+  $("pinePlinthMetres")
+    .value =
+      "";
+
+
+  $("powderDecision")
+    .value =
+      "";
+
+
+  $("powderColour")
+    .value =
+      "";
+
 
   $("additionalLabourEnabled")
     .checked =
       false;
 
+
   $("additionalFabricationHours")
     .value =
       "";
+
 
   $("additionalInstallationHours")
     .value =
       "";
 
-  $("travelKm").value = "";
-  $("extraHardware").value = "";
-  $("otherCosts").value = "";
 
-  $("quotePrice").value = "";
+  $("travelKm").value =
+    "";
+
+
+  $("extraHardware").value =
+    "";
+
+
+  $("otherCosts").value =
+    "";
+
+
+  $("quotePrice").value =
+    "";
+
 
   clearUndoState();
 
-  $("claddingCard").open =
-    true;
 
-  $("powderCard").open =
-    true;
+  $("claddingCard")
+    .open =
+      true;
+
+
+  $("powderCard")
+    .open =
+      true;
+
 
   refreshEverything();
 }
 
 
 /* ==========================================================
-   EMAIL / SMS
+   SMS / EMAIL
    ========================================================== */
-
-function smsProjectDescription() {
-
-  const gateCount =
-    includeState.gate
-      ? lastCalculation.gates.length
-      : 0;
-
-
-  const panelCount =
-    lastCalculation.panels.length;
-
-
-  const parts = [];
-
-
-  if (gateCount === 1) {
-    parts.push(
-      "a custom steel gate"
-    );
-  }
-
-
-  if (gateCount > 1) {
-    parts.push(
-      `${gateCount} custom steel gates`
-    );
-  }
-
-
-  if (panelCount === 1) {
-    parts.push(
-      "1 fixed panel"
-    );
-  }
-
-
-  if (panelCount > 1) {
-    parts.push(
-      `${panelCount} fixed panels`
-    );
-  }
-
-
-  let description =
-    parts.length
-      ? parts.join(" and ")
-      : "custom steelwork";
-
-
-  if (
-    includeState.cladding
-  ) {
-
-    description +=
-      ` with ${claddingDescription()} cladding`;
-  }
-
-
-  return description;
-}
-
 
 function sendSMS() {
 
@@ -9480,13 +11401,14 @@ function sendSMS() {
       "Please enter a valid 10-digit mobile number beginning with 04."
     );
 
+
     return;
   }
 
 
   const message =
     `Hi ${$("clientName").value}, ` +
-    `JTLA Gates quote ${$("projectNumber").value} for ${smsProjectDescription()}. ` +
+    `JTLA Gates quote ${$("projectNumber").value}. ` +
     `Total ${$("quoteTotalDisplay").textContent} incl GST. ` +
     `Regards, Jody Tuuta 0439 517 783`;
 
@@ -9499,7 +11421,8 @@ function sendSMS() {
 
 function buildEmailBody() {
 
-  let text = "";
+  let text =
+    "";
 
 
   text +=
@@ -9513,135 +11436,70 @@ function buildEmailBody() {
   text +=
     `PROJECT DESCRIPTION\n`;
 
+
   text +=
     `Supply, fabricate and install ${projectDescriptionText()}.\n\n`;
 
 
   text +=
-    `FABRICATION\n`;
-
-
-  if (includeState.gate) {
-
-    lastCalculation.gates
-      .forEach(gate => {
-
-        text +=
-          `${gate.label}: ${gate.width}mm wide × ${gate.height}mm high steel frame. ` +
-          `${PRICES.steel.frame[gate.frame].label}. ` +
-          `Hinged on the ${gate.hinge}, opening ${gate.opens}.\n`;
-      });
-  }
-
-
-  if (
-    includeState.cladding
-  ) {
-
-    text +=
-      `${claddingDescription()} cladding.\n`;
-  }
-
-
-  text +=
-    `\nINSTALLATION\n`;
-
-
-  text +=
-    `All left and right orientation references are based on ${selectedReferenceDescription().toLowerCase()}.\n`;
-
-
-  if (includeState.gate) {
-
-    lastCalculation.gates
-      .forEach(gate => {
-
-        text +=
-          `${gate.label} fitted with heavy-duty galvanised lock-out hinges, ` +
-          `hinged on the ${gate.hinge} and opening ${gate.opens === "in" ? "inward" : "outward"} when viewed from the nominated reference direction. ` +
-          `The latch is fitted to the opposite side.\n`;
-      });
-  }
-
-
-  text +=
-    `\nFINISH\n`;
-
-
-  if (
-    $("powderDecision").value ===
-    "yes"
-  ) {
-
-    text +=
-      `Steelwork powder coated ${$("powderColour").value}.\n`;
-
-    text +=
-      `Allow approximately 2 weeks for powder-coating processing.\n`;
-  }
-
-
-  else {
-
-    text +=
-      `Duragalv steel with exposed fabrication areas treated with etch primer and silver galvanising spray.\n`;
-  }
-
-
-  text +=
-    `\nPRICE\n`;
+    `PRICE\n`;
 
 
   text +=
     `Price ex GST: ${$("quoteExGstDisplay").textContent}\n`;
 
+
   text +=
     `GST: ${$("quoteGstDisplay").textContent}\n`;
 
+
   text +=
-    `TOTAL INC GST: ${$("quoteTotalDisplay").textContent}\n`;
+    `TOTAL INC GST: ${$("quoteTotalDisplay").textContent}\n\n`;
 
 
   text +=
-    `\nTERMS\n`;
+    `TERMS\n`;
 
 
   text +=
     `50% deposit required on acceptance.\n`;
 
+
   text +=
-    `Balance payable on completion.\n`;
+    `Balance payable on completion.\n\n`;
 
 
   text +=
-    `\nBANK TRANSFER\n`;
+    `BANK TRANSFER\n`;
 
 
   text +=
     `Name: ${PRICES.bank.accountName}\n`;
 
+
   text +=
     `BSB: ${PRICES.bank.bsb}\n`;
+
 
   text +=
     `Account: ${PRICES.bank.accountNumber}\n`;
 
-  text +=
-    `Reference: ${$("projectNumber").value}\n`;
-
 
   text +=
-    `\nTo proceed, please reply to this email confirming acceptance of Quote ${$("projectNumber").value}.\n`;
+    `Reference: ${$("projectNumber").value}\n\n`;
 
 
   text +=
-    `\nKind regards,\n`;
+    `Kind regards,\n`;
+
 
   text +=
     `Jody Tuuta\n`;
 
+
   text +=
     `JTLA Gates\n`;
+
 
   text +=
     `0439 517 783`;
@@ -9658,13 +11516,15 @@ function sendEmail() {
 
   if (
     !validEmail(
-      $("clientEmail").value
+      $("clientEmail")
+        .value
     )
   ) {
 
     alert(
       "Please enter a valid email address."
     );
+
 
     return;
   }
@@ -9683,7 +11543,7 @@ function sendEmail() {
 
 
 /* ==========================================================
-   PHONE FIELD
+   PHONE
    ========================================================== */
 
 function setupPhoneField() {
@@ -9692,8 +11552,12 @@ function setupPhoneField() {
     $("clientPhone");
 
 
-  if (!field.value) {
-    field.value = "04";
+  if (
+    !field.value
+  ) {
+
+    field.value =
+      "04";
   }
 
 
@@ -9701,13 +11565,19 @@ function setupPhoneField() {
     "input",
     () => {
 
+
       let digits =
         field.value
-          .replace(/\D/g, "");
+          .replace(
+            /\D/g,
+            ""
+          );
 
 
       if (
-        !digits.startsWith("04")
+        !digits.startsWith(
+          "04"
+        )
       ) {
 
         digits =
@@ -9724,6 +11594,7 @@ function setupPhoneField() {
           0,
           10
         );
+
     }
   );
 }
@@ -9735,60 +11606,82 @@ function setupPhoneField() {
 
 function refreshEverything() {
 
-  if (refreshLock) {
+  if (
+    refreshLock
+  ) {
     return;
   }
 
 
-  refreshLock = true;
+  refreshLock =
+    true;
 
 
   try {
+
 
     renumberComponents();
 
 
     components
-      .filter(
-        c => c.type === "post"
-      )
-      .forEach(component => {
 
-        const card =
-          document.querySelector(
-            `[data-component-id="${component.id}"]`
+      .filter(
+        component =>
+          component.type ===
+          "post"
+      )
+
+      .forEach(
+        component => {
+
+
+          const card =
+            document.querySelector(
+              `[data-component-id="${component.id}"]`
+            );
+
+
+          updatePostUI(
+            card
           );
 
-
-        updatePostUI(
-          card
-        );
-      });
+        }
+      );
 
 
     components
-      .filter(
-        c => c.type === "gate"
-      )
-      .forEach(component => {
 
-        const card =
-          document.querySelector(
-            `[data-component-id="${component.id}"]`
+      .filter(
+        component =>
+          component.type ===
+          "gate"
+      )
+
+      .forEach(
+        component => {
+
+
+          const card =
+            document.querySelector(
+              `[data-component-id="${component.id}"]`
+            );
+
+
+          updateGateUI(
+            card
           );
 
-
-        updateGateUI(
-          card
-        );
-      });
+        }
+      );
 
 
     $("referenceOtherWrap")
-      .classList.toggle(
+      .classList
+      .toggle(
         "hidden",
 
-        $("referenceDirection").value !==
+        $("referenceDirection")
+          .value !==
         "other"
       );
 
@@ -9810,9 +11703,13 @@ function refreshEverything() {
     updateHeader();
 
 
-    if (!restoringJob) {
+    if (
+      !restoringJob
+    ) {
+
       autoSaveJob();
     }
+
   }
 
 
@@ -9820,6 +11717,7 @@ function refreshEverything() {
 
     refreshLock =
       false;
+
   }
 }
 
@@ -9834,6 +11732,7 @@ function setupLiveEvents() {
     "input",
     event => {
 
+
       const target =
         event.target;
 
@@ -9843,6 +11742,7 @@ function setupLiveEvents() {
           "#savedJobsList"
         )
       ) {
+
         return;
       }
 
@@ -9864,6 +11764,7 @@ function setupLiveEvents() {
 
 
       refreshEverything();
+
     }
   );
 
@@ -9871,6 +11772,7 @@ function setupLiveEvents() {
   document.addEventListener(
     "change",
     event => {
+
 
       const target =
         event.target;
@@ -9881,6 +11783,7 @@ function setupLiveEvents() {
           "#savedJobsList"
         )
       ) {
+
         return;
       }
 
@@ -9910,6 +11813,7 @@ function setupLiveEvents() {
 
         maybeCollapsePowder();
       }
+
     }
   );
 
@@ -9918,12 +11822,73 @@ function setupLiveEvents() {
     "scroll",
     () => {
 
+
       window.requestAnimationFrame(
         updateActiveQuickNav
       );
+
     },
     {
       passive: true
+    }
+  );
+}
+
+
+/* ==========================================================
+   RELIABLE ADD COMPONENT HANDLER
+   ========================================================== */
+
+function setupAddComponentButtons() {
+
+  document.addEventListener(
+    "click",
+    event => {
+
+
+      const button =
+        event.target.closest(
+          "#addPostBtn, #addGateBtn, #addPanelBtn"
+        );
+
+
+      if (!button) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      const typeMap = {
+
+        addPostBtn:
+          "post",
+
+        addGateBtn:
+          "gate",
+
+        addPanelBtn:
+          "panel"
+
+      };
+
+
+      const type =
+        typeMap[
+          button.id
+        ];
+
+
+      if (!type) {
+        return;
+      }
+
+
+      addComponent(
+        type
+      );
+
     }
   );
 }
@@ -9937,150 +11902,133 @@ document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    /*
-      Colour dropdowns.
-    */
+
+    /* Colour lists */
 
     [
       $("colorbondColour"),
       $("powderColour")
     ]
-      .filter(Boolean)
-      .forEach(select => {
 
-        const blank =
-          document.createElement(
-            "option"
+      .filter(Boolean)
+
+      .forEach(
+        select => {
+
+
+          const blank =
+            document.createElement(
+              "option"
+            );
+
+
+          blank.value =
+            "";
+
+
+          blank.textContent =
+            "Select colour";
+
+
+          select.appendChild(
+            blank
           );
 
 
-        blank.value = "";
-
-        blank.textContent =
-          "Select colour";
-
-
-        select.appendChild(
-          blank
-        );
+          [
+            ...PRICES.colours
+          ]
+            .sort()
+            .forEach(
+              colour => {
 
 
-        [...PRICES.colours]
-          .sort()
-          .forEach(colour => {
-
-            const option =
-              document.createElement(
-                "option"
-              );
+                const option =
+                  document.createElement(
+                    "option"
+                  );
 
 
-            option.value =
-              colour;
+                option.value =
+                  colour;
 
 
-            option.textContent =
-              colour;
+                option.textContent =
+                  colour;
 
 
-            select.appendChild(
-              option
+                select.appendChild(
+                  option
+                );
+
+              }
             );
-          });
-      });
+
+        }
+      );
 
 
-    $("projectNumber").value =
-      getActiveProjectNumber();
+    $("projectNumber")
+      .value =
+        getActiveProjectNumber();
 
 
-    $("referenceDirection").value =
-      PRICES.defaults
-        .referenceDirection;
+    $("referenceDirection")
+      .value =
+        PRICES.defaults
+          .referenceDirection;
 
 
     setupPhoneField();
 
 
-    /*
-      Client formatting.
-    */
+    setupAddComponentButtons();
+
 
     [
       "clientName",
       "siteAddress"
     ]
-      .forEach(id => {
-
-        $(id)
-          .addEventListener(
-            "blur",
-            () => {
-
-              $(id).value =
-                titleCaseWords(
-                  $(id).value
-                );
+      .forEach(
+        id => {
 
 
-              refreshEverything();
-            }
-          );
-      });
+          $(id)
+            .addEventListener(
+              "blur",
+              () => {
 
 
-    /*
-      Component add buttons.
-    */
+                $(id).value =
+                  titleCaseWords(
+                    $(id).value
+                  );
 
-    $("addPostBtn")
-      .addEventListener(
-        "click",
-        () => {
-          addComponent(
-            "post"
-          );
+
+                refreshEverything();
+
+              }
+            );
+
         }
       );
 
-
-    $("addGateBtn")
-      .addEventListener(
-        "click",
-        () => {
-          addComponent(
-            "gate"
-          );
-        }
-      );
-
-
-    $("addPanelBtn")
-      .addEventListener(
-        "click",
-        () => {
-          addComponent(
-            "panel"
-          );
-        }
-      );
-
-
-    /*
-      Include switches.
-    */
 
     $("includeGateBtn")
       .addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
+
 
           includeState.gate =
             !includeState.gate;
 
+
           refreshEverything();
+
         }
       );
 
@@ -10090,12 +12038,16 @@ document.addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
+
 
           includeState.posts =
             !includeState.posts;
 
+
           refreshEverything();
+
         }
       );
 
@@ -10105,31 +12057,35 @@ document.addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
+
 
           includeState.cladding =
             !includeState.cladding;
 
+
           refreshEverything();
+
         }
       );
 
-
-    /*
-      Pine.
-    */
 
     $("pineCappingToggle")
       .addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
+
 
           treatedPineState.capping =
             !treatedPineState.capping;
 
+
           refreshEverything();
+
         }
       );
 
@@ -10139,34 +12095,41 @@ document.addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
+
 
           treatedPineState.plinth =
             !treatedPineState.plinth;
 
+
           refreshEverything();
+
         }
       );
 
-
-    /*
-      Powder coating.
-    */
 
     $("powderYesBtn")
       .addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
 
-          $("powderDecision").value =
-            "yes";
 
-          $("powderCard").open =
-            true;
+          $("powderDecision")
+            .value =
+              "yes";
+
+
+          $("powderCard")
+            .open =
+              true;
+
 
           refreshEverything();
+
         }
       );
 
@@ -10176,28 +12139,32 @@ document.addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
 
-          $("powderDecision").value =
-            "no";
+
+          $("powderDecision")
+            .value =
+              "no";
+
 
           refreshEverything();
 
+
           maybeCollapsePowder();
+
         }
       );
 
-
-    /*
-      Additional labour.
-    */
 
     $("additionalLabourEnabled")
       .addEventListener(
         "change",
         () => {
 
+
           resetQuoteToAuto();
+
 
           if (
             !$("additionalLabourEnabled")
@@ -10208,35 +12175,33 @@ document.addEventListener(
               .value =
                 "";
 
+
             $("additionalInstallationHours")
               .value =
                 "";
           }
 
+
           refreshEverything();
+
         }
       );
 
-
-    /*
-      Quote controls.
-    */
 
     $("resetQuoteBtn")
       .addEventListener(
         "click",
         () => {
 
+
           resetQuoteToAuto();
 
+
           refreshEverything();
+
         }
       );
 
-
-    /*
-      Undo.
-    */
 
     $("undoBtn")
       .addEventListener(
@@ -10245,44 +12210,41 @@ document.addEventListener(
       );
 
 
-    /*
-      Main workflow nav.
-    */
-
-    document.querySelectorAll(
-      ".section-nav-tab"
-    )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            jumpToSection(
-              button.dataset.target
-            );
-          }
-        );
-      });
+    document
+      .querySelectorAll(
+        ".section-nav-tab"
+      )
+      .forEach(
+        button => {
 
 
-    /*
-      Save.
-    */
+          button.addEventListener(
+            "click",
+            () => {
+
+
+              jumpToSection(
+                button.dataset
+                  .target
+              );
+
+            }
+          );
+
+        }
+      );
+
 
     $("saveBtn")
       .addEventListener(
         "click",
         () => {
 
+
           refreshEverything();
 
+
           autoSaveJob();
-
-
-          const original =
-            $("saveBtn")
-              .textContent;
 
 
           $("saveBtn")
@@ -10293,12 +12255,15 @@ document.addEventListener(
           setTimeout(
             () => {
 
+
               $("saveBtn")
                 .textContent =
-                  original;
+                  "Save";
+
             },
             800
           );
+
         }
       );
 
@@ -10322,9 +12287,12 @@ document.addEventListener(
         "click",
         () => {
 
+
           refreshEverything();
 
+
           window.print();
+
         }
       );
 
@@ -10335,10 +12303,6 @@ document.addEventListener(
         newJob
       );
 
-
-    /*
-      Restore active job.
-    */
 
     const active =
       localStorage.getItem(
@@ -10352,7 +12316,9 @@ document.addEventListener(
 
     if (
       active &&
-      jobs[active]
+      jobs[
+        active
+      ]
     ) {
 
       loadJob(
@@ -10363,12 +12329,17 @@ document.addEventListener(
 
     setupLiveEvents();
 
+
     renderSavedJobs();
+
 
     clearUndoState();
 
+
     refreshEverything();
 
+
     updateActiveQuickNav();
+
   }
 );
