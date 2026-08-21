@@ -12,17 +12,27 @@
 
   <title>JTLA Gates Quote</title>
 
-  <link rel="stylesheet" href="style.css?v=230">
+  <link rel="stylesheet" href="style.css?v=240">
   <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
   <!-- =====================================================
-       HEADER
+       FIXED HEADER
   ====================================================== -->
 
   <div class="top-bar">
+
+    <div class="top-logo-wrap">
+
+      <img
+        src="jtla-logo.png"
+        alt="JTLA"
+        class="top-logo"
+      >
+
+    </div>
 
     <div class="top-title">
 
@@ -47,6 +57,104 @@
     >
       UNDO
     </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       FIXED QUICK NAVIGATION
+  ====================================================== -->
+
+  <div
+    id="quickNavShell"
+    class="quick-nav-shell"
+  >
+
+    <!-- Physical components -->
+
+    <div
+      id="componentQuickNav"
+      class="quick-nav-row component-nav-row"
+    >
+    </div>
+
+
+    <!-- Main workflow -->
+
+    <div class="quick-nav-row workflow-nav-row">
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="siteLayoutCard"
+      >
+        SITE
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="claddingCard"
+      >
+        CLADDING
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="powderCard"
+      >
+        POWDER
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="materialsCard"
+      >
+        MATERIALS
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="internalCostingCard"
+      >
+        COSTING
+      </button>
+
+    </div>
+
+
+    <!-- Extra navigation -->
+
+    <div class="quick-nav-row utility-nav-row">
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="clientDetailsCard"
+      >
+        CLIENT
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="finishedQuoteCard"
+      >
+        QUOTE
+      </button>
+
+      <button
+        type="button"
+        class="quick-nav-tab section-nav-tab"
+        data-target="savedJobsCard"
+      >
+        SAVED
+      </button>
+
+    </div>
 
   </div>
 
@@ -95,7 +203,11 @@
          SITE LAYOUT
     ====================================================== -->
 
-    <details class="card" open>
+    <details
+      id="siteLayoutCard"
+      class="card nav-section"
+      open
+    >
 
       <summary>
         Site Layout
@@ -277,12 +389,15 @@
 
     <details
       id="claddingCard"
-      class="card"
+      class="card nav-section"
       open
     >
 
       <summary>
-        <span>Cladding</span>
+
+        <span>
+          Cladding
+        </span>
 
         <span
           id="claddingSummary"
@@ -290,6 +405,7 @@
         >
           Not complete
         </span>
+
       </summary>
 
       <div
@@ -331,6 +447,10 @@
 
             <option value="treatedPinePalings">
               Treated Pine Palings
+            </option>
+
+            <option value="galvMesh50">
+              50x50mm Galvanised Mesh - 4.0mm Wire
             </option>
 
             <option value="colorbond">
@@ -521,7 +641,7 @@
         </div>
 
 
-        <!-- TREATED PINE PALINGS -->
+        <!-- TREATED PINE -->
 
         <div
           id="treatedPineOptions"
@@ -633,6 +753,60 @@
         </div>
 
 
+        <!-- MESH -->
+
+        <div
+          id="meshOptions"
+          class="hidden"
+        >
+
+          <div class="mesh-info-box">
+
+            <strong>
+              50x50mm Galvanised Mesh
+            </strong>
+
+            <span>
+              4.0mm wire
+            </span>
+
+            <span>
+              $18.00/m² ex GST
+            </span>
+
+          </div>
+
+          <label>
+            Preferred order sheet
+
+            <select id="meshPreferredSheet">
+
+              <option value="auto">
+                Auto optimise
+              </option>
+
+              <option value="3000x2400">
+                3000x2400mm
+              </option>
+
+              <option value="2400x1200">
+                2400x1200mm
+              </option>
+
+              <option value="2000x1200">
+                2000x1200mm
+              </option>
+
+            </select>
+          </label>
+
+          <p class="small-note">
+            Mesh cut sizes are calculated from the clear internal frame dimensions.
+          </p>
+
+        </div>
+
+
         <!-- COLORBOND -->
 
         <div
@@ -719,7 +893,10 @@
          COMPONENTS
     ====================================================== -->
 
-    <section class="card">
+    <section
+      id="componentsSection"
+      class="card nav-section"
+    >
 
       <div class="static-title">
         Components
@@ -734,7 +911,7 @@
           id="noComponentsMessage"
           class="muted"
         >
-          Add the job components above, then use the sticky map to jump to each one.
+          Add the job components above, then use the fixed navigation or mud map to jump to each one.
         </p>
 
       </div>
@@ -748,7 +925,7 @@
 
     <details
       id="powderCard"
-      class="card powder-card"
+      class="card powder-card nav-section"
       open
     >
 
@@ -871,7 +1048,11 @@
          MATERIALS & FABRICATION
     ====================================================== -->
 
-    <details class="card" open>
+    <details
+      id="materialsCard"
+      class="card nav-section"
+      open
+    >
 
       <summary>
         Materials & Fabrication
@@ -991,10 +1172,13 @@
 
 
     <!-- =====================================================
-         LABOUR / TRAVEL / COSTS
+         LABOUR / TRAVEL
     ====================================================== -->
 
-    <details class="card">
+    <details
+      id="labourCard"
+      class="card nav-section"
+    >
 
       <summary>
         Labour, Travel & Other Costs
@@ -1115,7 +1299,10 @@
          INTERNAL COSTING
     ====================================================== -->
 
-    <section class="card">
+    <section
+      id="internalCostingCard"
+      class="card nav-section"
+    >
 
       <div class="static-title">
         Internal Costing
@@ -1263,7 +1450,11 @@
          CLIENT DETAILS
     ====================================================== -->
 
-    <details class="card" open>
+    <details
+      id="clientDetailsCard"
+      class="card nav-section"
+      open
+    >
 
       <summary>
         Client Details
@@ -1353,7 +1544,10 @@
          FINISHED QUOTE
     ====================================================== -->
 
-    <section class="card">
+    <section
+      id="finishedQuoteCard"
+      class="card nav-section"
+    >
 
       <div class="static-title">
         Finished Quote
@@ -1551,7 +1745,10 @@
          SAVED JOBS
     ====================================================== -->
 
-    <details class="card saved-jobs-card">
+    <details
+      id="savedJobsCard"
+      class="card saved-jobs-card nav-section"
+    >
 
       <summary>
         Saved Jobs
@@ -1575,7 +1772,7 @@
   <template id="componentTemplate">
 
     <article
-      class="component-card"
+      class="component-card nav-component"
       data-component-id=""
     >
 
@@ -1674,8 +1871,6 @@
       </label>
 
 
-      <!-- HEIGHT -->
-
       <div class="post-height-summary">
 
         <div>
@@ -1724,8 +1919,6 @@
       </div>
 
 
-      <!-- BRICK -->
-
       <div class="brick-holes hidden">
 
         <div class="small-heading">
@@ -1744,8 +1937,6 @@
 
       </div>
 
-
-      <!-- NEXT TO HOUSE -->
 
       <div class="house-bolt hidden">
 
@@ -1779,8 +1970,6 @@
 
       </div>
 
-
-      <!-- FLOATING -->
 
       <div class="floating-offset hidden">
 
@@ -1826,7 +2015,7 @@
         <div class="calculated-box">
 
           <span>
-            Calculated width
+            Steel frame width
           </span>
 
           <strong class="gate-width-display">
@@ -1838,13 +2027,40 @@
         <div class="calculated-box">
 
           <span>
-            Calculated height
+            Steel frame height
           </span>
 
           <strong class="gate-height-display">
             -
           </strong>
 
+        </div>
+
+      </div>
+
+
+      <div
+        class="gate-cladding-dimension-box"
+      >
+
+        <div>
+          <span>
+            Finished cladding width
+          </span>
+
+          <strong class="gate-cladding-width-display">
+            -
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Side overhang
+          </span>
+
+          <strong>
+            6mm each side
+          </strong>
         </div>
 
       </div>
@@ -1869,7 +2085,7 @@
           <label
             class="field-status required gate-manual-width-label"
           >
-            Manual gate width (mm)
+            Manual steel frame width (mm)
 
             <input
               class="gate-manual-width"
@@ -2111,8 +2327,8 @@
   </template>
 
 
-  <script src="prices.js?v=230"></script>
-  <script src="app.js?v=230"></script>
+  <script src="prices.js?v=240"></script>
+  <script src="app.js?v=240"></script>
 
 </body>
 </html>
