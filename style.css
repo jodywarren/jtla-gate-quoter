@@ -1,7 +1,7 @@
 /* =========================================================
    JTLA GATES
    MAIN STYLESHEET
-   VERSION 230
+   VERSION 240
    ========================================================= */
 
 
@@ -53,7 +53,7 @@ body {
   --white: #ffffff;
 
 
-  /* Workshop / fabrication green */
+  /* fabrication green */
 
   --green: #45644d;
 
@@ -62,7 +62,7 @@ body {
   --green-light: #b9d0bd;
 
 
-  /* Dark industrial red */
+  /* industrial red */
 
   --red: #7d4444;
 
@@ -126,7 +126,7 @@ textarea {
 
 
 /* =========================================================
-   HEADER
+   FIXED TOP HEADER
    ========================================================= */
 
 .top-bar {
@@ -134,24 +134,62 @@ textarea {
 
   top: 0;
 
-  z-index: 1500;
+  z-index: 2000;
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
-  gap: 12px;
+  gap: 9px;
 
-  min-height: 58px;
+  min-height: 54px;
 
-  padding: 7px 10px;
+  padding: 5px 8px;
 
-  background: var(--panel-deeper);
+  background: #ffffff;
 
-  border-bottom: 1px solid #54595c;
+  border-bottom: 1px solid #cccccc;
+
+  box-shadow:
+    0 2px 5px
+    rgba(0, 0, 0, 0.18);
 }
 
+
+/* =========================================================
+   HEADER LOGO
+   ========================================================= */
+
+.top-logo-wrap {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+}
+
+.top-logo {
+  display: block;
+
+  max-width: 38px;
+  max-height: 38px;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   HEADER TITLE / CLIENT
+   ========================================================= */
+
 .top-title {
+  flex: 1 1 auto;
+
   display: flex;
   flex-direction: column;
 
@@ -159,18 +197,18 @@ textarea {
 }
 
 .top-title > strong {
-  color: white;
+  color: #252525;
 
-  font-size: 17px;
-  line-height: 1.1;
+  font-size: 15px;
+  line-height: 1.05;
 }
 
 .top-title > span {
-  margin-top: 3px;
+  margin-top: 2px;
 
-  color: #dddddd;
+  color: #555555;
 
-  font-size: 13px;
+  font-size: 12px;
 
   white-space: nowrap;
   overflow: hidden;
@@ -178,9 +216,9 @@ textarea {
 }
 
 .top-title > small {
-  color: #aaaaaa;
+  color: #888888;
 
-  font-size: 10px;
+  font-size: 9px;
 }
 
 
@@ -189,25 +227,139 @@ textarea {
    ========================================================= */
 
 .undo-btn {
-  min-width: 78px;
-  min-height: 40px;
+  flex: 0 0 auto;
 
-  padding: 7px 12px;
+  min-width: 66px;
+  min-height: 36px;
 
-  border: 1px solid #777777;
+  padding: 5px 9px;
+
+  border: 1px solid #999999;
   border-radius: 5px;
 
-  background: #d8d8d8;
-  color: #222222;
+  background: #efefef;
+  color: #252525;
 
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 900;
 }
 
 .undo-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
 
   cursor: default;
+}
+
+
+/* =========================================================
+   FIXED QUICK NAVIGATION
+   ========================================================= */
+
+.quick-nav-shell {
+  position: sticky;
+
+  top: 54px;
+
+  z-index: 1900;
+
+  padding: 3px 5px;
+
+  background: #24272a;
+
+  border-bottom: 1px solid #55595c;
+
+  box-shadow:
+    0 2px 5px
+    rgba(0, 0, 0, 0.28);
+}
+
+
+/* =========================================================
+   QUICK NAV ROWS
+   ========================================================= */
+
+.quick-nav-row {
+  display: flex;
+
+  gap: 3px;
+
+  width: 100%;
+
+  margin-bottom: 3px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.quick-nav-row:last-child {
+  margin-bottom: 0;
+}
+
+.quick-nav-row::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   QUICK NAV BUTTONS
+   ========================================================= */
+
+.quick-nav-tab {
+  flex: 0 0 auto;
+
+  min-height: 25px;
+
+  padding: 3px 8px;
+
+  border: 1px solid #5e6366;
+  border-radius: 4px;
+
+  background: #3c4043;
+  color: #dddddd;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* physical components */
+
+.component-quick-tab {
+  min-width: 65px;
+
+  background:
+    var(--component-colour);
+
+  color: white;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.20);
+}
+
+
+/* selected section */
+
+.quick-nav-tab.active {
+  border-color: white;
+
+  color: white;
+
+  box-shadow:
+    inset 0 0 0 1px white,
+    0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.section-nav-tab.active {
+  background: var(--green);
+
+  color: white;
 }
 
 
@@ -218,47 +370,76 @@ textarea {
 .mud-map-shell {
   position: sticky;
 
-  top: 58px;
+  /*
+    Header 54
+    Quick nav roughly 84
+  */
 
-  z-index: 1400;
+  top: 136px;
 
-  padding: 5px 8px 7px;
+  z-index: 1800;
 
-  background: #272a2d;
+  padding: 4px 6px 6px;
+
+  background: #292c2f;
 
   border-bottom: 1px solid #555a5d;
 
   box-shadow:
-    0 3px 10px
-    rgba(0, 0, 0, 0.30);
+    0 3px 8px
+    rgba(0, 0, 0, 0.28);
 }
 
 .mud-map-top {
   display: flex;
   justify-content: space-between;
 
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 
   color: #b7b7b7;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 900;
 }
+
+
+/* =========================================================
+   SCROLLABLE MUD MAP
+   ========================================================= */
 
 .mud-map {
   display: flex;
 
+  align-items: stretch;
+
+  gap: 4px;
+
   width: 100%;
 
-  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
 
-  overflow: hidden;
+  padding-bottom: 2px;
+
+  scrollbar-width: thin;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.mud-map::-webkit-scrollbar {
+  height: 4px;
+}
+
+.mud-map::-webkit-scrollbar-thumb {
+  background: #666b6e;
+
+  border-radius: 4px;
 }
 
 .mud-empty {
   width: 100%;
 
-  padding: 8px;
+  padding: 7px;
 
   border: 1px dashed #686868;
   border-radius: 5px;
@@ -267,17 +448,15 @@ textarea {
 
   text-align: center;
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 
 /* =========================================================
-   MUD MAP COMPONENTS
+   MUD COMPONENT
    ========================================================= */
 
 .mud-item {
-  flex: 1 1 0;
-
   min-width: 0;
 
   display: flex;
@@ -291,12 +470,16 @@ textarea {
 
   width: 100%;
 
-  min-width: 0;
-  min-height: 45px;
+  min-height: 52px;
 
-  padding: 14px 5px 6px;
+  padding:
+    14px 5px
+    5px;
 
-  border: 2px solid rgba(255, 255, 255, 0.20);
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.18);
+
   border-radius: 5px;
 
   background:
@@ -305,11 +488,13 @@ textarea {
   color:
     var(--component-text);
 
-  font-size: 10px;
-  font-weight: 900;
-
   overflow: hidden;
 }
+
+
+/* =========================================================
+   SELECTED MUD COMPONENT
+   ========================================================= */
 
 .mud-component.selected {
   border-color: white;
@@ -319,35 +504,79 @@ textarea {
     rgba(255, 255, 255, 0.65);
 }
 
+
+/* =========================================================
+   MUD MAP LABELS
+   ========================================================= */
+
 .mud-label {
   display: block;
 
-  overflow: hidden;
+  color: white;
+
+  font-size: 10px;
+  font-weight: 900;
 
   white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.mud-detail {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(255, 255, 255, 0.82);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   MUD COMPLETION DOT
+
+   Always top-right.
+   Hinge marker is kept separately.
+   ========================================================= */
 
 .mud-status {
   position: absolute;
 
   top: 4px;
-  right: 4px;
+  right: 5px;
+
+  z-index: 5;
 
   width: 9px;
   height: 9px;
 
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.85);
+
   border-radius: 50%;
 }
 
 .mud-status.complete {
-  background: #46a45a;
+  background: #4d9a5a;
 }
 
 .mud-status.incomplete {
-  background: #a63f3f;
+  background: #9e4141;
 }
+
+
+/* =========================================================
+   HINGE MARKER
+
+   Right hinge is moved inward so it
+   never covers the completion dot.
+   ========================================================= */
 
 .mud-hinge {
   position: absolute;
@@ -358,23 +587,24 @@ textarea {
   align-items: center;
   justify-content: center;
 
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 
   border-radius: 50%;
 
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.68);
   color: white;
 
   font-size: 8px;
+  font-weight: 900;
 }
 
 .mud-hinge.left {
-  left: 3px;
+  left: 4px;
 }
 
 .mud-hinge.right {
-  right: 3px;
+  right: 20px;
 }
 
 
@@ -392,17 +622,17 @@ textarea {
 }
 
 .mud-move-controls button {
-  min-height: 24px;
+  min-height: 23px;
 
-  padding: 1px;
+  padding: 0;
 
   border: 0;
   border-radius: 3px;
 
-  background: #575c5f;
+  background: #555a5d;
   color: white;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
 }
 
@@ -412,20 +642,20 @@ textarea {
    ========================================================= */
 
 .layout-check {
-  margin-top: 4px;
+  margin-top: 3px;
 
-  padding: 5px 7px;
+  padding: 4px 6px;
 
   border-radius: 4px;
 
   text-align: center;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
 }
 
 .layout-check.incomplete {
-  background: #8c713e;
+  background: #896f40;
   color: white;
 }
 
@@ -437,6 +667,17 @@ textarea {
 .layout-check.error {
   background: var(--red-dark);
   color: white;
+}
+
+
+/* =========================================================
+   SCROLL TARGET OFFSETS
+   ========================================================= */
+
+.nav-section,
+.nav-component,
+.component-card {
+  scroll-margin-top: 235px;
 }
 
 
@@ -478,15 +719,15 @@ textarea {
   align-items: center;
   justify-content: space-between;
 
-  gap: 10px;
+  gap: 8px;
 
-  padding: 13px 14px;
+  padding: 12px 13px;
 
   list-style: none;
 
   cursor: pointer;
 
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
 }
 
@@ -497,7 +738,7 @@ textarea {
 .card > summary::after {
   content: "+";
 
-  margin-left: 8px;
+  margin-left: 6px;
 }
 
 .card[open] > summary::after {
@@ -505,17 +746,19 @@ textarea {
 }
 
 .card[open] > summary {
-  border-bottom: 1px solid #686d70;
+  border-bottom:
+    1px solid #686d70;
 }
 
 .card-content {
-  padding: 13px;
+  padding: 12px;
 }
 
 .static-title {
-  padding: 14px;
+  padding: 13px;
 
-  border-bottom: 1px solid #686d70;
+  border-bottom:
+    1px solid #686d70;
 
   font-size: 18px;
   font-weight: 900;
@@ -523,11 +766,13 @@ textarea {
 
 
 /* =========================================================
-   COLLAPSED CARD SUMMARY
+   COLLAPSED SUMMARY
    ========================================================= */
 
 .summary-inline {
-  flex: 1;
+  flex: 1 1 auto;
+
+  min-width: 0;
 
   margin-left: auto;
 
@@ -535,7 +780,7 @@ textarea {
 
   text-align: right;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
 
   white-space: nowrap;
@@ -550,13 +795,16 @@ textarea {
 
 h3,
 .small-heading {
-  margin: 18px 0 9px;
+  margin:
+    17px 0
+    8px;
 
   padding-bottom: 5px;
 
-  border-bottom: 1px solid #666b6e;
+  border-bottom:
+    1px solid #666b6e;
 
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 900;
 }
 
@@ -568,11 +816,11 @@ h3,
 label {
   display: block;
 
-  margin-bottom: 13px;
+  margin-bottom: 12px;
 
   color: #f3f3f3;
 
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -584,7 +832,7 @@ label textarea {
 
 
 /* =========================================================
-   REQUIRED / COMPLETE FIELD STATUS
+   REQUIRED FIELDS
    ========================================================= */
 
 .field-status {
@@ -630,7 +878,7 @@ label textarea {
 .grid {
   display: grid;
 
-  gap: 10px;
+  gap: 9px;
 }
 
 .grid.two {
@@ -643,7 +891,34 @@ label textarea {
 
 
 /* =========================================================
-   INCLUDE BUTTONS
+   ADD COMPONENTS
+   ========================================================= */
+
+.add-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 5px;
+}
+
+.add-grid button {
+  min-height: 44px;
+
+  border: 1px solid #7e8386;
+  border-radius: 6px;
+
+  background: #323639;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   INCLUDE SWITCHES
    ========================================================= */
 
 .include-grid {
@@ -656,12 +931,12 @@ label textarea {
 }
 
 .include-btn {
-  min-height: 43px;
+  min-height: 41px;
 
   border: 0;
   border-radius: 5px;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
 }
 
@@ -677,37 +952,11 @@ label textarea {
 
 
 /* =========================================================
-   ADD COMPONENT BUTTONS
-   ========================================================= */
-
-.add-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 5px;
-}
-
-.add-grid button {
-  min-height: 47px;
-
-  border: 1px solid #7e8386;
-  border-radius: 6px;
-
-  background: #323639;
-  color: white;
-
-  font-weight: 800;
-}
-
-
-/* =========================================================
-   COMPONENT LIST
+   COMPONENTS
    ========================================================= */
 
 .components {
-  padding: 10px;
+  padding: 9px;
 
   display: grid;
 
@@ -717,12 +966,11 @@ label textarea {
 
 /* =========================================================
    COMPONENT CARD
-   FULL IDENTITY COLOUR
+
+   Whole card uses identity colour.
    ========================================================= */
 
 .component-card {
-  scroll-margin-top: 140px;
-
   background:
     var(--component-colour);
 
@@ -742,6 +990,11 @@ label textarea {
     rgba(0, 0, 0, 0.20);
 }
 
+
+/* =========================================================
+   COMPONENT HEADER
+   ========================================================= */
+
 .component-header {
   display: flex;
   align-items: center;
@@ -749,10 +1002,11 @@ label textarea {
 
   gap: 10px;
 
-  padding: 9px 10px;
+  padding:
+    10px 11px;
 
   background:
-    rgba(0, 0, 0, 0.18);
+    rgba(0, 0, 0, 0.20);
 
   border-bottom:
     1px solid
@@ -762,18 +1016,27 @@ label textarea {
 .component-header > div {
   display: flex;
   align-items: center;
-
   flex-wrap: wrap;
 
-  gap: 7px;
+  gap: 8px;
 }
+
+
+/* larger component name */
 
 .component-title {
   color: white;
 
-  font-size: 18px;
+  font-size: 22px;
+  line-height: 1;
+
   font-weight: 900;
 }
+
+
+/* =========================================================
+   COMPONENT COMPLETION
+   ========================================================= */
 
 .component-status {
   display: inline-block;
@@ -789,21 +1052,21 @@ label textarea {
 }
 
 .component-status.incomplete {
-  background: #913e3e;
+  background: #873c3c;
 }
 
 .component-status.complete {
-  background: #3f794c;
+  background: #376b42;
 }
+
+
+/* =========================================================
+   COMPONENT BODY
+   ========================================================= */
 
 .component-body {
   padding: 12px;
 }
-
-
-/*
-  Keep text readable over component colours.
-*/
 
 .component-body label,
 .component-body .small-heading {
@@ -817,13 +1080,6 @@ label textarea {
 .component-body .field-status.complete {
   color: #e2f0e5;
 }
-
-
-/*
-  Inputs remain white.
-  The colour identifies the component,
-  not the input itself.
-*/
 
 .component-body input,
 .component-body select,
@@ -840,11 +1096,11 @@ label textarea {
 .remove-btn {
   min-height: 31px;
 
-  padding: 6px 10px;
+  padding: 5px 9px;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.3);
+    rgba(255, 255, 255, 0.30);
 
   border-radius: 4px;
 
@@ -853,13 +1109,13 @@ label textarea {
 
   color: white;
 
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 900;
 }
 
 
 /* =========================================================
-   CALCULATED VALUES
+   CALCULATED INFO
    ========================================================= */
 
 .calculated-line,
@@ -872,10 +1128,10 @@ label textarea {
   gap: 10px;
 
   margin:
-    8px 0
-    13px;
+    7px 0
+    12px;
 
-  padding: 9px 11px;
+  padding: 9px 10px;
 
   border-radius: 6px;
 
@@ -888,15 +1144,63 @@ label textarea {
 .calculated-line span,
 .calculated-box span,
 .info-row span {
-  color: rgba(255, 255, 255, 0.78);
+  color:
+    rgba(255, 255, 255, 0.78);
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .calculated-line strong,
 .calculated-box strong,
 .info-row strong {
   color: white;
+}
+
+
+/* =========================================================
+   GATE CLADDING DIMENSIONS
+   ========================================================= */
+
+.gate-cladding-dimension-box {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 6px;
+
+  margin-bottom: 10px;
+}
+
+.gate-cladding-dimension-box > div {
+  padding: 8px 9px;
+
+  border-radius: 5px;
+
+  background:
+    rgba(0, 0, 0, 0.22);
+}
+
+.gate-cladding-dimension-box span {
+  display: block;
+
+  color:
+    rgba(255, 255, 255, 0.72);
+
+  font-size: 9px;
+}
+
+.gate-cladding-dimension-box strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: white;
+
+  font-size: 14px;
 }
 
 
@@ -913,9 +1217,9 @@ label textarea {
 
   margin:
     6px 0
-    12px;
+    11px;
 
-  padding: 10px;
+  padding: 9px;
 
   border-radius: 6px;
 
@@ -932,7 +1236,7 @@ label textarea {
   color:
     rgba(255, 255, 255, 0.75);
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .post-height-summary strong {
@@ -952,9 +1256,14 @@ label textarea {
   font-weight: 900;
 }
 
+
+/* =========================================================
+   POST HEIGHT BUTTONS
+   ========================================================= */
+
 .change-post-height-btn,
 .reset-post-height-btn {
-  min-height: 36px;
+  min-height: 35px;
 
   border:
     1px solid
@@ -967,15 +1276,15 @@ label textarea {
 
   color: white;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
 }
 
 .reset-post-height-btn {
   width: 100%;
 
-  margin-top: -4px;
-  margin-bottom: 12px;
+  margin-top: -3px;
+  margin-bottom: 11px;
 }
 
 
@@ -985,8 +1294,8 @@ label textarea {
 
 .gate-height-basis {
   margin:
-    -4px 0
-    12px;
+    -3px 0
+    11px;
 
   color:
     rgba(255, 255, 255, 0.76);
@@ -1000,13 +1309,13 @@ label textarea {
    ========================================================= */
 
 .gate-width-controls {
-  margin-bottom: 13px;
+  margin-bottom: 12px;
 }
 
 .gate-width-mode-btn {
   width: 100%;
 
-  min-height: 40px;
+  min-height: 38px;
 
   border:
     1px solid
@@ -1019,7 +1328,7 @@ label textarea {
 
   color: white;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
 }
 
@@ -1028,12 +1337,12 @@ label textarea {
 }
 
 .gate-manual-width-wrap {
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
 
 /* =========================================================
-   GATE ORIENTATION
+   HINGE / OPEN
    ========================================================= */
 
 .gate-orientation-row {
@@ -1083,7 +1392,7 @@ label textarea {
 }
 
 .add-hole {
-  min-height: 38px;
+  min-height: 37px;
 
   border:
     1px solid
@@ -1145,14 +1454,14 @@ label textarea {
 .small-status-btn {
   width: 100%;
 
-  min-height: 38px;
+  min-height: 37px;
 
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
   border: 0;
   border-radius: 5px;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
 }
 
@@ -1168,16 +1477,63 @@ label textarea {
 
 
 /* =========================================================
-   POWDER COATING CARD
+   MESH
+   ========================================================= */
+
+.mesh-info-box {
+  display: grid;
+
+  grid-template-columns:
+    1fr auto auto;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 11px;
+
+  padding: 9px;
+
+  border-radius: 6px;
+
+  background: #303437;
+}
+
+.mesh-info-box strong {
+  color: white;
+
+  font-size: 12px;
+}
+
+.mesh-info-box span {
+  color: #cccccc;
+
+  font-size: 10px;
+}
+
+.small-note {
+  margin:
+    -3px 0
+    8px;
+
+  color: #bbbbbb;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+
+/* =========================================================
+   POWDER COATING
    ========================================================= */
 
 .powder-card > summary {
-  min-height: 48px;
+  min-height: 46px;
 }
 
 .powder-compact {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 9px;
+  padding-bottom: 9px;
 }
 
 .powder-line {
@@ -1185,24 +1541,24 @@ label textarea {
   align-items: center;
   justify-content: space-between;
 
-  gap: 10px;
+  gap: 8px;
 }
 
 .powder-line > strong {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .powder-choice-grid {
   display: grid;
 
   grid-template-columns:
-    repeat(2, 70px);
+    repeat(2, 68px);
 
   gap: 5px;
 }
 
 .powder-decision {
-  min-height: 36px;
+  min-height: 35px;
 
   border: 0;
   border-radius: 5px;
@@ -1210,7 +1566,7 @@ label textarea {
   background: var(--red);
   color: white;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
 }
 
@@ -1229,7 +1585,7 @@ label textarea {
 
   gap: 8px;
 
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .powder-colour-field {
@@ -1308,7 +1664,7 @@ label textarea {
 }
 
 .material-column {
-  padding: 10px;
+  padding: 9px;
 
   border-radius: 6px;
 
@@ -1318,22 +1674,22 @@ label textarea {
 .material-column > strong {
   display: block;
 
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 
   color: #eeeeee;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .material-column > div {
   display: flex;
   justify-content: space-between;
 
-  gap: 6px;
+  gap: 5px;
 
   margin-top: 5px;
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .material-column span {
@@ -1362,7 +1718,7 @@ label textarea {
 
   gap: 15px;
 
-  padding: 8px 10px;
+  padding: 8px 9px;
 
   border-radius: 5px;
 
@@ -1372,40 +1728,39 @@ label textarea {
 .consumables-list span {
   color: #bbbbbb;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .consumables-list strong {
   text-align: right;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 
 /* =========================================================
    FABRICATION LIST
-   MATCH COMPONENT COLOUR
    ========================================================= */
 
 .fabrication-view {
   display: grid;
 
-  gap: 6px;
+  gap: 5px;
 }
 
 .fabrication-reference {
-  padding: 8px 10px;
+  padding: 8px 9px;
 
   border-radius: 5px;
 
   background: var(--green-dark);
   color: white;
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .fabrication-item {
-  padding: 9px 10px;
+  padding: 9px;
 
   border:
     2px solid
@@ -1419,8 +1774,20 @@ label textarea {
   color:
     var(--component-text);
 
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.35;
+}
+
+.fabrication-cladding-cut {
+  padding: 8px 9px;
+
+  border-radius: 5px;
+
+  background: #363b3e;
+
+  color: #eeeeee;
+
+  font-size: 10px;
 }
 
 
@@ -1438,7 +1805,7 @@ label textarea {
 }
 
 .summary-grid > div {
-  min-height: 61px;
+  min-height: 59px;
 
   padding: 8px;
 
@@ -1452,7 +1819,7 @@ label textarea {
 
   color: #bbbbbb;
 
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .summary-grid strong {
@@ -1460,7 +1827,7 @@ label textarea {
 
   margin-top: 4px;
 
-  font-size: 15px;
+  font-size: 14px;
 }
 
 
@@ -1473,7 +1840,7 @@ label textarea {
 
   gap: 4px;
 
-  margin: 12px 0;
+  margin: 11px 0;
 }
 
 .labour-totals-panel > div {
@@ -1516,7 +1883,7 @@ label textarea {
    ========================================================= */
 
 .internal-summary {
-  margin-bottom: 12px;
+  margin-bottom: 11px;
 }
 
 
@@ -1525,9 +1892,9 @@ label textarea {
    ========================================================= */
 
 .quote-control {
-  margin-top: 12px;
+  margin-top: 11px;
 
-  padding: 10px;
+  padding: 9px;
 
   border-radius: 7px;
 
@@ -1541,10 +1908,10 @@ label textarea {
 
   grid-template-columns:
     minmax(140px, 1.5fr)
-    minmax(80px, 0.7fr)
+    minmax(75px, 0.7fr)
     minmax(100px, 1fr);
 
-  gap: 7px;
+  gap: 6px;
 
   align-items: end;
 }
@@ -1554,7 +1921,7 @@ label textarea {
     minmax(140px, 1fr)
     auto;
 
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .quote-edit-label {
@@ -1568,12 +1935,12 @@ label textarea {
 
   color: #eeeeee;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
 }
 
 #quotePrice {
-  min-height: 48px;
+  min-height: 46px;
 
   border: 2px solid var(--green);
 
@@ -1581,14 +1948,14 @@ label textarea {
 
   color: #233427;
 
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 900;
 }
 
 .quote-metric {
-  min-height: 48px;
+  min-height: 46px;
 
-  padding: 7px 9px;
+  padding: 7px 8px;
 
   border-radius: 5px;
 
@@ -1600,7 +1967,7 @@ label textarea {
 
   color: #bdbdbd;
 
-  font-size: 9px;
+  font-size: 8px;
 }
 
 .quote-metric strong {
@@ -1610,7 +1977,7 @@ label textarea {
 
   color: white;
 
-  font-size: 15px;
+  font-size: 14px;
 }
 
 #quoteModeDisplay {
@@ -1622,13 +1989,13 @@ label textarea {
 }
 
 .quote-metric.rate strong {
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .reset-quote-btn {
-  min-height: 44px;
+  min-height: 42px;
 
-  padding: 7px 12px;
+  padding: 6px 11px;
 
   border: 1px solid #72777a;
   border-radius: 5px;
@@ -1636,7 +2003,7 @@ label textarea {
   background: #555b5e;
   color: white;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
 }
 
@@ -1662,7 +2029,8 @@ label textarea {
 
   padding-bottom: 11px;
 
-  border-bottom: 1px solid #bbbbbb;
+  border-bottom:
+    1px solid #bbbbbb;
 }
 
 .quote-head strong {
@@ -1681,8 +2049,7 @@ label textarea {
 
 
 /* =========================================================
-   CLIENT QUOTE HEADINGS
-   GREEN TEXT ONLY
+   CLIENT-FACING GREEN WORDS ONLY
    ========================================================= */
 
 .quote-section {
@@ -1698,6 +2065,7 @@ label textarea {
 
   font-size: 13px;
   font-weight: 900;
+
   letter-spacing: 0.3px;
 }
 
@@ -1709,13 +2077,13 @@ label textarea {
   color: #333333;
 
   font-size: 13px;
+
   line-height: 1.45;
 }
 
 
 /* =========================================================
-   SIMPLE PRICE DISPLAY
-   NO COLOURED BOXES
+   QUOTE PRICE
    ========================================================= */
 
 .quote-price-simple {
@@ -1772,7 +2140,7 @@ label textarea {
 
 
 /* =========================================================
-   WARNING CARD
+   WARNINGS
    ========================================================= */
 
 .warning-card {
@@ -1798,7 +2166,7 @@ label textarea {
 
   color: #ead8b8;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 
@@ -1819,7 +2187,7 @@ label textarea {
 }
 
 .actions button {
-  min-height: 46px;
+  min-height: 45px;
 
   border: 0;
   border-radius: 5px;
@@ -1827,7 +2195,8 @@ label textarea {
   background: #d2d2d2;
   color: #202020;
 
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .actions .green {
@@ -1921,7 +2290,7 @@ label textarea {
 .muted {
   color: #aaaaaa;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 
@@ -1933,23 +2302,94 @@ label textarea {
 
   .app-shell {
     padding:
-      7px 7px
+      6px 6px
       22px;
   }
 
 
-  /*
-    General two-column forms stack.
-  */
+  /* fixed header */
+
+  .top-bar {
+    min-height: 50px;
+
+    padding:
+      4px 6px;
+  }
+
+  .top-logo-wrap {
+    width: 35px;
+    height: 35px;
+  }
+
+  .top-logo {
+    max-width: 34px;
+    max-height: 34px;
+  }
+
+  .top-title > strong {
+    font-size: 14px;
+  }
+
+  .top-title > span {
+    font-size: 11px;
+  }
+
+
+  /* navigation */
+
+  .quick-nav-shell {
+    top: 50px;
+
+    padding:
+      2px 4px;
+  }
+
+  .quick-nav-row {
+    gap: 2px;
+
+    margin-bottom: 2px;
+  }
+
+  .quick-nav-tab {
+    min-height: 22px;
+
+    padding:
+      2px 6px;
+
+    font-size: 7px;
+  }
+
+  .component-quick-tab {
+    min-width: 59px;
+  }
+
+
+  /* mud map follows header/navigation */
+
+  .mud-map-shell {
+    top: 121px;
+
+    padding:
+      3px 5px
+      5px;
+  }
+
+
+  .nav-section,
+  .nav-component,
+  .component-card {
+    scroll-margin-top: 215px;
+  }
+
+
+  /* normal form rows */
 
   .grid.two {
     grid-template-columns: 1fr;
   }
 
 
-  /*
-    Keep hinge/open together.
-  */
+  /* keep hinge / open together */
 
   .gate-orientation-row {
     grid-template-columns:
@@ -1960,9 +2400,18 @@ label textarea {
   }
 
 
-  /*
-    Treated pine still two wide.
-  */
+  /* gate dimensions remain two-wide */
+
+  .gate-cladding-dimension-box {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  /* pine */
 
   .pine-options-grid {
     grid-template-columns:
@@ -1973,9 +2422,20 @@ label textarea {
   }
 
 
-  /*
-    Material summary stays 3-wide.
-  */
+  /* mesh */
+
+  .mesh-info-box {
+    grid-template-columns:
+      1fr auto;
+  }
+
+  .mesh-info-box strong {
+    grid-column:
+      1 / -1;
+  }
+
+
+  /* materials remains 3 across */
 
   .materials-three {
     grid-template-columns:
@@ -1986,17 +2446,18 @@ label textarea {
   }
 
   .material-column {
-    padding: 7px 5px;
+    padding:
+      7px 5px;
   }
 
   .material-column > strong {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .material-column > div {
     display: block;
 
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .material-column b {
@@ -2006,33 +2467,32 @@ label textarea {
 
     text-align: left;
 
-    font-size: 11px;
+    font-size: 10px;
   }
 
 
-  /*
-    Powder card stays compact.
-  */
+  /* powder */
 
   .powder-choice-grid {
     grid-template-columns:
-      repeat(2, 58px);
+      repeat(
+        2,
+        56px
+      );
   }
 
   .powder-line > strong {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .powder-detail-row {
     grid-template-columns:
       minmax(0, 1fr)
-      105px;
+      100px;
   }
 
 
-  /*
-    Internal costing summary stays 2-wide.
-  */
+  /* internal summary */
 
   .summary-grid {
     grid-template-columns:
@@ -2040,15 +2500,13 @@ label textarea {
   }
 
 
-  /*
-    Quote line.
-  */
+  /* quote */
 
   .quote-control-line {
     grid-template-columns:
-      minmax(120px, 1.3fr)
-      70px
-      minmax(90px, 1fr);
+      minmax(115px, 1.3fr)
+      65px
+      minmax(85px, 1fr);
   }
 
   .quote-control-line.second {
@@ -2062,7 +2520,7 @@ label textarea {
   }
 
   .quote-metric strong {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   #quotePrice {
@@ -2070,9 +2528,14 @@ label textarea {
   }
 
 
-  /*
-    Actions.
-  */
+  /* larger component title */
+
+  .component-title {
+    font-size: 21px;
+  }
+
+
+  /* buttons */
 
   .actions {
     grid-template-columns:
@@ -2098,7 +2561,6 @@ label textarea {
     font-size: 12px;
   }
 
-
   .quote-section p {
     font-size: 12px;
   }
@@ -2112,37 +2574,62 @@ label textarea {
 @media (max-width: 390px) {
 
   .top-title > strong {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .undo-btn {
-    min-width: 66px;
+    min-width: 59px;
 
     padding:
-      6px 7px;
+      5px 6px;
   }
 
-  .mud-component {
+
+  .quick-nav-tab {
+    padding:
+      2px 5px;
+
+    font-size: 6.5px;
+  }
+
+
+  .mud-label {
+    font-size: 9px;
+  }
+
+  .mud-detail {
     font-size: 8px;
   }
+
 
   .pine-options-grid {
     grid-template-columns: 1fr;
   }
 
+
   .quote-control-line {
     grid-template-columns:
-      1.2fr 65px 0.9fr;
+      1.2fr
+      60px
+      0.9fr;
   }
+
 
   .quote-metric strong {
-    font-size: 12px;
+    font-size: 11px;
   }
 
-  .reset-quote-btn {
-    padding: 6px 8px;
 
-    font-size: 9px;
+  .reset-quote-btn {
+    padding:
+      5px 7px;
+
+    font-size: 8px;
+  }
+
+
+  .component-title {
+    font-size: 20px;
   }
 }
 
