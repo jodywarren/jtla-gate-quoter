@@ -16,7 +16,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css?v=241"
+    href="style.css?v=242"
   >
 
   <link
@@ -80,18 +80,23 @@
     class="quick-nav-shell"
   >
 
-    <!-- PHYSICAL COMPONENTS -->
+    <!--
+      Compatibility target for app.js.
+      Physical component navigation is no longer shown here.
+      The mud map remains the component navigator.
+    -->
 
     <div
       id="componentQuickNav"
-      class="quick-nav-row component-nav-row"
+      style="display:none"
+      aria-hidden="true"
     >
     </div>
 
 
-    <!-- MAIN WORKFLOW -->
+    <!-- ROW 1 -->
 
-    <div class="quick-nav-row workflow-nav-row">
+    <div class="quick-nav-row quick-nav-row-one">
 
       <button
         type="button"
@@ -133,6 +138,13 @@
         LABOUR
       </button>
 
+    </div>
+
+
+    <!-- ROW 2 -->
+
+    <div class="quick-nav-row quick-nav-row-two">
+
       <button
         type="button"
         class="quick-nav-tab section-nav-tab"
@@ -140,13 +152,6 @@
       >
         COSTING
       </button>
-
-    </div>
-
-
-    <!-- ADMIN / FINISH -->
-
-    <div class="quick-nav-row utility-nav-row">
 
       <button
         type="button"
@@ -288,6 +293,7 @@
           <button
             id="addPostBtn"
             type="button"
+            data-add-component="post"
           >
             + Post
           </button>
@@ -295,6 +301,7 @@
           <button
             id="addGateBtn"
             type="button"
+            data-add-component="gate"
           >
             + Gate
           </button>
@@ -302,6 +309,7 @@
           <button
             id="addPanelBtn"
             type="button"
+            data-add-component="panel"
           >
             + Fixed Panel
           </button>
@@ -503,7 +511,10 @@
         </label>
 
 
-        <!-- DIRECTION IS HIDDEN FOR MESH -->
+        <!--
+          DIRECTION IS COMPLETELY HIDDEN
+          WHEN MESH IS SELECTED
+        -->
 
         <label
           id="claddingDirectionWrap"
@@ -532,7 +543,9 @@
         </label>
 
 
-        <!-- EKODECK -->
+        <!-- =================================================
+             EKODECK
+        ================================================== -->
 
         <div id="ekodeckOptions">
 
@@ -545,19 +558,23 @@
 
             <select id="ekodeckColour">
 
-              <option>
+              <option value="">
+                Select colour
+              </option>
+
+              <option value="Greystone">
                 Greystone
               </option>
 
-              <option>
+              <option value="Alpine Ash">
                 Alpine Ash
               </option>
 
-              <option>
+              <option value="Leatherwood">
                 Leatherwood
               </option>
 
-              <option>
+              <option value="Riverbank Red">
                 Riverbank Red
               </option>
 
@@ -568,7 +585,9 @@
         </div>
 
 
-        <!-- CYPRESS -->
+        <!-- =================================================
+             CYPRESS
+        ================================================== -->
 
         <div
           id="cypressOptions"
@@ -583,6 +602,10 @@
             Finish
 
             <select id="cypressFinish">
+
+              <option value="">
+                Select finish
+              </option>
 
               <option value="Raw">
                 Raw
@@ -625,7 +648,9 @@
         </div>
 
 
-        <!-- LOSP -->
+        <!-- =================================================
+             LOSP
+        ================================================== -->
 
         <div
           id="lospOptions"
@@ -640,6 +665,10 @@
             Finish
 
             <select id="lospFinish">
+
+              <option value="">
+                Select finish
+              </option>
 
               <option value="Primed">
                 Primed
@@ -678,7 +707,9 @@
         </div>
 
 
-        <!-- MERBAU -->
+        <!-- =================================================
+             MERBAU
+        ================================================== -->
 
         <div
           id="merbauOptions"
@@ -693,6 +724,10 @@
             Finish
 
             <select id="merbauFinish">
+
+              <option value="">
+                Select finish
+              </option>
 
               <option value="Raw">
                 Raw
@@ -709,12 +744,15 @@
         </div>
 
 
-        <!-- TREATED PINE -->
+        <!-- =================================================
+             TREATED PINE
+        ================================================== -->
 
         <div
           id="treatedPineOptions"
           class="hidden"
         >
+
 
           <div class="grid two">
 
@@ -727,6 +765,10 @@
               Paling length
 
               <select id="treatedPineLength">
+
+                <option value="">
+                  Select length
+                </option>
 
                 <option value="1650">
                   1650mm
@@ -754,6 +796,10 @@
 
               <select id="treatedPineWidth">
 
+                <option value="">
+                  Select width
+                </option>
+
                 <option value="100">
                   100mm
                 </option>
@@ -773,7 +819,29 @@
           </div>
 
 
+          <!-- ONE MEASUREMENT FOR BOTH CAPPING AND PLINTH -->
+
+          <label
+            id="pineTrimMetresLabel"
+            class="field-status required"
+            data-required-field="pineTrimMetres"
+          >
+
+            Capping / Plinth length (m)
+
+            <input
+              id="pineTrimMetres"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Auto from gate / panel width"
+            >
+
+          </label>
+
+
           <div class="pine-options-grid">
+
 
             <div class="pine-option-card">
 
@@ -785,19 +853,9 @@
                 CAPPING ON
               </button>
 
-
-              <label>
-
-                Capping length (m)
-
-                <input
-                  id="pineCappingMetres"
-                  type="number"
-                  step="0.01"
-                  placeholder="Auto"
-                >
-
-              </label>
+              <p class="small-note">
+                Uses the shared Capping / Plinth length above.
+              </p>
 
             </div>
 
@@ -812,28 +870,38 @@
                 PLINTH ON
               </button>
 
-
-              <label>
-
-                Plinth length (m)
-
-                <input
-                  id="pinePlinthMetres"
-                  type="number"
-                  step="0.01"
-                  placeholder="Auto"
-                >
-
-              </label>
+              <p class="small-note">
+                Uses the shared Capping / Plinth length above.
+              </p>
 
             </div>
 
           </div>
 
+
+          <!--
+            TEMPORARY HIDDEN COMPATIBILITY INPUTS.
+            app.js Version 242 will stop using these.
+          -->
+
+          <input
+            id="pineCappingMetres"
+            type="hidden"
+            value=""
+          >
+
+          <input
+            id="pinePlinthMetres"
+            type="hidden"
+            value=""
+          >
+
         </div>
 
 
-        <!-- MESH -->
+        <!-- =================================================
+             MESH
+        ================================================== -->
 
         <div
           id="meshOptions"
@@ -891,7 +959,9 @@
         </div>
 
 
-        <!-- COLORBOND -->
+        <!-- =================================================
+             COLORBOND
+        ================================================== -->
 
         <div
           id="colorbondOptions"
@@ -907,19 +977,23 @@
 
             <select id="colorbondProfile">
 
-              <option>
+              <option value="">
+                Select profile
+              </option>
+
+              <option value="Good Neighbour">
                 Good Neighbour
               </option>
 
-              <option>
+              <option value="Corrugated">
                 Corrugated
               </option>
 
-              <option>
+              <option value="Trimdek">
                 Trimdek
               </option>
 
-              <option>
+              <option value="Other">
                 Other
               </option>
 
@@ -943,7 +1017,9 @@
         </div>
 
 
-        <!-- CUSTOM -->
+        <!-- =================================================
+             CUSTOM
+        ================================================== -->
 
         <div
           id="customOptions"
@@ -1006,7 +1082,7 @@
           id="noComponentsMessage"
           class="muted"
         >
-          Add the job components above, then use the fixed navigation or mud map to jump to each one.
+          Add the job components above. Use the mud map at the top to move between them.
         </p>
 
       </div>
@@ -2515,7 +2591,8 @@
 
 
   <script src="prices.js?v=240"></script>
-  <script src="app.js?v=241"></script>
+
+  <script src="app.js?v=242"></script>
 
 </body>
 
