@@ -1,1194 +1,1652 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#2f3235">
+  <meta
+    name="theme-color"
+    content="#ffffff"
+  >
 
-  <title>JTLA Gates Quote</title>
+  <title>JTLA Gates</title>
 
   <link
     rel="stylesheet"
-    href="style.css?v=242"
+    href="style.css"
   >
 
-  <link
-    rel="manifest"
-    href="manifest.json"
-  >
+  <script
+    src="prices.js"
+    defer
+  ></script>
 
+  <script
+    src="app.js"
+    defer
+  ></script>
 </head>
-
 
 <body>
 
-
   <!-- =====================================================
-       FIXED HEADER
-  ====================================================== -->
+       APPLICATION
+       ===================================================== -->
 
-  <div class="top-bar">
-
-    <div class="top-logo-wrap">
-
-      <img
-        src="jtla-logo.png"
-        alt="JTLA"
-        class="top-logo"
-      >
-
-    </div>
+  <div id="app">
 
 
-    <div class="top-title">
+    <!-- ===================================================
+         FIXED HEADER
+         =================================================== -->
 
-      <strong id="topClientName">
-        New Client
-      </strong>
-
-      <span id="topClientPhone">
-      </span>
-
-    </div>
-
-
-    <button
-      id="undoBtn"
-      class="undo-btn"
-      type="button"
-      disabled
-    >
-      UNDO
-    </button>
-
-  </div>
-
-
-  <!-- =====================================================
-       FIXED QUICK NAVIGATION
-  ====================================================== -->
-
-  <div
-    id="quickNavShell"
-    class="quick-nav-shell"
-  >
-
-    <!--
-      Compatibility target for app.js.
-      Physical component navigation is no longer shown here.
-      The mud map remains the component navigator.
-    -->
-
-    <div
-      id="componentQuickNav"
-      style="display:none"
-      aria-hidden="true"
-    >
-    </div>
-
-
-    <!-- ROW 1 -->
-
-    <div class="quick-nav-row quick-nav-row-one">
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="siteLayoutCard"
-      >
-        SITE
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="claddingCard"
-      >
-        CLADDING
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="powderCard"
-      >
-        POWDER
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="materialsCard"
-      >
-        MATERIALS
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="labourCard"
-      >
-        LABOUR
-      </button>
-
-    </div>
-
-
-    <!-- ROW 2 -->
-
-    <div class="quick-nav-row quick-nav-row-two">
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="internalCostingCard"
-      >
-        COSTING
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="clientDetailsCard"
-      >
-        CLIENT
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="finishedQuoteCard"
-      >
-        QUOTE
-      </button>
-
-      <button
-        type="button"
-        class="quick-nav-tab section-nav-tab"
-        data-target="savedJobsCard"
-      >
-        SAVED
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       STICKY MUD MAP
-  ====================================================== -->
-
-  <div class="mud-map-shell">
-
-    <div class="mud-map-top">
-
-      <span>
-        LEFT TO RIGHT
-      </span>
-
-      <strong id="topProjectNumber">
-        001246
-      </strong>
-
-    </div>
-
-
-    <div
-      id="mudMap"
-      class="mud-map"
+    <header
+      id="app-header"
+      class="app-header"
     >
 
-      <div class="mud-empty">
-        Add components below
-      </div>
+      <div class="header-main">
 
-    </div>
+        <div class="header-logo-wrap">
 
-
-    <div
-      id="layoutCheck"
-      class="layout-check incomplete"
-    >
-      Layout incomplete
-    </div>
-
-  </div>
-
-
-  <main class="app-shell">
-
-
-    <!-- =====================================================
-         SITE
-    ====================================================== -->
-
-    <details
-      id="siteLayoutCard"
-      class="card nav-section"
-      open
-    >
-
-      <summary>
-        Site Layout
-      </summary>
-
-
-      <div class="card-content">
-
-
-        <div class="grid two">
-
-          <label
-            class="field-status required"
-            data-required-field="cavityWidth"
+          <img
+            id="header-logo"
+            class="header-logo"
+            src="jtla-logo.png"
+            alt="JTLA Gates"
           >
-
-            Overall cavity width (mm)
-
-            <input
-              id="cavityWidth"
-              type="number"
-              placeholder="Enter width"
-            >
-
-          </label>
-
-
-          <label
-            class="field-status required"
-            data-required-field="overallHeight"
-          >
-
-            Height above finished surface (mm)
-
-            <input
-              id="overallHeight"
-              type="number"
-              placeholder="Enter height"
-            >
-
-          </label>
 
         </div>
 
 
-        <h3>
-          Add Components
-        </h3>
+        <div class="header-client">
 
-
-        <div
-          id="addComponentsArea"
-          class="add-grid"
-        >
-
-          <button
-            id="addPostBtn"
-            type="button"
-            data-add-component="post"
+          <div
+            id="header-client-name"
+            class="header-client-name"
           >
-            + Post
-          </button>
+            New Job
+          </div>
 
-          <button
-            id="addGateBtn"
-            type="button"
-            data-add-component="gate"
+          <div
+            id="header-client-mobile"
+            class="header-client-mobile"
           >
-            + Gate
-          </button>
-
-          <button
-            id="addPanelBtn"
-            type="button"
-            data-add-component="panel"
-          >
-            + Fixed Panel
-          </button>
+            04
+          </div>
 
         </div>
 
 
-        <h3>
-          View / Reference Direction
-        </h3>
-
-
-        <label
-          class="field-status required"
-          data-required-field="referenceDirection"
-        >
-
-          Left / right references are viewed from
-
-          <select id="referenceDirection">
-
-            <option value="streetToProperty">
-              Looking from street toward property
-            </option>
-
-            <option value="propertyToStreet">
-              Looking from property toward street
-            </option>
-
-            <option value="north">
-              Looking North
-            </option>
-
-            <option value="south">
-              Looking South
-            </option>
-
-            <option value="east">
-              Looking East
-            </option>
-
-            <option value="west">
-              Looking West
-            </option>
-
-            <option value="other">
-              Other
-            </option>
-
-          </select>
-
-        </label>
-
-
-        <div
-          id="referenceOtherWrap"
-          class="hidden"
-        >
-
-          <label
-            class="field-status required"
-            data-required-field="referenceOther"
-          >
-
-            Other reference description
-
-            <input
-              id="referenceOther"
-              type="text"
-              placeholder="e.g. Looking toward garage"
-            >
-
-          </label>
-
-        </div>
-
-
-        <h3>
-          Include
-        </h3>
-
-
-        <div class="include-grid">
+        <div class="header-actions">
 
           <button
-            id="includeGateBtn"
-            class="include-btn on"
+            id="undo-btn"
+            class="header-action-btn"
             type="button"
+            disabled
           >
-            GATE ON
-          </button>
-
-          <button
-            id="includePostsBtn"
-            class="include-btn on"
-            type="button"
-          >
-            POSTS ON
-          </button>
-
-          <button
-            id="includeCladdingBtn"
-            class="include-btn on"
-            type="button"
-          >
-            CLADDING ON
+            Undo
           </button>
 
         </div>
 
       </div>
 
-    </details>
+
+      <!-- ===============================================
+           MAIN NAVIGATION
+           Two full-width rows.
+           =============================================== -->
+
+      <nav
+        id="main-nav"
+        class="main-nav"
+        aria-label="Quote sections"
+      >
+
+        <div class="nav-row">
+
+          <button
+            class="nav-tab active"
+            type="button"
+            data-section-target="site"
+          >
+            Site
+          </button>
+
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="components"
+          >
+            Components
+          </button>
+
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="cladding"
+          >
+            Cladding
+          </button>
+
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="powder"
+          >
+            Powder
+          </button>
+
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="materials"
+          >
+            Materials
+          </button>
+
+        </div>
 
 
-    <!-- =====================================================
-         CLADDING
-    ====================================================== -->
+        <div class="nav-row">
 
-    <details
-      id="claddingCard"
-      class="card nav-section"
-      open
-    >
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="labour"
+          >
+            Labour
+          </button>
 
-      <summary>
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="costing"
+          >
+            Costing
+          </button>
 
-        <span>
-          Cladding
-        </span>
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="client"
+          >
+            Client
+          </button>
 
-        <span
-          id="claddingSummary"
-          class="summary-inline"
-        >
-          Not complete
-        </span>
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="quote"
+          >
+            Quote
+          </button>
 
-      </summary>
+          <button
+            class="nav-tab"
+            type="button"
+            data-section-target="saved"
+          >
+            Saved Jobs
+          </button>
 
+        </div>
+
+      </nav>
+
+
+      <!-- ===============================================
+           GLOBAL STATUS BAR
+           =============================================== -->
 
       <div
-        id="claddingSection"
-        class="card-content"
+        id="global-status-bar"
+        class="global-status-bar"
       >
 
-
-        <label
-          class="field-status required"
-          data-required-field="claddingType"
+        <div
+          id="project-number-display"
+          class="status-item"
         >
-
-          Material
-
-          <select id="claddingType">
-
-            <option value="ekodeck">
-              Ekodeck Screening 67x15mm
-            </option>
-
-            <option value="cypressPickets">
-              Cypress 67x15mm
-            </option>
-
-            <option value="losp90">
-              LOSP 92x18mm Primed H3
-            </option>
-
-            <option value="losp140">
-              LOSP 138x18mm Primed H3
-            </option>
-
-            <option value="merbau90">
-              Merbau Decking 90mm
-            </option>
-
-            <option value="merbau140">
-              Merbau Decking 140mm
-            </option>
-
-            <option value="treatedPinePalings">
-              Treated Pine Palings
-            </option>
-
-            <option value="galvMesh50">
-              50x50mm Galvanised Mesh - 4.0mm Wire
-            </option>
-
-            <option value="colorbond">
-              Colorbond Steel Cladding
-            </option>
-
-            <option value="custom">
-              Custom / Other
-            </option>
-
-          </select>
-
-        </label>
-
-
-        <!--
-          DIRECTION IS COMPLETELY HIDDEN
-          WHEN MESH IS SELECTED
-        -->
-
-        <label
-          id="claddingDirectionWrap"
-          class="field-status required"
-          data-required-field="claddingDirection"
-        >
-
-          Direction
-
-          <select id="claddingDirection">
-
-            <option value="">
-              Select direction
-            </option>
-
-            <option value="vertical">
-              Vertical
-            </option>
-
-            <option value="horizontal">
-              Horizontal
-            </option>
-
-          </select>
-
-        </label>
-
-
-        <!-- =================================================
-             EKODECK
-        ================================================== -->
-
-        <div id="ekodeckOptions">
-
-          <label
-            class="field-status required"
-            data-required-field="ekodeckColour"
-          >
-
-            Ekodeck colour
-
-            <select id="ekodeckColour">
-
-              <option value="">
-                Select colour
-              </option>
-
-              <option value="Greystone">
-                Greystone
-              </option>
-
-              <option value="Alpine Ash">
-                Alpine Ash
-              </option>
-
-              <option value="Leatherwood">
-                Leatherwood
-              </option>
-
-              <option value="Riverbank Red">
-                Riverbank Red
-              </option>
-
-            </select>
-
-          </label>
-
+          001246
         </div>
 
-
-        <!-- =================================================
-             CYPRESS
-        ================================================== -->
-
         <div
-          id="cypressOptions"
-          class="hidden"
+          id="autosave-status"
+          class="status-item status-muted"
         >
-
-          <label
-            class="field-status required"
-            data-required-field="cypressFinish"
-          >
-
-            Finish
-
-            <select id="cypressFinish">
-
-              <option value="">
-                Select finish
-              </option>
-
-              <option value="Raw">
-                Raw
-              </option>
-
-              <option value="Oil">
-                Oil
-              </option>
-
-              <option value="Paint">
-                Paint
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <div
-            id="cypressColourWrap"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="cypressColour"
-            >
-
-              Paint colour
-
-              <input
-                id="cypressColour"
-                type="text"
-              >
-
-            </label>
-
-          </div>
-
+          Autosaved
         </div>
 
-
-        <!-- =================================================
-             LOSP
-        ================================================== -->
-
         <div
-          id="lospOptions"
-          class="hidden"
+          id="quote-mode-header"
+          class="status-item"
         >
-
-          <label
-            class="field-status required"
-            data-required-field="lospFinish"
-          >
-
-            Finish
-
-            <select id="lospFinish">
-
-              <option value="">
-                Select finish
-              </option>
-
-              <option value="Primed">
-                Primed
-              </option>
-
-              <option value="Paint">
-                Paint
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <div
-            id="lospColourWrap"
-            class="hidden"
-          >
-
-            <label
-              class="field-status required"
-              data-required-field="lospColour"
-            >
-
-              Paint colour
-
-              <input
-                id="lospColour"
-                type="text"
-              >
-
-            </label>
-
-          </div>
-
+          Auto
         </div>
 
+      </div>
 
-        <!-- =================================================
-             MERBAU
-        ================================================== -->
-
-        <div
-          id="merbauOptions"
-          class="hidden"
-        >
-
-          <label
-            class="field-status required"
-            data-required-field="merbauFinish"
-          >
-
-            Finish
-
-            <select id="merbauFinish">
-
-              <option value="">
-                Select finish
-              </option>
-
-              <option value="Raw">
-                Raw
-              </option>
-
-              <option value="Oil">
-                Oil
-              </option>
-
-            </select>
-
-          </label>
-
-        </div>
+    </header>
 
 
-        <!-- =================================================
-             TREATED PINE
-        ================================================== -->
 
-        <div
-          id="treatedPineOptions"
-          class="hidden"
-        >
+    <!-- ===================================================
+         MAIN SCREEN AREA
+         =================================================== -->
 
-
-          <div class="grid two">
+    <main
+      id="screen-container"
+      class="screen-container"
+    >
 
 
-            <label
-              class="field-status required"
-              data-required-field="treatedPineLength"
-            >
+      <!-- =================================================
+           SITE
+           ================================================= -->
 
-              Paling length
+      <section
+        id="section-site"
+        class="app-section active"
+        data-section="site"
+      >
 
-              <select id="treatedPineLength">
+        <div class="section-inner">
 
-                <option value="">
-                  Select length
-                </option>
+          <div class="section-heading">
 
-                <option value="1650">
-                  1650mm
-                </option>
-
-                <option value="1800">
-                  1800mm
-                </option>
-
-                <option value="2100">
-                  2100mm
-                </option>
-
-              </select>
-
-            </label>
-
-
-            <label
-              class="field-status required"
-              data-required-field="treatedPineWidth"
-            >
-
-              Paling width
-
-              <select id="treatedPineWidth">
-
-                <option value="">
-                  Select width
-                </option>
-
-                <option value="100">
-                  100mm
-                </option>
-
-                <option value="125">
-                  125mm
-                </option>
-
-                <option value="150">
-                  150mm
-                </option>
-
-              </select>
-
-            </label>
-
-          </div>
-
-
-          <!-- ONE MEASUREMENT FOR BOTH CAPPING AND PLINTH -->
-
-          <label
-            id="pineTrimMetresLabel"
-            class="field-status required"
-            data-required-field="pineTrimMetres"
-          >
-
-            Capping / Plinth length (m)
-
-            <input
-              id="pineTrimMetres"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="Auto from gate / panel width"
-            >
-
-          </label>
-
-
-          <div class="pine-options-grid">
-
-
-            <div class="pine-option-card">
-
-              <button
-                id="pineCappingToggle"
-                type="button"
-                class="small-status-btn on"
-              >
-                CAPPING ON
-              </button>
-
-              <p class="small-note">
-                Uses the shared Capping / Plinth length above.
+            <div>
+              <h1>Site</h1>
+              <p class="section-subtitle">
+                Overall opening and site measurements.
               </p>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Overall Cavity</h2>
+            </div>
+
+
+            <div class="form-grid two-column">
+
+              <div class="field-group required-field">
+
+                <label for="site-cavity-width">
+                  Cavity Width
+                </label>
+
+                <div class="input-with-unit">
+
+                  <input
+                    id="site-cavity-width"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    step="1"
+                    placeholder="e.g. 1200"
+                    data-state-path="site.cavityWidthMm"
+                  >
+
+                  <span class="input-unit">
+                    mm
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="field-group required-field">
+
+                <label for="site-finished-height">
+                  Finished Height
+                </label>
+
+                <div class="input-with-unit">
+
+                  <input
+                    id="site-finished-height"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    step="1"
+                    placeholder="1800"
+                    data-state-path="site.finishedHeightMm"
+                  >
+
+                  <span class="input-unit">
+                    mm
+                  </span>
+
+                </div>
+
+              </div>
 
             </div>
 
 
-            <div class="pine-option-card">
+            <div class="info-strip">
 
-              <button
-                id="pinePlinthToggle"
-                type="button"
-                class="small-status-btn on"
-              >
-                PLINTH ON
-              </button>
+              <div class="info-strip-item">
 
-              <p class="small-note">
-                Uses the shared Capping / Plinth length above.
-              </p>
+                <span class="info-label">
+                  Gate ground clearance
+                </span>
+
+                <strong id="site-ground-gap-display">
+                  40 mm
+                </strong>
+
+              </div>
+
+
+              <div class="info-strip-item">
+
+                <span class="info-label">
+                  Standard gate steel gap
+                </span>
+
+                <strong id="site-gate-gap-display">
+                  12 mm
+                </strong>
+
+              </div>
 
             </div>
 
           </div>
 
 
-          <!--
-            TEMPORARY HIDDEN COMPATIBILITY INPUTS.
-            app.js Version 242 will stop using these.
-          -->
+          <div class="card">
 
-          <input
-            id="pineCappingMetres"
-            type="hidden"
-            value=""
-          >
-
-          <input
-            id="pinePlinthMetres"
-            type="hidden"
-            value=""
-          >
-
-        </div>
+            <div class="card-heading">
+              <h2>Travel</h2>
+            </div>
 
 
-        <!-- =================================================
-             MESH
-        ================================================== -->
+            <div class="form-grid">
 
-        <div
-          id="meshOptions"
-          class="hidden"
-        >
+              <div class="field-group">
 
-          <div class="mesh-info-box">
+                <label for="site-travel-km">
+                  Distance From Workshop
+                </label>
 
-            <strong>
-              50x50mm Galvanised Mesh
-            </strong>
+                <div class="input-with-unit">
 
-            <span>
-              4.0mm wire
-            </span>
+                  <input
+                    id="site-travel-km"
+                    type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="0.1"
+                    placeholder="0"
+                    data-state-path="site.oneWayTravelKm"
+                  >
 
-            <span>
-              $18.00/m² ex GST
-            </span>
+                  <span class="input-unit">
+                    km
+                  </span>
+
+                </div>
+
+                <small class="field-help">
+                  Enter one-way distance. Costing uses the configured round-trip calculation.
+                </small>
+
+              </div>
+
+            </div>
 
           </div>
 
 
-          <label>
+          <div class="card">
 
-            Preferred order sheet
+            <div class="card-heading">
+              <h2>Quote Reference View</h2>
+            </div>
 
-            <select id="meshPreferredSheet">
 
-              <option value="auto">
-                Auto optimise
-              </option>
+            <div class="field-group">
 
-              <option value="3000x2400">
-                3000x2400mm
-              </option>
+              <label for="site-reference-direction">
+                Left / Right Reference
+              </label>
 
-              <option value="2400x1200">
-                2400x1200mm
-              </option>
+              <select
+                id="site-reference-direction"
+                data-state-path="site.referenceDirection"
+              >
+                <option value="streetToProperty">
+                  Looking from street toward property
+                </option>
 
-              <option value="2000x1200">
-                2000x1200mm
-              </option>
+                <option value="propertyToStreet">
+                  Looking from property toward street
+                </option>
 
-            </select>
+                <option value="north">
+                  Looking North
+                </option>
 
-          </label>
+                <option value="south">
+                  Looking South
+                </option>
 
+                <option value="east">
+                  Looking East
+                </option>
 
-          <p class="small-note">
-            Mesh cut sizes are calculated from the clear internal steel frame dimensions.
-          </p>
+                <option value="west">
+                  Looking West
+                </option>
 
-        </div>
-
-
-        <!-- =================================================
-             COLORBOND
-        ================================================== -->
-
-        <div
-          id="colorbondOptions"
-          class="hidden"
-        >
-
-          <label
-            class="field-status required"
-            data-required-field="colorbondProfile"
-          >
-
-            Profile
-
-            <select id="colorbondProfile">
-
-              <option value="">
-                Select profile
-              </option>
-
-              <option value="Good Neighbour">
-                Good Neighbour
-              </option>
-
-              <option value="Corrugated">
-                Corrugated
-              </option>
-
-              <option value="Trimdek">
-                Trimdek
-              </option>
-
-              <option value="Other">
-                Other
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <label
-            class="field-status required"
-            data-required-field="colorbondColour"
-          >
-
-            Colour
-
-            <select id="colorbondColour">
-            </select>
-
-          </label>
-
-        </div>
-
-
-        <!-- =================================================
-             CUSTOM
-        ================================================== -->
-
-        <div
-          id="customOptions"
-          class="hidden"
-        >
-
-          <label
-            class="field-status required"
-            data-required-field="customDescription"
-          >
-
-            Description
-
-            <input
-              id="customDescription"
-              type="text"
-            >
-
-          </label>
-
-
-          <label>
-
-            Material cost inc GST
-
-            <input
-              id="customCost"
-              type="number"
-            >
-
-          </label>
-
-        </div>
-
-      </div>
-
-    </details>
-
-
-    <!-- =====================================================
-         COMPONENTS
-    ====================================================== -->
-
-    <section
-      id="componentsSection"
-      class="card"
-    >
-
-      <div class="static-title">
-        Components
-      </div>
-
-
-      <div
-        id="componentsContainer"
-        class="components"
-      >
-
-        <p
-          id="noComponentsMessage"
-          class="muted"
-        >
-          Add the job components above. Use the mud map at the top to move between them.
-        </p>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         POWDER COATING
-    ====================================================== -->
-
-    <details
-      id="powderCard"
-      class="card powder-card nav-section"
-      open
-    >
-
-      <summary>
-
-        <span>
-          Powder Coating
-        </span>
-
-        <span
-          id="powderSummary"
-          class="summary-inline"
-        >
-          Not selected
-        </span>
-
-      </summary>
-
-
-      <div class="card-content powder-compact">
-
-
-        <div class="powder-line">
-
-          <strong>
-            POWDER COATING
-          </strong>
-
-
-          <div class="powder-choice-grid">
-
-            <button
-              id="powderYesBtn"
-              type="button"
-              class="powder-decision"
-            >
-              YES
-            </button>
-
-            <button
-              id="powderNoBtn"
-              type="button"
-              class="powder-decision"
-            >
-              NO
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <input
-          id="powderDecision"
-          type="hidden"
-          value=""
-        >
-
-
-        <div
-          id="powderYesOptions"
-          class="hidden"
-        >
-
-          <div class="powder-detail-row">
-
-            <label
-              class="field-status required powder-colour-field"
-              data-required-field="powderColour"
-            >
-
-              Colour
-
-              <select id="powderColour">
+                <option value="other">
+                  Other / custom description
+                </option>
               </select>
 
-            </label>
+            </div>
 
 
-            <div class="powder-price-display">
+            <div
+              id="custom-reference-wrap"
+              class="field-group hidden"
+            >
 
-              <span>
-                PC total
+              <label for="site-reference-custom">
+                Custom Reference
+              </label>
+
+              <input
+                id="site-reference-custom"
+                type="text"
+                placeholder="e.g. Looking from backyard toward side fence"
+                data-state-path="site.referenceCustom"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           COMPONENTS / LAYOUT
+           ================================================= -->
+
+      <section
+        id="section-components"
+        class="app-section"
+        data-section="components"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Components / Layout</h1>
+
+              <p class="section-subtitle">
+                Build the job in physical left-to-right street order.
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               MUD MAP
+               ============================================= -->
+
+          <div class="card mud-map-card">
+
+            <div class="card-heading">
+
+              <h2>Mud Map</h2>
+
+              <span
+                id="layout-width-status"
+                class="compact-status"
+              >
+                No components
               </span>
 
-              <strong id="powderTotalDisplay">
+            </div>
+
+
+            <div
+              id="mud-map"
+              class="mud-map"
+              aria-label="Physical job layout"
+            >
+
+              <div class="empty-state">
+                Add a Post, Gate or Fixed Panel below.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               ADD COMPONENT
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Add Component</h2>
+            </div>
+
+
+            <div
+              id="add-component-controls"
+              class="add-component-controls"
+            >
+
+              <button
+                class="component-add-btn post-btn"
+                type="button"
+                data-action="add-component"
+                data-component-type="post"
+              >
+                + Post
+              </button>
+
+
+              <button
+                class="component-add-btn gate-btn"
+                type="button"
+                data-action="add-component"
+                data-component-type="gate"
+              >
+                + Gate
+              </button>
+
+
+              <button
+                class="component-add-btn panel-btn"
+                type="button"
+                data-action="add-component"
+                data-component-type="fixedPanel"
+              >
+                + Fixed Panel
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               COMPONENT EDITOR
+               ============================================= -->
+
+          <div
+            id="component-editor"
+            class="component-editor"
+          >
+
+            <div class="card">
+
+              <div class="empty-state large">
+                Select a component from the mud map or add a new component.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               LAYOUT CALCULATION SUMMARY
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Layout Check</h2>
+            </div>
+
+
+            <div
+              id="layout-calculation-summary"
+              class="calculation-summary"
+            >
+
+              <div class="summary-row">
+
+                <span>
+                  Cavity
+                </span>
+
+                <strong>
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Components
+                </span>
+
+                <strong>
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Gate gaps
+                </span>
+
+                <strong>
+                  —
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row summary-total">
+
+                <span>
+                  Remaining / Difference
+                </span>
+
+                <strong>
+                  —
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           CLADDING
+           ================================================= -->
+
+      <section
+        id="section-cladding"
+        class="app-section"
+        data-section="cladding"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Cladding</h1>
+
+              <p class="section-subtitle">
+                One cladding specification applies to the entire job.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-heading">
+
+              <h2>Cladding Selection</h2>
+
+              <span
+                id="cladding-summary"
+                class="compact-summary"
+              >
+                —
+              </span>
+
+            </div>
+
+
+            <div class="field-group required-field">
+
+              <label for="cladding-type">
+                Material
+              </label>
+
+              <select
+                id="cladding-type"
+                data-state-path="cladding.type"
+              >
+
+                <option value="ekodeck">
+                  Ekodeck Screening 67x15mm
+                </option>
+
+                <option value="cypressPickets">
+                  Cypress 67x15mm
+                </option>
+
+                <option value="losp90">
+                  LOSP 92x18mm Primed H3
+                </option>
+
+                <option value="losp140">
+                  LOSP 138x18mm Primed H3
+                </option>
+
+                <option value="merbau90">
+                  Merbau Decking 90mm
+                </option>
+
+                <option value="merbau140">
+                  Merbau Decking 140mm
+                </option>
+
+                <option value="treatedPinePalings">
+                  Treated Pine Palings
+                </option>
+
+                <option value="galvMesh50">
+                  50x50mm Galvanised Mesh - 4.0mm Wire
+                </option>
+
+                <option value="colorbond">
+                  Colorbond Steel Cladding
+                </option>
+
+                <option value="custom">
+                  Custom / Other
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- ===========================================
+                 DYNAMIC CLADDING FIELDS
+
+                 app.js renders fields relevant to the
+                 selected cladding only.
+                 =========================================== -->
+
+            <div
+              id="cladding-options"
+              class="dynamic-options"
+            ></div>
+
+          </div>
+
+
+          <!-- =============================================
+               CLADDING CALCULATION
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Cladding Calculation</h2>
+            </div>
+
+
+            <div
+              id="cladding-calculation"
+              class="calculation-summary"
+            >
+
+              <div class="empty-state">
+                Complete the layout to calculate cladding.
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           POWDER COATING
+           ================================================= -->
+
+      <section
+        id="section-powder"
+        class="app-section"
+        data-section="powder"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Powder Coating</h1>
+
+              <p class="section-subtitle">
+                Powder coating applies to the whole job.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="powder-toggle-row">
+
+              <div class="powder-toggle-label">
+                POWDER COATING
+              </div>
+
+
+              <div
+                class="segmented-control"
+                role="group"
+                aria-label="Powder coating"
+              >
+
+                <button
+                  id="powder-yes-btn"
+                  class="segment-btn"
+                  type="button"
+                  data-action="set-powder"
+                  data-value="yes"
+                >
+                  YES
+                </button>
+
+
+                <button
+                  id="powder-no-btn"
+                  class="segment-btn active"
+                  type="button"
+                  data-action="set-powder"
+                  data-value="no"
+                >
+                  NO
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="powder-options"
+              class="powder-options hidden"
+            >
+
+              <div class="field-group required-field">
+
+                <label for="powder-colour">
+                  Colorbond Colour
+                </label>
+
+                <select
+                  id="powder-colour"
+                  data-state-path="powder.colour"
+                >
+                  <option value="">
+                    Select colour
+                  </option>
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="powder-summary"
+              class="compact-feature-summary"
+            >
+              No powder coating
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Powder Cost</h2>
+            </div>
+
+
+            <div
+              id="powder-calculation"
+              class="calculation-summary"
+            >
+
+              <div class="summary-row">
+
+                <span>
+                  Posts
+                </span>
+
+                <strong>
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Frames
+                </span>
+
+                <strong>
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Travel
+                </span>
+
+                <strong>
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row summary-total">
+
+                <span>
+                  Powder Coating
+                </span>
+
+                <strong>
+                  $0.00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           MATERIALS & FABRICATION
+           ================================================= -->
+
+      <section
+        id="section-materials"
+        class="app-section"
+        data-section="materials"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Materials & Fabrication</h1>
+
+              <p class="section-subtitle">
+                What needs to be ordered, cut and fabricated.
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               STEEL
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Steel</h2>
+            </div>
+
+
+            <div
+              id="steel-materials-list"
+              class="materials-grid"
+            >
+
+              <div class="empty-state">
+                No steel calculated yet.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               CLADDING MATERIALS
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Cladding</h2>
+            </div>
+
+
+            <div
+              id="cladding-materials-list"
+              class="materials-grid"
+            >
+
+              <div class="empty-state">
+                No cladding calculated yet.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               REQUIRED MATERIALS / CONSUMABLES
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Required Materials / Consumables</h2>
+            </div>
+
+
+            <div
+              id="required-materials-list"
+              class="required-materials-list"
+            >
+
+              <div class="empty-state">
+                Required materials will appear here.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               FABRICATION / CUT LIST
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Fabrication / Cut List</h2>
+            </div>
+
+
+            <div
+              id="fabrication-cut-list"
+              class="fabrication-cut-list"
+            >
+
+              <div class="empty-state">
+                Fabrication dimensions will appear here.
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           LABOUR
+           ================================================= -->
+
+      <section
+        id="section-labour"
+        class="app-section"
+        data-section="labour"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Labour</h1>
+
+              <p class="section-subtitle">
+                Automatic labour plus any additional allowance.
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               FABRICATION LABOUR
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Fabrication</h2>
+            </div>
+
+
+            <div class="labour-summary-grid">
+
+              <div class="labour-stat">
+
+                <span class="labour-stat-label">
+                  Auto
+                </span>
+
+                <strong
+                  id="labour-fabrication-auto"
+                  class="labour-stat-value"
+                >
+                  0.00 hr
+                </strong>
+
+              </div>
+
+
+              <div class="labour-stat">
+
+                <label
+                  class="labour-stat-label"
+                  for="labour-fabrication-additional"
+                >
+                  Additional
+                </label>
+
+                <div class="input-with-unit">
+
+                  <input
+                    id="labour-fabrication-additional"
+                    type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="0.25"
+                    value="0"
+                    data-state-path="labour.additionalFabricationHours"
+                  >
+
+                  <span class="input-unit">
+                    hr
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="labour-stat total">
+
+                <span class="labour-stat-label">
+                  Total
+                </span>
+
+                <strong
+                  id="labour-fabrication-total"
+                  class="labour-stat-value"
+                >
+                  0.00 hr
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="fabrication-labour-breakdown"
+              class="labour-breakdown"
+            ></div>
+
+          </div>
+
+
+          <!-- =============================================
+               INSTALLATION LABOUR
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Installation</h2>
+            </div>
+
+
+            <div class="labour-summary-grid">
+
+              <div class="labour-stat">
+
+                <span class="labour-stat-label">
+                  Auto
+                </span>
+
+                <strong
+                  id="labour-install-auto"
+                  class="labour-stat-value"
+                >
+                  0.00 hr
+                </strong>
+
+              </div>
+
+
+              <div class="labour-stat">
+
+                <label
+                  class="labour-stat-label"
+                  for="labour-install-additional"
+                >
+                  Additional
+                </label>
+
+                <div class="input-with-unit">
+
+                  <input
+                    id="labour-install-additional"
+                    type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="0.25"
+                    value="0"
+                    data-state-path="labour.additionalInstallHours"
+                  >
+
+                  <span class="input-unit">
+                    hr
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="labour-stat total">
+
+                <span class="labour-stat-label">
+                  Total
+                </span>
+
+                <strong
+                  id="labour-install-total"
+                  class="labour-stat-value"
+                >
+                  0.00 hr
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="installation-labour-breakdown"
+              class="labour-breakdown"
+            ></div>
+
+          </div>
+
+
+          <!-- =============================================
+               CLADDING LABOUR
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Cladding Labour</h2>
+            </div>
+
+
+            <div
+              id="cladding-labour-summary"
+              class="calculation-summary"
+            >
+
+              <div class="summary-row">
+
+                <span>
+                  Area
+                </span>
+
+                <strong>
+                  0.00 m²
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Rate
+                </span>
+
+                <strong>
+                  $0.00/m²
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row summary-total">
+
+                <span>
+                  Cladding Labour
+                </span>
+
+                <strong>
+                  $0.00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               TOTAL LABOUR
+               ============================================= -->
+
+          <div class="card highlight-card">
+
+            <div class="card-heading">
+              <h2>Total Labour</h2>
+            </div>
+
+
+            <div class="cost-hero">
+
+              <span
+                id="total-labour-hours"
+                class="cost-hero-secondary"
+              >
+                0.00 hours
+              </span>
+
+              <strong
+                id="total-labour-cost"
+                class="cost-hero-value"
+              >
                 $0.00
               </strong>
 
-              <small>
-                inc GST
-              </small>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           COSTING
+           ================================================= -->
+
+      <section
+        id="section-costing"
+        class="app-section"
+        data-section="costing"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Costing</h1>
+
+              <p class="section-subtitle">
+                Internal business costing only.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Internal Costs</h2>
+            </div>
+
+
+            <div
+              id="internal-cost-breakdown"
+              class="cost-table"
+            >
+
+              <div class="cost-row">
+
+                <span>
+                  Materials
+                </span>
+
+                <strong id="cost-materials">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  Labour
+                </span>
+
+                <strong id="cost-labour">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  Travel
+                </span>
+
+                <strong id="cost-travel">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  Powder / Finish
+                </span>
+
+                <strong id="cost-finish">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  Material Markup
+                </span>
+
+                <strong id="cost-markup">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row subtotal">
+
+                <span>
+                  Cost / Sell EX GST
+                </span>
+
+                <strong id="cost-ex-gst">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  GST
+                </span>
+
+                <strong id="cost-gst">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row total">
+
+                <span>
+                  Automatic Quote
+                </span>
+
+                <strong id="cost-auto-quote">
+                  $0.00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-heading">
+              <h2>Quote Performance</h2>
+            </div>
+
+
+            <div class="metric-grid">
+
+              <div class="metric">
+
+                <span class="metric-label">
+                  Quote Mode
+                </span>
+
+                <strong
+                  id="costing-quote-mode"
+                  class="metric-value"
+                >
+                  Auto
+                </strong>
+
+              </div>
+
+
+              <div class="metric">
+
+                <span class="metric-label">
+                  Profit
+                </span>
+
+                <strong
+                  id="costing-profit"
+                  class="metric-value"
+                >
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="metric">
+
+                <span class="metric-label">
+                  Effective $/m²
+                </span>
+
+                <strong
+                  id="costing-effective-rate"
+                  class="metric-value"
+                >
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="metric">
+
+                <span class="metric-label">
+                  Cavity Area
+                </span>
+
+                <strong
+                  id="costing-cavity-area"
+                  class="metric-value"
+                >
+                  0.00 m²
+                </strong>
+
+              </div>
 
             </div>
 
@@ -1196,1404 +1654,669 @@
 
         </div>
 
+      </section>
 
-        <div
-          id="powderNoOptions"
-          class="hidden"
-        >
 
-          <div class="powder-no-summary">
 
-            <span>
-              Duragalv finish
-            </span>
+      <!-- =================================================
+           CLIENT
+           ================================================= -->
 
-            <strong id="nonPowderFinishDisplay">
-              $0.00
-            </strong>
+      <section
+        id="section-client"
+        class="app-section"
+        data-section="client"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Client</h1>
+
+              <p class="section-subtitle">
+                Client and project details.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="form-grid">
+
+              <div class="field-group">
+
+                <label for="client-name">
+                  Client Name
+                </label>
+
+                <input
+                  id="client-name"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="Client name"
+                  data-state-path="client.name"
+                >
+
+              </div>
+
+
+              <div class="field-group">
+
+                <label for="client-address">
+                  Address
+                </label>
+
+                <input
+                  id="client-address"
+                  type="text"
+                  autocomplete="street-address"
+                  placeholder="Job address"
+                  data-state-path="client.address"
+                >
+
+              </div>
+
+
+              <div class="form-grid two-column">
+
+                <div class="field-group">
+
+                  <label for="client-project-number">
+                    Project Number
+                  </label>
+
+                  <input
+                    id="client-project-number"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="6"
+                    placeholder="001246"
+                    data-state-path="client.projectNumber"
+                  >
+
+                </div>
+
+
+                <div class="field-group">
+
+                  <label for="client-mobile">
+                    Mobile
+                  </label>
+
+                  <input
+                    id="client-mobile"
+                    type="tel"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    maxlength="10"
+                    value="04"
+                    data-state-path="client.mobile"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field-group">
+
+                <label for="client-email">
+                  Email
+                </label>
+
+                <input
+                  id="client-email"
+                  type="email"
+                  inputmode="email"
+                  autocomplete="email"
+                  placeholder="client@email.com"
+                  data-state-path="client.email"
+                >
+
+              </div>
+
+            </div>
 
           </div>
 
         </div>
 
-      </div>
-
-    </details>
+      </section>
 
 
-    <!-- =====================================================
-         MATERIALS
-    ====================================================== -->
 
-    <details
-      id="materialsCard"
-      class="card nav-section"
-      open
-    >
+      <!-- =================================================
+           QUOTE
+           ================================================= -->
 
-      <summary>
-        Materials & Fabrication
-      </summary>
+      <section
+        id="section-quote"
+        class="app-section"
+        data-section="quote"
+      >
 
+        <div class="section-inner">
 
-      <div class="card-content">
-
-
-        <div class="materials-three">
-
-
-          <div
-            id="gateMaterialsCard"
-            class="material-column"
-          >
-
-            <strong>
-              GATE
-            </strong>
+          <div class="section-heading">
 
             <div>
-              <span>Frame required</span>
-              <b id="frameMetres">0.00 m</b>
-            </div>
+              <h1>Quote</h1>
 
-            <div>
-              <span>8m lengths</span>
-              <b id="frameLengths">0</b>
-            </div>
-
-            <div>
-              <span>Waste</span>
-              <b id="frameWaste">0.00 m</b>
+              <p class="section-subtitle">
+                Final customer quote and communication.
+              </p>
             </div>
 
           </div>
 
 
-          <div
-            id="postMaterialsCard"
-            class="material-column"
-          >
+          <!-- =============================================
+               QUOTE CONTROL
+               ============================================= -->
 
-            <strong>
-              POSTS
-            </strong>
+          <div class="card quote-control-card">
 
-            <div>
-              <span>Required</span>
-              <b id="postMetres">0.00 m</b>
-            </div>
+            <div class="quote-control-top">
 
-            <div>
-              <span>8m lengths</span>
-              <b id="postLengths">0</b>
-            </div>
+              <div>
 
-            <div>
-              <span>Waste</span>
-              <b id="postWaste">0.00 m</b>
-            </div>
+                <span class="quote-mode-label">
+                  Quote
+                </span>
 
-          </div>
+                <strong
+                  id="quote-mode-display"
+                  class="quote-mode-display"
+                >
+                  Auto
+                </strong>
+
+              </div>
 
 
-          <div
-            id="claddingMaterialsCard"
-            class="material-column"
-          >
-
-            <strong>
-              CLADDING
-            </strong>
-
-            <div>
-              <span>Pieces</span>
-              <b id="claddingBoards">0</b>
-            </div>
-
-            <div>
-              <span>Required</span>
-              <b id="claddingMetres">0.00 m</b>
-            </div>
-
-            <div>
-              <span>Stock</span>
-              <b id="claddingStockLengths">0</b>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <h3>
-          Consumables / Order List
-        </h3>
-
-
-        <div
-          id="consumablesList"
-          class="consumables-list"
-        >
-        </div>
-
-
-        <h3>
-          Cut / Fabrication List
-        </h3>
-
-
-        <div
-          id="fabricationView"
-          class="fabrication-view"
-        >
-        </div>
-
-      </div>
-
-    </details>
-
-
-    <!-- =====================================================
-         LABOUR
-    ====================================================== -->
-
-    <details
-      id="labourCard"
-      class="card nav-section"
-    >
-
-      <summary>
-        Labour, Travel & Other Costs
-      </summary>
-
-
-      <div class="card-content">
-
-
-        <div class="summary-grid">
-
-          <div>
-
-            <span>
-              Auto fabrication
-            </span>
-
-            <strong id="estimatedFabricationHours">
-              0.00 hrs
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Auto installation
-            </span>
-
-            <strong id="estimatedInstallationHours">
-              0.00 hrs
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <label class="check-line">
-
-          <input
-            id="additionalLabourEnabled"
-            type="checkbox"
-          >
-
-          Add additional labour
-
-        </label>
-
-
-        <div
-          id="additionalLabourFields"
-          class="hidden"
-        >
-
-          <div class="grid two">
-
-            <label>
-
-              Additional fabrication hours
-
-              <input
-                id="additionalFabricationHours"
-                type="number"
-                step="0.25"
+              <button
+                id="quote-reset-auto-btn"
+                class="secondary-btn hidden"
+                type="button"
+                data-action="reset-quote-auto"
               >
+                Reset to Auto
+              </button>
 
-            </label>
+            </div>
 
 
-            <label>
+            <div class="quote-amount-wrap">
 
-              Additional installation hours
-
-              <input
-                id="additionalInstallationHours"
-                type="number"
-                step="0.25"
-              >
-
-            </label>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="labourTotalsPanel"
-          class="labour-totals-panel"
-        >
-        </div>
-
-
-        <label>
-
-          One-way travel distance (km)
-
-          <input
-            id="travelKm"
-            type="number"
-          >
-
-        </label>
-
-
-        <label>
-
-          Extra material / hardware inc GST
-
-          <input
-            id="extraHardware"
-            type="number"
-          >
-
-        </label>
-
-
-        <label>
-
-          Other direct costs inc GST
-
-          <input
-            id="otherCosts"
-            type="number"
-          >
-
-        </label>
-
-      </div>
-
-    </details>
-
-
-    <!-- =====================================================
-         INTERNAL COSTING
-    ====================================================== -->
-
-    <section
-      id="internalCostingCard"
-      class="card nav-section"
-    >
-
-      <div class="static-title">
-        Internal Costing
-      </div>
-
-
-      <div class="card-content">
-
-
-        <div class="summary-grid internal-summary">
-
-
-          <div>
-
-            <span>
-              Materials ex GST
-            </span>
-
-            <strong id="materialsTotal">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Labour
-            </span>
-
-            <strong id="labourTotal">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Travel
-            </span>
-
-            <strong id="travelTotal">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Markup
-            </span>
-
-            <strong id="markupTotal">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              GST
-            </span>
-
-            <strong id="gstTotal">
-              $0.00
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <div class="quote-control">
-
-
-          <div class="quote-control-line">
-
-
-            <label class="quote-edit-label">
-
-              <span>
-                Quote
+              <span class="currency-prefix">
+                $
               </span>
 
               <input
-                id="quotePrice"
+                id="quote-final-amount"
+                class="quote-amount-input"
                 type="number"
+                inputmode="decimal"
+                min="0"
                 step="10"
+                placeholder="0"
+                aria-label="Final quote including GST"
               >
-
-            </label>
-
-
-            <div class="quote-metric">
-
-              <span>
-                Status
-              </span>
-
-              <strong id="quoteModeDisplay">
-                AUTO
-              </strong>
 
             </div>
 
 
-            <div class="quote-metric">
+            <div class="quote-metrics">
 
-              <span>
-                Profit
-              </span>
+              <div>
 
-              <strong id="profitTotal">
-                $0.00
-              </strong>
+                <span>
+                  Profit
+                </span>
+
+                <strong id="quote-profit">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Effective $/m²
+                </span>
+
+                <strong id="quote-effective-rate">
+                  $0.00
+                </strong>
+
+              </div>
 
             </div>
 
           </div>
 
 
-          <div class="quote-control-line second">
+          <!-- =============================================
+               FINISHED CLIENT QUOTE
+               ============================================= -->
+
+          <article
+            id="finished-quote"
+            class="finished-quote"
+          >
+
+            <div class="quote-document-header">
+
+              <img
+                class="quote-logo"
+                src="jtla-logo.png"
+                alt="JTLA Gates"
+              >
 
 
-            <div class="quote-metric rate">
+              <div class="quote-document-reference">
 
-              <span>
-                Rate
-              </span>
+                <strong id="finished-quote-reference">
+                  Quote 001246
+                </strong>
 
-              <strong id="effectiveRate">
-                N/A
-              </strong>
+                <span id="finished-quote-client">
+                  Client
+                </span>
 
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>PROJECT DESCRIPTION</h2>
+
+              <div
+                id="quote-project-description"
+                class="quote-text"
+              >
+                Complete the job details to generate the project description.
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>FABRICATION</h2>
+
+              <div
+                id="quote-fabrication"
+                class="quote-text"
+              >
+                —
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>INSTALLATION</h2>
+
+              <div
+                id="quote-installation"
+                class="quote-text"
+              >
+                —
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>FINISH</h2>
+
+              <div
+                id="quote-finish"
+                class="quote-text"
+              >
+                —
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>PRICE</h2>
+
+              <div class="quote-price-table">
+
+                <div class="quote-price-row">
+
+                  <span>
+                    Total EX GST
+                  </span>
+
+                  <strong id="quote-price-ex-gst">
+                    $0.00
+                  </strong>
+
+                </div>
+
+
+                <div class="quote-price-row">
+
+                  <span>
+                    GST
+                  </span>
+
+                  <strong id="quote-price-gst">
+                    $0.00
+                  </strong>
+
+                </div>
+
+
+                <div class="quote-price-row total">
+
+                  <span>
+                    TOTAL INC GST
+                  </span>
+
+                  <strong id="quote-price-inc-gst">
+                    $0.00
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>TERMS</h2>
+
+              <div
+                id="quote-terms"
+                class="quote-text"
+              >
+                50% deposit required on acceptance. Balance payable on completion.
+              </div>
+
+            </div>
+
+
+            <div class="quote-section">
+
+              <h2>BANK TRANSFER</h2>
+
+              <div
+                id="quote-bank-details"
+                class="quote-bank-details"
+              >
+                <div>
+                  JW and GF Tuuta
+                </div>
+
+                <div>
+                  BSB: 306 089
+                </div>
+
+                <div>
+                  Account: 3406851
+                </div>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!-- =============================================
+               EMAIL
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+
+              <h2>Email</h2>
+
+              <button
+                id="copy-email-btn"
+                class="secondary-btn"
+                type="button"
+                data-action="copy-email"
+              >
+                Copy Email
+              </button>
+
+            </div>
+
+
+            <div class="field-group">
+
+              <label for="email-subject">
+                Subject
+              </label>
+
+              <input
+                id="email-subject"
+                type="text"
+                readonly
+              >
+
+            </div>
+
+
+            <div class="field-group">
+
+              <label for="email-body">
+                Email Body
+              </label>
+
+              <textarea
+                id="email-body"
+                rows="14"
+                readonly
+              ></textarea>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               SMS
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+
+              <h2>SMS</h2>
+
+              <button
+                id="copy-sms-btn"
+                class="secondary-btn"
+                type="button"
+                data-action="copy-sms"
+              >
+                Copy SMS
+              </button>
+
+            </div>
+
+
+            <div class="field-group">
+
+              <label for="sms-body">
+                Message
+              </label>
+
+              <textarea
+                id="sms-body"
+                rows="6"
+                readonly
+              ></textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           SAVED JOBS
+           ================================================= -->
+
+      <section
+        id="section-saved"
+        class="app-section"
+        data-section="saved"
+      >
+
+        <div class="section-inner">
+
+          <div class="section-heading">
+
+            <div>
+              <h1>Saved Jobs</h1>
+
+              <p class="section-subtitle">
+                Saved jobs remain here until you delete them.
+              </p>
             </div>
 
 
             <button
-              id="resetQuoteBtn"
+              id="new-job-btn"
+              class="primary-btn"
               type="button"
-              class="reset-quote-btn"
+              data-action="new-job"
             >
-              RESET TO AUTO
+              New Job
             </button>
 
           </div>
 
-        </div>
 
-      </div>
+          <div class="card">
 
-    </section>
+            <div class="saved-jobs-toolbar">
 
+              <button
+                id="save-current-job-btn"
+                class="primary-btn"
+                type="button"
+                data-action="save-job"
+              >
+                Save Current Job
+              </button>
 
-    <!-- =====================================================
-         CLIENT
-    ====================================================== -->
-
-    <details
-      id="clientDetailsCard"
-      class="card nav-section"
-      open
-    >
-
-      <summary>
-        Client Details
-      </summary>
+            </div>
 
 
-      <div class="card-content">
-
-
-        <label
-          class="field-status required"
-          data-required-field="clientName"
-        >
-
-          Client name
-
-          <input
-            id="clientName"
-            type="text"
-            autocomplete="name"
-          >
-
-        </label>
-
-
-        <label
-          class="field-status required"
-          data-required-field="siteAddress"
-        >
-
-          Address
-
-          <input
-            id="siteAddress"
-            type="text"
-            autocomplete="street-address"
-          >
-
-        </label>
-
-
-        <div class="grid two">
-
-
-          <label>
-
-            Project number
-
-            <input
-              id="projectNumber"
-              type="text"
-              readonly
+            <div
+              id="saved-jobs-list"
+              class="saved-jobs-list"
             >
 
-          </label>
+              <div class="empty-state large">
+                No saved jobs yet.
+              </div>
 
+            </div>
 
-          <label
-            id="phoneLabel"
-            class="field-status optional"
-          >
-
-            Mobile number
-
-            <input
-              id="clientPhone"
-              type="tel"
-              inputmode="numeric"
-              maxlength="10"
-              value="04"
-              autocomplete="tel"
-            >
-
-          </label>
+          </div>
 
         </div>
 
+      </section>
 
-        <label
-          id="emailLabel"
-          class="field-status optional"
-        >
-
-          Email
-
-          <input
-            id="clientEmail"
-            type="email"
-            autocomplete="email"
-          >
-
-        </label>
-
-      </div>
-
-    </details>
+    </main>
 
 
-    <!-- =====================================================
-         FINISHED QUOTE
-    ====================================================== -->
 
-    <section
-      id="finishedQuoteCard"
-      class="card nav-section"
+    <!-- ===================================================
+         TOAST / FEEDBACK
+         =================================================== -->
+
+    <div
+      id="toast"
+      class="toast"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+
+
+    <!-- ===================================================
+         CONFIRMATION DIALOG
+         =================================================== -->
+
+    <dialog
+      id="confirm-dialog"
+      class="confirm-dialog"
     >
 
-      <div class="static-title">
-        Finished Quote
-      </div>
-
-
-      <div
-        id="finishedQuote"
-        class="quote-preview"
+      <form
+        method="dialog"
+        class="dialog-card"
       >
 
-
-        <div class="quote-head">
-
-          <strong>
-            JTLA Gates
-          </strong>
-
-          <span>
-            Jody Tuuta
-          </span>
-
-          <span>
-            0439 517 783
-          </span>
-
-        </div>
+        <h2 id="confirm-dialog-title">
+          Confirm
+        </h2>
 
 
-        <div id="quoteDescription">
-        </div>
-
-
-        <div class="quote-price-simple">
-
-
-          <div>
-
-            <span>
-              Price ex GST
-            </span>
-
-            <strong id="quoteExGstDisplay">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              GST
-            </span>
-
-            <strong id="quoteGstDisplay">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div class="total">
-
-            <span>
-              Total inc GST
-            </span>
-
-            <strong id="quoteTotalDisplay">
-              $0.00
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <div class="quote-section">
-
-          <h4>
-            TERMS
-          </h4>
-
-          <p>
-            50% deposit required on acceptance.
-            Balance payable on completion.
-          </p>
-
-        </div>
-
-
-        <div class="quote-section">
-
-          <h4>
-            BANK TRANSFER
-          </h4>
-
-          <p>
-
-            <strong>Name:</strong>
-            JW and GF Tuuta
-            <br>
-
-            <strong>BSB:</strong>
-            306 089
-            <br>
-
-            <strong>Account:</strong>
-            3406851
-            <br>
-
-            <strong>Reference:</strong>
-
-            <span id="bankReference">
-              001246
-            </span>
-
-          </p>
-
-        </div>
-
-
-        <p class="quote-acceptance">
-          To proceed, please reply confirming acceptance of this quote.
+        <p id="confirm-dialog-message">
+          Are you sure?
         </p>
 
-      </div>
 
-    </section>
+        <div class="dialog-actions">
 
-
-    <!-- =====================================================
-         WARNINGS
-    ====================================================== -->
-
-    <section
-      id="warningSection"
-      class="card warning-card hidden"
-    >
-
-      <div class="static-title">
-        Check Before Sending
-      </div>
-
-      <div
-        id="warningList"
-        class="card-content warning-list"
-      >
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         ACTIONS
-    ====================================================== -->
-
-    <section class="actions">
-
-      <button
-        id="saveBtn"
-        class="green"
-        type="button"
-      >
-        Save
-      </button>
-
-      <button
-        id="smsBtn"
-        type="button"
-      >
-        SMS
-      </button>
-
-      <button
-        id="emailBtn"
-        type="button"
-      >
-        Email Quote
-      </button>
-
-      <button
-        id="printBtn"
-        type="button"
-      >
-        PDF / Print
-      </button>
-
-      <button
-        id="newJobBtn"
-        class="red"
-        type="button"
-      >
-        New Job
-      </button>
-
-    </section>
-
-
-    <!-- =====================================================
-         SAVED JOBS
-    ====================================================== -->
-
-    <details
-      id="savedJobsCard"
-      class="card saved-jobs-card nav-section"
-    >
-
-      <summary>
-        Saved Jobs
-      </summary>
-
-      <div
-        id="savedJobsList"
-        class="card-content saved-jobs-list"
-      >
-      </div>
-
-    </details>
-
-  </main>
-
-
-  <!-- =====================================================
-       COMPONENT SHELL
-  ====================================================== -->
-
-  <template id="componentTemplate">
-
-    <article
-      class="component-card nav-component"
-      data-component-id=""
-    >
-
-      <header class="component-header">
-
-        <div>
-
-          <strong class="component-title">
-          </strong>
-
-          <span class="component-status incomplete">
-            INCOMPLETE
-          </span>
-
-        </div>
-
-
-        <button
-          class="remove-btn"
-          type="button"
-        >
-          Remove
-        </button>
-
-      </header>
-
-
-      <div class="component-body">
-      </div>
-
-    </article>
-
-  </template>
-
-
-  <!-- =====================================================
-       POST
-  ====================================================== -->
-
-  <template id="postTemplate">
-
-    <div>
-
-
-      <label class="field-status required post-steel-label">
-
-        Post steel
-
-        <select class="post-size">
-        </select>
-
-      </label>
-
-
-      <label class="field-status required post-fixing-label">
-
-        Fixing / position
-
-        <select class="post-fixing">
-
-          <option value="">
-            Select fixing
-          </option>
-
-          <option value="brick">
-            Fixed to brick
-          </option>
-
-          <option value="concreteHouse">
-            Concreted next to house
-          </option>
-
-          <option value="concreteFloating">
-            Concreted floating
-          </option>
-
-          <option value="fixedPanelLeft">
-            Fixed panel - left post
-          </option>
-
-          <option value="fixedPanelCentre">
-            Fixed panel - centre post
-          </option>
-
-          <option value="fixedPanelRight">
-            Fixed panel - right post
-          </option>
-
-          <option value="baseplate">
-            Baseplated
-          </option>
-
-          <option value="existing">
-            Existing structure / no new post
-          </option>
-
-        </select>
-
-      </label>
-
-
-      <div class="post-height-summary">
-
-        <div>
-
-          <span>
-            Finished height
-          </span>
-
-          <strong class="post-visible-height">
-            -
-          </strong>
-
-          <small class="post-height-status">
-          </small>
-
-        </div>
-
-
-        <button
-          type="button"
-          class="change-post-height-btn"
-        >
-          CHANGE
-        </button>
-
-      </div>
-
-
-      <div class="post-height-override-wrap hidden">
-
-        <label>
-
-          Custom finished height (mm)
-
-          <input
-            class="post-height-override"
-            type="number"
+          <button
+            id="confirm-dialog-cancel"
+            class="secondary-btn"
+            type="submit"
+            value="cancel"
           >
-
-        </label>
-
-
-        <button
-          type="button"
-          class="reset-post-height-btn"
-        >
-          Reset to job height
-        </button>
-
-      </div>
+            Cancel
+          </button>
 
 
-      <div class="brick-holes hidden">
-
-        <div class="small-heading">
-          Hole positions from top
-        </div>
-
-        <div class="hole-list">
-        </div>
-
-        <button
-          class="add-hole"
-          type="button"
-        >
-          + Hole
-        </button>
-
-      </div>
-
-
-      <div class="house-bolt hidden">
-
-        <label class="check-line">
-
-          <input
-            class="house-bolt-enabled"
-            type="checkbox"
+          <button
+            id="confirm-dialog-confirm"
+            class="danger-btn"
+            type="submit"
+            value="confirm"
           >
-
-          Add top bolt into house / garage
-
-        </label>
-
-
-        <div class="house-bolt-position hidden">
-
-          <label class="field-status required top-hole-label">
-
-            Hole position from top (mm)
-
-            <input
-              class="top-hole-position"
-              type="number"
-            >
-
-          </label>
+            Confirm
+          </button>
 
         </div>
 
-      </div>
+      </form>
 
+    </dialog>
 
-      <div class="floating-offset hidden">
-
-        <label>
-
-          Offset from house / structure (mm)
-
-          <input
-            class="post-offset"
-            type="number"
-          >
-
-        </label>
-
-      </div>
-
-
-      <div class="calculated-line">
-
-        <span>
-          Cut length
-        </span>
-
-        <strong class="post-cut">
-          -
-        </strong>
-
-      </div>
-
-    </div>
-
-  </template>
-
-
-  <!-- =====================================================
-       GATE
-  ====================================================== -->
-
-  <template id="gateTemplate">
-
-    <div>
-
-
-      <div class="grid two">
-
-        <div class="calculated-box">
-
-          <span>
-            Steel frame width
-          </span>
-
-          <strong class="gate-width-display">
-            -
-          </strong>
-
-        </div>
-
-
-        <div class="calculated-box">
-
-          <span>
-            Steel frame height
-          </span>
-
-          <strong class="gate-height-display">
-            -
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="gate-cladding-dimension-box">
-
-        <div>
-
-          <span>
-            Finished cladding width
-          </span>
-
-          <strong class="gate-cladding-width-display">
-            -
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Side overhang
-          </span>
-
-          <strong>
-            6mm each side
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="gate-height-basis">
-      </div>
-
-
-      <div class="gate-width-controls">
-
-        <button
-          type="button"
-          class="gate-width-mode-btn"
-        >
-          AUTO WIDTH
-        </button>
-
-
-        <div class="gate-manual-width-wrap hidden">
-
-          <label class="field-status required gate-manual-width-label">
-
-            Manual steel frame width (mm)
-
-            <input
-              class="gate-manual-width"
-              type="number"
-            >
-
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <label class="gate-frame-wrap">
-
-        Frame steel
-
-        <select class="gate-frame">
-        </select>
-
-      </label>
-
-
-      <div class="horizontal-rail-wrap hidden">
-
-        <label>
-
-          Hori mid rails
-
-          <select class="horizontal-rails">
-
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-
-          </select>
-
-        </label>
-
-      </div>
-
-
-      <div class="vertical-rail-wrap hidden">
-
-        <label>
-
-          Vert mid rails
-
-          <select class="vertical-rails">
-
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-
-          </select>
-
-        </label>
-
-      </div>
-
-
-      <div class="gate-orientation-row">
-
-        <label class="field-status required hinge-side-label">
-
-          Hinge side
-
-          <select class="hinge-side">
-
-            <option value="left">
-              Left
-            </option>
-
-            <option value="right">
-              Right
-            </option>
-
-          </select>
-
-        </label>
-
-
-        <label class="field-status required open-direction-label">
-
-          Opens
-
-          <select class="open-direction">
-
-            <option value="in">
-              In
-            </option>
-
-            <option value="out">
-              Out
-            </option>
-
-          </select>
-
-        </label>
-
-      </div>
-
-
-      <label class="field-status required gate-latch-label">
-
-        Latch
-
-        <select class="gate-latch">
-        </select>
-
-      </label>
-
-
-      <div class="other-latch hidden">
-
-        <label class="field-status required other-latch-description-label">
-
-          Other latch description
-
-          <input
-            class="other-latch-description"
-            type="text"
-          >
-
-        </label>
-
-
-        <label>
-
-          Cost inc GST
-
-          <input
-            class="other-latch-cost"
-            type="number"
-          >
-
-        </label>
-
-      </div>
-
-    </div>
-
-  </template>
-
-
-  <!-- =====================================================
-       FIXED PANEL
-  ====================================================== -->
-
-  <template id="panelTemplate">
-
-    <div>
-
-
-      <div class="grid two">
-
-        <label class="field-status required panel-width-label">
-
-          Overall width (mm)
-
-          <input
-            class="panel-width"
-            type="number"
-          >
-
-        </label>
-
-
-        <label class="field-status required panel-height-label">
-
-          Overall height (mm)
-
-          <input
-            class="panel-height"
-            type="number"
-          >
-
-        </label>
-
-      </div>
-
-
-      <div class="calculated-line">
-
-        <span>
-          Cladding
-        </span>
-
-        <strong class="panel-cladding-summary">
-          Uses job cladding
-        </strong>
-
-      </div>
-
-
-      <div class="panel-rail-controls hidden">
-
-        <label>
-
-          Vertical panel rails
-
-          <select class="panel-rail-count">
-
-            <option value="3">
-              Top + Mid + Lower
-            </option>
-
-            <option value="4">
-              Top + Mid + Lower + Extra
-            </option>
-
-          </select>
-
-        </label>
-
-      </div>
-
-
-      <div class="panel-rail-info">
-      </div>
-
-    </div>
-
-  </template>
-
-
-  <!-- =====================================================
-       HOLE
-  ====================================================== -->
-
-  <template id="holeTemplate">
-
-    <div class="hole-row">
-
-      <input
-        class="hole-position"
-        type="number"
-        placeholder="mm from top"
-      >
-
-      <button
-        class="remove-hole"
-        type="button"
-      >
-        ×
-      </button>
-
-    </div>
-
-  </template>
-
-
-  <script src="prices.js?v=240"></script>
-
-  <script src="app.js?v=242"></script>
+  </div>
 
 </body>
-
 </html>
