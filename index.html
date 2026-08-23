@@ -33,10 +33,6 @@
 
 <body>
 
-  <!-- =====================================================
-       APPLICATION
-       ===================================================== -->
-
   <div id="app">
 
 
@@ -100,7 +96,6 @@
 
       <!-- ===============================================
            MAIN NAVIGATION
-           Two full-width rows.
            =============================================== -->
 
       <nav
@@ -202,7 +197,7 @@
 
 
       <!-- ===============================================
-           GLOBAL STATUS BAR
+           GLOBAL STATUS
            =============================================== -->
 
       <div
@@ -262,19 +257,32 @@
           <div class="section-heading">
 
             <div>
-              <h1>Site</h1>
+
+              <h1>
+                Site
+              </h1>
+
               <p class="section-subtitle">
                 Overall opening and site measurements.
               </p>
+
             </div>
 
           </div>
 
 
+          <!-- =============================================
+               OVERALL CAVITY
+               ============================================= -->
+
           <div class="card">
 
             <div class="card-heading">
-              <h2>Overall Cavity</h2>
+
+              <h2>
+                Overall Cavity
+              </h2>
+
             </div>
 
 
@@ -354,11 +362,11 @@
               <div class="info-strip-item">
 
                 <span class="info-label">
-                  Standard gate steel gap
+                  Overall steel gap
                 </span>
 
                 <strong id="site-gate-gap-display">
-                  12 mm
+                  24 mm
                 </strong>
 
               </div>
@@ -368,10 +376,98 @@
           </div>
 
 
+          <!-- =============================================
+               REFERENCE VIEW
+               ============================================= -->
+
           <div class="card">
 
             <div class="card-heading">
-              <h2>Travel</h2>
+
+              <h2>
+                Reference View
+              </h2>
+
+            </div>
+
+
+            <div class="field-group">
+
+              <label for="site-reference-direction">
+                Left / Right Reference
+              </label>
+
+              <select
+                id="site-reference-direction"
+                data-state-path="site.referenceDirection"
+              >
+
+                <option value="streetToProperty">
+                  Looking from street toward property
+                </option>
+
+                <option value="propertyToStreet">
+                  Looking from property toward street
+                </option>
+
+                <option value="north">
+                  Looking North
+                </option>
+
+                <option value="south">
+                  Looking South
+                </option>
+
+                <option value="east">
+                  Looking East
+                </option>
+
+                <option value="west">
+                  Looking West
+                </option>
+
+                <option value="other">
+                  Other / custom description
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div
+              id="custom-reference-wrap"
+              class="field-group hidden"
+            >
+
+              <label for="site-reference-custom">
+                Custom Reference
+              </label>
+
+              <input
+                id="site-reference-custom"
+                type="text"
+                placeholder="e.g. Looking from backyard toward side fence"
+                data-state-path="site.referenceCustom"
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               TRAVEL
+               ============================================= -->
+
+          <div class="card">
+
+            <div class="card-heading">
+
+              <h2>
+                Travel
+              </h2>
+
             </div>
 
 
@@ -411,76 +507,6 @@
 
           </div>
 
-
-          <div class="card">
-
-            <div class="card-heading">
-              <h2>Quote Reference View</h2>
-            </div>
-
-
-            <div class="field-group">
-
-              <label for="site-reference-direction">
-                Left / Right Reference
-              </label>
-
-              <select
-                id="site-reference-direction"
-                data-state-path="site.referenceDirection"
-              >
-                <option value="streetToProperty">
-                  Looking from street toward property
-                </option>
-
-                <option value="propertyToStreet">
-                  Looking from property toward street
-                </option>
-
-                <option value="north">
-                  Looking North
-                </option>
-
-                <option value="south">
-                  Looking South
-                </option>
-
-                <option value="east">
-                  Looking East
-                </option>
-
-                <option value="west">
-                  Looking West
-                </option>
-
-                <option value="other">
-                  Other / custom description
-                </option>
-              </select>
-
-            </div>
-
-
-            <div
-              id="custom-reference-wrap"
-              class="field-group hidden"
-            >
-
-              <label for="site-reference-custom">
-                Custom Reference
-              </label>
-
-              <input
-                id="site-reference-custom"
-                type="text"
-                placeholder="e.g. Looking from backyard toward side fence"
-                data-state-path="site.referenceCustom"
-              >
-
-            </div>
-
-          </div>
-
         </div>
 
       </section>
@@ -502,11 +528,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Components / Layout</h1>
+
+              <h1>
+                Components / Layout
+              </h1>
 
               <p class="section-subtitle">
                 Build the job in physical left-to-right street order.
               </p>
+
             </div>
 
           </div>
@@ -520,13 +550,15 @@
 
             <div class="card-heading">
 
-              <h2>Mud Map</h2>
+              <h2>
+                Mud Map
+              </h2>
 
               <span
                 id="layout-width-status"
                 class="compact-status"
               >
-                No components
+                Not Confirmed
               </span>
 
             </div>
@@ -554,7 +586,11 @@
           <div class="card">
 
             <div class="card-heading">
-              <h2>Add Component</h2>
+
+              <h2>
+                Add Component
+              </h2>
+
             </div>
 
 
@@ -598,18 +634,24 @@
 
 
           <!-- =============================================
-               COMPONENT EDITOR
+               ALL COMPONENT EDITORS
+
+               app.js will render ALL components here in
+               physical left-to-right order.
+
+               User can scroll through every component.
+               Mud-map selection jumps to the correct card.
                ============================================= -->
 
           <div
             id="component-editor"
-            class="component-editor"
+            class="component-editor component-editor-list"
           >
 
             <div class="card">
 
               <div class="empty-state large">
-                Select a component from the mud map or add a new component.
+                Add a Post, Gate or Fixed Panel to begin.
               </div>
 
             </div>
@@ -618,13 +660,17 @@
 
 
           <!-- =============================================
-               LAYOUT CALCULATION SUMMARY
+               LAYOUT CHECK
                ============================================= -->
 
           <div class="card">
 
             <div class="card-heading">
-              <h2>Layout Check</h2>
+
+              <h2>
+                Measurement Check
+              </h2>
+
             </div>
 
 
@@ -675,7 +721,7 @@
               <div class="summary-row summary-total">
 
                 <span>
-                  Remaining / Difference
+                  Difference
                 </span>
 
                 <strong>
@@ -709,11 +755,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Cladding</h1>
+
+              <h1>
+                Cladding
+              </h1>
 
               <p class="section-subtitle">
                 One cladding specification applies to the entire job.
               </p>
+
             </div>
 
           </div>
@@ -723,7 +773,9 @@
 
             <div class="card-heading">
 
-              <h2>Cladding Selection</h2>
+              <h2>
+                Cladding Selection
+              </h2>
 
               <span
                 id="cladding-summary"
@@ -735,7 +787,10 @@
             </div>
 
 
-            <div class="field-group required-field">
+            <div
+              id="cladding-material-field"
+              class="field-group required-field"
+            >
 
               <label for="cladding-type">
                 Material
@@ -745,6 +800,10 @@
                 id="cladding-type"
                 data-state-path="cladding.type"
               >
+
+                <option value="">
+                  Select material
+                </option>
 
                 <option value="ekodeck">
                   Ekodeck Screening 67x15mm
@@ -791,13 +850,6 @@
             </div>
 
 
-            <!-- ===========================================
-                 DYNAMIC CLADDING FIELDS
-
-                 app.js renders fields relevant to the
-                 selected cladding only.
-                 =========================================== -->
-
             <div
               id="cladding-options"
               class="dynamic-options"
@@ -806,14 +858,14 @@
           </div>
 
 
-          <!-- =============================================
-               CLADDING CALCULATION
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Cladding Calculation</h2>
+
+              <h2>
+                Cladding Calculation
+              </h2>
+
             </div>
 
 
@@ -851,11 +903,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Powder Coating</h1>
+
+              <h1>
+                Powder Coating
+              </h1>
 
               <p class="section-subtitle">
                 Powder coating applies to the whole job.
               </p>
+
             </div>
 
           </div>
@@ -917,9 +973,11 @@
                   id="powder-colour"
                   data-state-path="powder.colour"
                 >
+
                   <option value="">
                     Select colour
                   </option>
+
                 </select>
 
               </div>
@@ -940,7 +998,11 @@
           <div class="card">
 
             <div class="card-heading">
-              <h2>Powder Cost</h2>
+
+              <h2>
+                Powder Cost
+              </h2>
+
             </div>
 
 
@@ -1025,24 +1087,28 @@
           <div class="section-heading">
 
             <div>
-              <h1>Materials & Fabrication</h1>
+
+              <h1>
+                Materials & Fabrication
+              </h1>
 
               <p class="section-subtitle">
                 What needs to be ordered, cut and fabricated.
               </p>
+
             </div>
 
           </div>
 
 
-          <!-- =============================================
-               STEEL
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Steel</h2>
+
+              <h2>
+                Steel
+              </h2>
+
             </div>
 
 
@@ -1060,14 +1126,14 @@
           </div>
 
 
-          <!-- =============================================
-               CLADDING MATERIALS
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Cladding</h2>
+
+              <h2>
+                Cladding
+              </h2>
+
             </div>
 
 
@@ -1085,14 +1151,14 @@
           </div>
 
 
-          <!-- =============================================
-               REQUIRED MATERIALS / CONSUMABLES
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Required Materials / Consumables</h2>
+
+              <h2>
+                Required Materials / Consumables
+              </h2>
+
             </div>
 
 
@@ -1110,14 +1176,14 @@
           </div>
 
 
-          <!-- =============================================
-               FABRICATION / CUT LIST
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Fabrication / Cut List</h2>
+
+              <h2>
+                Fabrication / Cut List
+              </h2>
+
             </div>
 
 
@@ -1155,24 +1221,28 @@
           <div class="section-heading">
 
             <div>
-              <h1>Labour</h1>
+
+              <h1>
+                Labour
+              </h1>
 
               <p class="section-subtitle">
                 Automatic labour plus any additional allowance.
               </p>
+
             </div>
 
           </div>
 
 
-          <!-- =============================================
-               FABRICATION LABOUR
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Fabrication</h2>
+
+              <h2>
+                Fabrication
+              </h2>
+
             </div>
 
 
@@ -1250,14 +1320,14 @@
           </div>
 
 
-          <!-- =============================================
-               INSTALLATION LABOUR
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Installation</h2>
+
+              <h2>
+                Installation
+              </h2>
+
             </div>
 
 
@@ -1335,14 +1405,14 @@
           </div>
 
 
-          <!-- =============================================
-               CLADDING LABOUR
-               ============================================= -->
-
           <div class="card">
 
             <div class="card-heading">
-              <h2>Cladding Labour</h2>
+
+              <h2>
+                Cladding Labour
+              </h2>
+
             </div>
 
 
@@ -1394,14 +1464,14 @@
           </div>
 
 
-          <!-- =============================================
-               TOTAL LABOUR
-               ============================================= -->
-
           <div class="card highlight-card">
 
             <div class="card-heading">
-              <h2>Total Labour</h2>
+
+              <h2>
+                Total Labour
+              </h2>
+
             </div>
 
 
@@ -1446,11 +1516,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Costing</h1>
+
+              <h1>
+                Costing
+              </h1>
 
               <p class="section-subtitle">
                 Internal business costing only.
               </p>
+
             </div>
 
           </div>
@@ -1459,7 +1533,11 @@
           <div class="card">
 
             <div class="card-heading">
-              <h2>Internal Costs</h2>
+
+              <h2>
+                Internal Costs
+              </h2>
+
             </div>
 
 
@@ -1536,7 +1614,7 @@
               <div class="cost-row subtotal">
 
                 <span>
-                  Cost / Sell EX GST
+                  Ex GST
                 </span>
 
                 <strong id="cost-ex-gst">
@@ -1553,6 +1631,19 @@
                 </span>
 
                 <strong id="cost-gst">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="cost-row">
+
+                <span>
+                  Rounding
+                </span>
+
+                <strong id="cost-rounding">
                   $0.00
                 </strong>
 
@@ -1579,7 +1670,11 @@
           <div class="card">
 
             <div class="card-heading">
-              <h2>Quote Performance</h2>
+
+              <h2>
+                Quote Performance
+              </h2>
+
             </div>
 
 
@@ -1673,11 +1768,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Client</h1>
+
+              <h1>
+                Client
+              </h1>
 
               <p class="section-subtitle">
                 Client and project details.
               </p>
+
             </div>
 
           </div>
@@ -1804,19 +1903,19 @@
           <div class="section-heading">
 
             <div>
-              <h1>Quote</h1>
+
+              <h1>
+                Quote
+              </h1>
 
               <p class="section-subtitle">
                 Final customer quote and communication.
               </p>
+
             </div>
 
           </div>
 
-
-          <!-- =============================================
-               QUOTE CONTROL
-               ============================================= -->
 
           <div class="card quote-control-card">
 
@@ -1902,6 +2001,7 @@
           </div>
 
 
+
           <!-- =============================================
                FINISHED CLIENT QUOTE
                ============================================= -->
@@ -1937,7 +2037,9 @@
 
             <div class="quote-section">
 
-              <h2>PROJECT DESCRIPTION</h2>
+              <h2>
+                PROJECT DESCRIPTION
+              </h2>
 
               <div
                 id="quote-project-description"
@@ -1951,7 +2053,9 @@
 
             <div class="quote-section">
 
-              <h2>FABRICATION</h2>
+              <h2>
+                FABRICATION
+              </h2>
 
               <div
                 id="quote-fabrication"
@@ -1965,7 +2069,9 @@
 
             <div class="quote-section">
 
-              <h2>INSTALLATION</h2>
+              <h2>
+                INSTALLATION
+              </h2>
 
               <div
                 id="quote-installation"
@@ -1979,7 +2085,9 @@
 
             <div class="quote-section">
 
-              <h2>FINISH</h2>
+              <h2>
+                FINISH
+              </h2>
 
               <div
                 id="quote-finish"
@@ -1993,7 +2101,9 @@
 
             <div class="quote-section">
 
-              <h2>PRICE</h2>
+              <h2>
+                PRICE
+              </h2>
 
               <div class="quote-price-table">
 
@@ -2042,7 +2152,9 @@
 
             <div class="quote-section">
 
-              <h2>TERMS</h2>
+              <h2>
+                TERMS
+              </h2>
 
               <div
                 id="quote-terms"
@@ -2056,12 +2168,15 @@
 
             <div class="quote-section">
 
-              <h2>BANK TRANSFER</h2>
+              <h2>
+                BANK TRANSFER
+              </h2>
 
               <div
                 id="quote-bank-details"
                 class="quote-bank-details"
               >
+
                 <div>
                   JW and GF Tuuta
                 </div>
@@ -2081,6 +2196,7 @@
           </article>
 
 
+
           <!-- =============================================
                EMAIL
                ============================================= -->
@@ -2089,7 +2205,9 @@
 
             <div class="card-heading">
 
-              <h2>Email</h2>
+              <h2>
+                Email
+              </h2>
 
               <button
                 id="copy-email-btn"
@@ -2126,13 +2244,14 @@
 
               <textarea
                 id="email-body"
-                rows="14"
+                rows="16"
                 readonly
               ></textarea>
 
             </div>
 
           </div>
+
 
 
           <!-- =============================================
@@ -2143,7 +2262,9 @@
 
             <div class="card-heading">
 
-              <h2>SMS</h2>
+              <h2>
+                SMS
+              </h2>
 
               <button
                 id="copy-sms-btn"
@@ -2165,7 +2286,7 @@
 
               <textarea
                 id="sms-body"
-                rows="6"
+                rows="8"
                 readonly
               ></textarea>
 
@@ -2194,11 +2315,15 @@
           <div class="section-heading">
 
             <div>
-              <h1>Saved Jobs</h1>
+
+              <h1>
+                Saved Jobs
+              </h1>
 
               <p class="section-subtitle">
                 Saved jobs remain here until you delete them.
               </p>
+
             </div>
 
 
@@ -2252,7 +2377,7 @@
 
 
     <!-- ===================================================
-         TOAST / FEEDBACK
+         TOAST
          =================================================== -->
 
     <div
