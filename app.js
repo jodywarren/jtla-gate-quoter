@@ -81,6 +81,19 @@
     catchAllowanceExGST: 40
   };
  
+  /* Updated bank account name. */
+  if (CFG.bank) {
+    CFG.bank.accountName = String(CFG.bank.accountName || '').replace('GF Tuuta', 'CF Tuuta');
+  }
+ 
+  /* All steel is Duragalv. Keep internal labels concise. */
+  Object.values(CFG.steel.frame || {}).forEach(item => {
+    if (item?.label) item.label = item.label.replace(/\s+Duragalv\b/gi, '');
+  });
+  Object.values(CFG.steel.posts || {}).forEach(item => {
+    if (item?.label) item.label = item.label.replace(/\s+Duragalv\b/gi, '');
+  });
+ 
   if (CFG.cladding?.colorbond) {
     CFG.cladding.colorbond.rawMaterialRatePerM2ExGST = 25;
     CFG.cladding.colorbond.rawMaterialRatePerM2 = 25;
@@ -89,6 +102,7 @@
     CFG.cladding.colorbond.installedRatePerM2 = 50;
     CFG.cladding.colorbond.installedRateIncludesGST = false;
     CFG.cladding.colorbond.labourRatePerM2 = 0;
+    CFG.cladding.colorbond.screwAllowancePerLinealMExGST = 3;
   }
  
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -461,20 +475,16 @@
  
     if (c?.type === 'fixedPanel') {
       const d = newFixedPanel();
- 
+      const savedRails = Array.isArray(c.internalRails)
+        ? c.internalRails.map(r => ({ ...newPanelRail(r.orientation || 'horizontal', r.steelType || CFG.defaults.frameType), ...r }))
+        : null;
       return {
         ...d,
         ...c,
- 
-        leftPost: {
-          ...d.leftPost,
-          ...(c.leftPost || {})
-        },
- 
-        rightPost: {
-          ...d.rightPost,
-          ...(c.rightPost || {})
-        }
+        railMode: c.railMode || (savedRails ? 'manual' : 'auto'),
+        internalRails: savedRails || d.internalRails,
+        leftPost: { ...d.leftPost, ...(c.leftPost || {}) },
+        rightPost: { ...d.rightPost, ...(c.rightPost || {}) }
       };
     }
  
@@ -656,22 +666,29 @@
     };
   }
  
+  function newPanelRail(orientation = 'horizontal', steelType = CFG.defaults.frameType) {
+    return {
+      id: uid('panel_rail'),
+      orientation,
+      steelType,
+      lengthMode: 'auto',
+      manualLengthMm: 0
+    };
+  }
+ 
   function newFixedPanel() {
     return {
       id: uid('panel'),
- 
       type: 'fixedPanel',
- 
       widthMm: 700,
- 
-      leftPost:
-        newPanelPost('left'),
- 
-      rightPost:
-        newPanelPost('right'),
- 
-      verticalRailCount:
-        CFG.defaults.fixedPanelVerticalRailCount
+      leftPost: newPanelPost('left'),
+      rightPost: newPanelPost('right'),
+      railMode: 'auto',
+      internalRails: [
+        newPanelRail('horizontal', CFG.defaults.frameType),
+        newPanelRail('horizontal', CFG.defaults.frameType),
+        newPanelRail('horizontal', CFG.defaults.frameType)
+      ]
     };
   }
  
@@ -953,6 +970,23 @@
       0,
       num(panel.widthMm)
     );
+  }
+ 
+  function panelInternalWidthMm(panel) {
+    const leftW = panel.leftPost.fixing === 'existing_structure' ? 0 : postConfig(panel.leftPost.postType).widthMm;
+    const rightW = panel.rightPost.fixing === 'existing_structure' ? 0 : postConfig(panel.rightPost.postType).widthMm;
+    return Math.max(0, panelWidthMm(panel) - leftW - rightW);
+  }
+ 
+  function panelRailAutoLengthMm(panel, rail) {
+    return rail.orientation === 'vertical'
+      ? Math.max(0, num(job.site.finishedHeightMm))
+      : panelInternalWidthMm(panel);
+  }
+ 
+  function panelRailsUsed(panel) {
+    if (panel.railMode !== 'manual' && job.cladding.direction === 'horizontal') return [];
+    return Array.isArray(panel.internalRails) ? panel.internalRails : [];
   }
  
   function componentOccupiedWidthMm(
@@ -1315,6 +1349,49 @@
           stockPrice,
           includesGST
         )
+    };
+  }
+ 
+  /* Pack complete cut pieces into stock lengths without joining offcuts. */
+  function packStockCuts(cutsMm, stockLengthM) {
+    const stockMm = Math.max(1, num(stockLengthM) * 1000);
+    const cuts = (cutsMm || []).map(v => Math.max(0, num(v))).filter(v => v > 0).sort((a, b) => b - a);
+    const bins = [];
+    const oversized = [];
+ 
+    cuts.forEach(cut => {
+      if (cut > stockMm) {
+        const fullLengths = Math.floor(cut / stockMm);
+        const remainder = cut - fullLengths * stockMm;
+        for (let i = 0; i < fullLengths; i += 1) bins.push({ remainingMm: 0, cutsMm: [stockMm] });
+        if (remainder > 0) bins.push({ remainingMm: stockMm - remainder, cutsMm: [remainder] });
+        oversized.push(cut);
+        return;
+      }
+      let bestIndex = -1;
+      let bestRemainingAfter = Infinity;
+      bins.forEach((bin, index) => {
+        if (bin.remainingMm >= cut) {
+          const remainingAfter = bin.remainingMm - cut;
+          if (remainingAfter < bestRemainingAfter) {
+            bestRemainingAfter = remainingAfter;
+            bestIndex = index;
+          }
+        }
+      });
+      if (bestIndex >= 0) {
+        bins[bestIndex].cutsMm.push(cut);
+        bins[bestIndex].remainingMm -= cut;
+      } else {
+        bins.push({ remainingMm: stockMm - cut, cutsMm: [cut] });
+      }
+    });
+ 
+    return {
+      qty: bins.length,
+      bins,
+      oversized,
+      totalCutM: cuts.reduce((sum, v) => sum + v, 0) / 1000
     };
   }
  
@@ -1954,11 +2031,17 @@
         cfg.installedRateIncludesGST
       );
       labourRatePerM2 = 0;
+      const screwLinealM = surfaces.reduce((sum, surface) => sum + Math.max(0, num(surface.widthMm)) / 1000, 0);
+      const screwAllowanceExGST = screwLinealM * num(cfg.screwAllowancePerLinealMExGST, 3);
       detail = {
         orderText: `${round(areaM2, 2)} m² ${job.cladding.profile || 'Colorbond'} - ${job.cladding.colour || 'select colour'}`,
         installedRatePerM2: cfg.installedRatePerM2,
-        directSellExGST
+        directSellExGST,
+        screwLinealM,
+        screwAllowanceExGST
       };
+      materialCostExGST += screwAllowanceExGST;
+      directSellExGST += screwAllowanceExGST;
     } else if (type === 'custom') {
       detail = calculateCustomCladding(areaM2);
       materialCostExGST = detail.materialCostExGST;
@@ -2201,19 +2284,21 @@
  
     let steelCostExGST = 0;
     const steelOrders = [];
+    const cutsByType = {};
+    cutList.forEach(item => {
+      if (!item.postType || item.fixing === 'existing_structure') return;
+      const materialMm = Math.max(0, num(item.materialAllowanceMm || item.cutLengthMm));
+      if (!materialMm) return;
+      if (!cutsByType[item.postType]) cutsByType[item.postType] = [];
+      cutsByType[item.postType].push(materialMm);
+    });
  
-    Object.entries(byTypeLengths).forEach(([type, lengthM]) => {
+    Object.entries(cutsByType).forEach(([type, cutsMm]) => {
       const cfg = postConfig(type);
-      const order = stockLengthCost(lengthM, cfg.stockLengthM, cfg.pricePerStockLength, cfg.priceIncludesGST);
-      steelCostExGST += order.costExGST;
-      steelOrders.push({
-        type,
-        label: cfg.label,
-        lengthM,
-        stockQty: order.qty,
-        stockLengthM: cfg.stockLengthM,
-        costExGST: order.costExGST
-      });
+      const packed = packStockCuts(cutsMm, cfg.stockLengthM);
+      const costExGST = packed.qty * gstExclusive(cfg.pricePerStockLength, cfg.priceIncludesGST);
+      steelCostExGST += costExGST;
+      steelOrders.push({ type, label: cfg.label, lengthM: packed.totalCutM, stockQty: packed.qty, stockLengthM: cfg.stockLengthM, costExGST, stockPlan: packed.bins });
     });
  
     const dynaboltCostExGST = dynabolts * gstExclusive(
@@ -2247,6 +2332,7 @@
  
   function calculateFrames(gateWidths) {
     const lengthsByType = {};
+    const cutsByType = {};
     const cutList = [];
     const sliderHardware = [];
     let gateFabricationHours = 0;
@@ -2262,76 +2348,52 @@
     let screwItems = 0;
     const labels = componentDisplayLabels();
     const gateHeight = gateFrameHeightMm();
+    const chargedDoublePairs = new Set();
  
-    const addLength = (type, lengthM) => {
-      if (lengthM <= 0) return;
-      lengthsByType[type] = (lengthsByType[type] || 0) + lengthM;
+    const addCut = (type, lengthMm) => {
+      const value = Math.max(0, num(lengthMm));
+      if (!value) return;
+      if (!cutsByType[type]) cutsByType[type] = [];
+      cutsByType[type].push(value);
+      lengthsByType[type] = (lengthsByType[type] || 0) + value / 1000;
     };
  
     job.components.forEach(c => {
       if (c.type === 'gate') {
         const width = Math.max(0, num(gateWidths[c.id]));
-        const frame = frameConfig(c.frameType);
         const railCount = clamp(parseInt(c.internalRailCount, 10) || 0, 0, CFG.rails.gate.maximumInternalRailCount);
         const railLength = railCutLengthForGate(c, width, gateHeight);
-        const perimeterM = (width * 2 + gateHeight * 2) / 1000;
-        const railM = (railCount * railLength) / 1000;
-        addLength(c.frameType, perimeterM + railM);
+        addCut(c.frameType, width); addCut(c.frameType, width);
+        addCut(c.frameType, gateHeight); addCut(c.frameType, gateHeight);
+        for (let i = 0; i < railCount; i += 1) addCut(c.frameType, railLength);
  
         gateFabricationHours += CFG.labour.gateFabricationHoursEach;
         gateInstallHours += CFG.labour.hangGateHoursEach;
         hingeSets += 1;
-        latchCostExGSTTotal += latchCostExGST(c.latchType);
+ 
+        const isDouble = c.relationship === 'double' && c.doublePairId;
+        if (!isDouble || !chargedDoublePairs.has(c.doublePairId)) {
+          latchCostExGSTTotal += latchCostExGST(c.latchType);
+          if (isDouble) chargedDoublePairs.add(c.doublePairId);
+        }
         screwItems += 1;
  
-        cutList.push({
-          componentId: c.id,
-          label: labels[c.id],
-          type: 'gate',
-          frameType: c.frameType,
-          widthMm: width,
-          heightMm: gateHeight,
-          railCount,
-          railLengthMm: railLength,
-          railOrientation: job.cladding.direction === 'horizontal' ? 'vertical' : 'horizontal',
-          hingeSide: c.hingeSide,
-          latchType: c.latchType
-        });
+        cutList.push({ componentId: c.id, label: labels[c.id], type: 'gate', frameType: c.frameType, widthMm: width, heightMm: gateHeight, railCount, railLengthMm: railLength, railOrientation: job.cladding.direction === 'horizontal' ? 'vertical' : 'horizontal', hingeSide: c.hingeSide, latchType: c.latchType, doublePairId: c.doublePairId || '', relationship: c.relationship || 'single' });
       }
  
       if (c.type === 'fixedPanel') {
         const width = panelWidthMm(c);
         const height = Math.max(0, num(job.site.finishedHeightMm));
-        const frameType = CFG.defaults.frameType;
-        let railCount = 0;
-        let railLength = 0;
- 
-        if (job.cladding.direction === 'vertical') {
-          railCount = clamp(
-            parseInt(c.verticalRailCount, 10) || CFG.rails.fixedPanel.verticalDefaultRailCount,
-            CFG.rails.fixedPanel.verticalMinimumRailCount,
-            CFG.rails.fixedPanel.verticalMaximumRailCount
-          );
-          const leftW = c.leftPost.fixing === 'existing_structure' ? 0 : postConfig(c.leftPost.postType).widthMm;
-          const rightW = c.rightPost.fixing === 'existing_structure' ? 0 : postConfig(c.rightPost.postType).widthMm;
-          railLength = Math.max(0, width - leftW - rightW);
-          addLength(frameType, (railCount * railLength) / 1000);
-        }
- 
+        const rails = panelRailsUsed(c).map(rail => {
+          const lengthMm = rail.lengthMode === 'manual' ? Math.max(0, num(rail.manualLengthMm)) : panelRailAutoLengthMm(c, rail);
+          const steelType = rail.steelType || CFG.defaults.frameType;
+          addCut(steelType, lengthMm);
+          return { ...rail, steelType, lengthMm };
+        });
         panelFabricationHours += CFG.labour.fixedPanelFabricationHoursEach;
         panelInstallHours += CFG.labour.fixedPanelInstallHoursEach;
         screwItems += 1;
- 
-        cutList.push({
-          label: labels[c.id],
-          type: 'fixedPanel',
-          frameType,
-          widthMm: width,
-          heightMm: height,
-          railCount,
-          railLengthMm: railLength,
-          railOrientation: 'horizontal'
-        });
+        cutList.push({ componentId: c.id, label: labels[c.id], type: 'fixedPanel', widthMm: width, heightMm: height, rails });
       }
  
       if (c.type === 'slider') {
@@ -2342,128 +2404,51 @@
         const topLengthMm = c.overhangMode === 'full_gate' ? manufacturedLengthMm : openingWidthMm;
         const bottomLengthMm = manufacturedLengthMm;
         const endLengthMm = frameHeightMm;
- 
-        addLength(c.bottomFrameType, bottomLengthMm / 1000);
-        addLength(c.topFrameType, topLengthMm / 1000);
-        addLength(c.endFrameType, (endLengthMm * 2) / 1000);
+        addCut(c.bottomFrameType, bottomLengthMm);
+        addCut(c.topFrameType, topLengthMm);
+        addCut(c.endFrameType, endLengthMm); addCut(c.endFrameType, endLengthMm);
  
         const rails = (c.internalRails || []).map(rail => {
-          const lengthMm = rail.lengthMode === 'manual'
-            ? Math.max(0, num(rail.manualLengthMm))
-            : sliderRailAutoLengthMm(c, rail);
-          addLength(c.internalRailType, lengthMm / 1000);
+          const lengthMm = rail.lengthMode === 'manual' ? Math.max(0, num(rail.manualLengthMm)) : sliderRailAutoLengthMm(c, rail);
+          addCut(c.internalRailType, lengthMm);
           return { ...rail, lengthMm };
         });
  
         const manufacturedM = manufacturedLengthMm / 1000;
         sliderFabricationHours += manufacturedM * (CFG.slider.fabricationMinutesPerM / 60);
         sliderInstallHours += manufacturedM * CFG.slider.installationHoursPerM;
- 
         const wheelQty = Math.max(0, parseInt(c.wheelQty, 10) || 0);
         const guideQty = Math.max(0, parseInt(c.guideRollerQty, 10) || 0);
         const dropQty = Math.max(0, parseInt(c.dropBoltQty, 10) || 0);
         const trackRequiredM = sliderTrackRequiredM(c);
-        const trackStockQty = trackRequiredM > 0
-          ? Math.ceil(trackRequiredM / CFG.hardware.slider.track.stockLengthM)
-          : 0;
- 
+        const trackStockQty = trackRequiredM > 0 ? Math.ceil(trackRequiredM / CFG.hardware.slider.track.stockLengthM) : 0;
         const wheelCost = wheelQty * CFG.hardware.slider.wheel.priceEachExGST;
         const guideCost = guideQty * CFG.hardware.slider.guideRollerSet.priceEachExGST;
         const dropCost = dropQty * CFG.hardware.slider.dropBolt.priceEachExGST;
         const trackCost = trackStockQty * CFG.hardware.slider.track.pricePerStockLengthExGST;
         const sliderLatch = latchCostExGST(c.latchType);
- 
         sliderHardwareCostExGST += wheelCost + guideCost + dropCost + sliderLatch;
         sliderTrackCostExGST += trackCost;
- 
-        sliderHardware.push({
-          componentId: c.id,
-          label: labels[c.id],
-          wheelQty,
-          guideQty,
-          dropQty,
-          latchType: c.latchType,
-          trackRequiredM,
-          trackStockQty,
-          trackCostExGST: trackCost,
-          rails,
-          openingWidthMm,
-          manufacturedLengthMm,
-          gateBodyWidthMm,
-          frameHeightMm,
-          cladding: sliderCladdingDimensions(c)
-        });
- 
+        sliderHardware.push({ componentId: c.id, label: labels[c.id], wheelQty, guideQty, dropQty, latchType: c.latchType, trackRequiredM, trackStockQty, trackCostExGST: trackCost, rails, openingWidthMm, manufacturedLengthMm, gateBodyWidthMm, frameHeightMm, cladding: sliderCladdingDimensions(c) });
         screwItems += 1;
- 
-        cutList.push({
-          label: labels[c.id],
-          type: 'slider',
-          openingWidthMm,
-          manufacturedLengthMm,
-          gateBodyWidthMm,
-          frameHeightMm,
-          topLengthMm,
-          bottomLengthMm,
-          endLengthMm,
-          topFrameType: c.topFrameType,
-          bottomFrameType: c.bottomFrameType,
-          endFrameType: c.endFrameType,
-          internalRailType: c.internalRailType,
-          rails,
-          slideDirection: c.slideDirection,
-          latchType: c.latchType
-        });
+        cutList.push({ componentId: c.id, label: labels[c.id], type: 'slider', openingWidthMm, manufacturedLengthMm, gateBodyWidthMm, frameHeightMm, topLengthMm, bottomLengthMm, endLengthMm, topFrameType: c.topFrameType, bottomFrameType: c.bottomFrameType, endFrameType: c.endFrameType, internalRailType: c.internalRailType, rails, slideDirection: c.slideDirection, latchType: c.latchType });
       }
     });
  
     let steelCostExGST = 0;
     const steelOrders = [];
- 
-    Object.entries(lengthsByType).forEach(([type, lengthM]) => {
+    Object.entries(cutsByType).forEach(([type, cutsMm]) => {
       const cfg = frameConfig(type);
-      const order = stockLengthCost(lengthM, cfg.stockLengthM, cfg.pricePerStockLength, cfg.priceIncludesGST);
-      steelCostExGST += order.costExGST;
-      steelOrders.push({
-        type,
-        label: cfg.label,
-        lengthM,
-        stockQty: order.qty,
-        stockLengthM: cfg.stockLengthM,
-        costExGST: order.costExGST
-      });
+      const packed = packStockCuts(cutsMm, cfg.stockLengthM);
+      const costExGST = packed.qty * gstExclusive(cfg.pricePerStockLength, cfg.priceIncludesGST);
+      steelCostExGST += costExGST;
+      steelOrders.push({ type, label: cfg.label, lengthM: packed.totalCutM, stockQty: packed.qty, stockLengthM: cfg.stockLengthM, costExGST, stockPlan: packed.bins, cutsMm: [...cutsMm] });
     });
  
-    const hingeCostExGST = hingeSets * gstExclusive(
-      CFG.hardware.hinges.lockout.pricePerSet,
-      CFG.hardware.hinges.lockout.priceIncludesGST
-    );
+    const hingeCostExGST = hingeSets * gstExclusive(CFG.hardware.hinges.lockout.pricePerSet, CFG.hardware.hinges.lockout.priceIncludesGST);
+    const screwCostExGST = job.cladding.type === 'colorbond' ? 0 : screwItems * gstExclusive(CFG.fixings.screws.defaultPerItem, CFG.fixings.screws.priceIncludesGST);
  
-    const screwCostExGST = screwItems * gstExclusive(
-      CFG.fixings.screws.defaultPerItem,
-      CFG.fixings.screws.priceIncludesGST
-    );
- 
-    return {
-      lengthsByType,
-      steelCostExGST,
-      steelOrders,
-      gateFabricationHours,
-      gateInstallHours,
-      panelFabricationHours,
-      panelInstallHours,
-      sliderFabricationHours,
-      sliderInstallHours,
-      hingeSets,
-      hingeCostExGST,
-      latchCostExGST: latchCostExGSTTotal,
-      sliderHardwareCostExGST,
-      sliderTrackCostExGST,
-      sliderHardware,
-      screwItems,
-      screwCostExGST,
-      cutList
-    };
+    return { lengthsByType, steelCostExGST, steelOrders, gateFabricationHours, gateInstallHours, panelFabricationHours, panelInstallHours, sliderFabricationHours, sliderInstallHours, hingeSets, hingeCostExGST, latchCostExGST: latchCostExGSTTotal, sliderHardwareCostExGST, sliderTrackCostExGST, sliderHardware, screwItems, screwCostExGST, cutList };
   }
  
   function calculatePowder(posts, frames) {
@@ -2484,10 +2469,11 @@
           areaM2 += perimeterM * (((cfg.widthMm + cfg.depthMm) * 2) / 1000);
         }
  
-        if (item.type === 'fixedPanel' && item.railCount > 0) {
-          const cfg = frameConfig(item.frameType);
-          const lengthM = (item.railCount * item.railLengthMm) / 1000;
-          areaM2 += lengthM * (((cfg.widthMm + cfg.depthMm) * 2) / 1000);
+        if (item.type === 'fixedPanel' && item.rails?.length) {
+          item.rails.forEach(rail => {
+            const cfg = frameConfig(rail.steelType);
+            areaM2 += (rail.lengthMm / 1000) * (((cfg.widthMm + cfg.depthMm) * 2) / 1000);
+          });
         }
  
         if (item.type === 'slider') {
@@ -2530,7 +2516,7 @@
     let frameArea = 0;
     frames.cutList.forEach(item => {
       if (item.type === 'gate') frameArea += (item.widthMm / 1000) * (item.heightMm / 1000);
-      if (item.type === 'fixedPanel' && item.railCount > 0) frameArea += (item.widthMm / 1000) * (item.heightMm / 1000);
+      if (item.type === 'fixedPanel' && item.rails?.length) frameArea += (item.widthMm / 1000) * (item.heightMm / 1000);
       if (item.type === 'slider') frameArea += (item.gateBodyWidthMm / 1000) * (item.frameHeightMm / 1000);
     });
  
@@ -4273,138 +4259,31 @@
     `;
   }
  
-  function renderFixedPanelEditor(
-    c,
-    label
-  ) {
+  function renderFixedPanelEditor(c, label) {
+    const activeRails = panelRailsUsed(c);
+    const railRows = activeRails.map((rail, index) => {
+      const shownLength = rail.lengthMode === 'manual' ? num(rail.manualLengthMm) : panelRailAutoLengthMm(c, rail);
+      return `
+        <div class="slider-rail-row">
+          <div class="field-group"><label>Rail ${index + 1}</label><select data-panel-rail-field="orientation" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="horizontal" ${rail.orientation === 'horizontal' ? 'selected' : ''}>Horizontal</option><option value="vertical" ${rail.orientation === 'vertical' ? 'selected' : ''}>Vertical</option></select></div>
+          <div class="field-group"><label>Steel</label><select data-panel-rail-field="steelType" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}">${optionsFromObject(CFG.steel.frame, rail.steelType || CFG.defaults.frameType)}</select></div>
+          <div class="field-group"><label>Length</label><select data-panel-rail-field="lengthMode" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="auto" ${rail.lengthMode === 'auto' ? 'selected' : ''}>Auto</option><option value="manual" ${rail.lengthMode === 'manual' ? 'selected' : ''}>Manual</option></select></div>
+          <div class="field-group"><label>${rail.lengthMode === 'manual' ? 'Manual length' : 'Calculated length'}</label><div class="input-with-unit"><input type="number" min="0" step="1" value="${Math.round(shownLength)}" ${rail.lengthMode === 'manual' ? '' : 'disabled'} data-panel-rail-field="manualLengthMm" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><span class="input-unit">mm</span></div></div>
+          <button type="button" class="delete" data-action="delete-panel-rail" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}">×</button>
+        </div>`;
+    }).join('');
+    const autoMessage = c.railMode !== 'manual' && job.cladding.direction === 'horizontal'
+      ? '<div class="compact-feature-summary">Auto layout: no rails for horizontal cladding. Add a rail below to override.</div>'
+      : '';
+ 
     return `
-      <div
-        id="component-card-${safe(c.id)}"
-        class="card component-card fixed-panel${c.id === job.selectedComponentId ? ' component-selected' : ''}"
-      >
- 
-        <div class="component-card-header">
- 
-          <div class="component-title-wrap">
- 
-            <h2 class="component-title">
-              ${safe(label)}
-            </h2>
- 
-            <div class="component-subtitle">
-              Complete panel including two built-in posts
-            </div>
- 
-          </div>
- 
-          ${componentToolbar(c)}
- 
-        </div>
- 
- 
-        <div
-          class="field-group required-field ${num(c.widthMm) > 0 ? 'complete' : ''}"
-        >
- 
-          <label>
-            Overall Fixed Panel Width
-          </label>
- 
-          <div class="input-with-unit">
- 
-            <input
-              type="number"
-              min="0"
-              step="1"
-              inputmode="numeric"
-              value="${num(c.widthMm)}"
-              data-component-field="widthMm"
-              data-component-id="${safe(c.id)}"
-            >
- 
-            <span class="input-unit">
-              mm
-            </span>
- 
-          </div>
- 
-          <small class="field-help">
-            Includes the two built-in posts. No clearance is deducted around a fixed panel.
-          </small>
- 
-        </div>
- 
- 
-        <div class="component-subsection">
- 
-          <div class="component-subsection-title">
-            Built-in Posts
-          </div>
- 
-          <div class="dynamic-options">
- 
-            ${renderPanelPostEditor(
-              c,
-              'left',
-              c.leftPost
-            )}
- 
-            ${renderPanelPostEditor(
-              c,
-              'right',
-              c.rightPost
-            )}
- 
-          </div>
- 
-        </div>
- 
- 
-        ${
-          job.cladding.direction ===
-          'vertical'
-            ? `
-              <div class="component-subsection">
- 
-                <div class="component-subsection-title">
-                  Vertical Cladding Rails
-                </div>
- 
-                <div class="field-group">
- 
-                  <label>
-                    Total Rail Count
-                  </label>
- 
-                  <input
-                    type="number"
-                    min="${CFG.rails.fixedPanel.verticalMinimumRailCount}"
-                    max="${CFG.rails.fixedPanel.verticalMaximumRailCount}"
-                    step="1"
-                    value="${num(c.verticalRailCount)}"
-                    data-component-field="verticalRailCount"
-                    data-component-id="${safe(c.id)}"
-                  >
- 
-                  <small class="field-help">
-                    Default is top, middle and bottom. Increase where required.
-                  </small>
- 
-                </div>
- 
-              </div>
-            `
-            : `
-              <div class="compact-feature-summary">
-                Horizontal cladding: no fixed-panel rails. Cladding spans between the two posts.
-              </div>
-            `
-        }
- 
-      </div>
-    `;
+      <div id="component-card-${safe(c.id)}" class="card component-card fixed-panel${c.id === job.selectedComponentId ? ' component-selected' : ''}">
+        <div class="component-card-header"><div class="component-title-wrap"><h2 class="component-title">${safe(label)}</h2><div class="component-subtitle">Complete panel including two built-in posts</div></div>${componentToolbar(c)}</div>
+        <div class="field-group required-field ${num(c.widthMm) > 0 ? 'complete' : ''}"><label>Overall Fixed Panel Width</label><div class="input-with-unit"><input type="number" min="0" step="1" inputmode="numeric" value="${num(c.widthMm)}" data-component-field="widthMm" data-component-id="${safe(c.id)}"><span class="input-unit">mm</span></div><small class="field-help">Includes the two built-in posts. No clearance is deducted around a fixed panel.</small></div>
+        <div class="component-subsection"><div class="component-subsection-title">Built-in Posts</div><div class="dynamic-options">${renderPanelPostEditor(c, 'left', c.leftPost)}${renderPanelPostEditor(c, 'right', c.rightPost)}</div></div>
+        <div class="component-subsection"><div class="component-subsection-title">Internal Rails</div><div class="compact-feature-summary">Each rail can use its own steel size. Auto horizontal length is the clear distance between posts; Auto vertical length is the finished panel height.</div>${autoMessage}${railRows || '<div class="empty-state">No internal rails included.</div>'}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button type="button" class="secondary-btn" data-action="add-panel-rail" data-component-id="${safe(c.id)}" data-orientation="horizontal">+ Horizontal Rail</button><button type="button" class="secondary-btn" data-action="add-panel-rail" data-component-id="${safe(c.id)}" data-orientation="vertical">+ Vertical Rail</button><button type="button" class="secondary-btn" data-action="reset-panel-rails-auto" data-component-id="${safe(c.id)}">Reset Rails to Auto</button></div></div>
+      </div>`;
   }
- 
  
   function renderSliderPostMini(slider, key, label, post) {
     const needsHoles = ['fixed_brick', 'baseplate', 'concrete_house'].includes(post.fixing);
@@ -4413,7 +4292,7 @@
         <div class="option-panel-title">${safe(label)}</div>
         <div class="slider-subgrid">
           ${key.startsWith('rollerGuide.')
-            ? `<div class="field-group"><label>Post size</label><div class="compact-feature-summary">65×65 SHS Duragalv</div></div>`
+            ? `<div class="field-group"><label>Post size</label><div class="compact-feature-summary">65×65 SHS</div></div>`
             : `<div class="field-group"><label>Post size</label><select data-slider-post-field="postType" data-component-id="${safe(slider.id)}" data-slider-post-key="${safe(key)}">${optionsFromObject(CFG.steel.posts, post.postType)}</select></div>`}
           <div class="field-group"><label>Fixing</label><select data-slider-post-field="fixing" data-component-id="${safe(slider.id)}" data-slider-post-key="${safe(key)}">${fixingOptions(post.fixing)}</select></div>
         </div>
@@ -5103,10 +4982,10 @@
         job.cladding.custom;
  
       html += `
-        <div class="field-group">
+        <div class="field-group required-field ${c.name ? 'complete' : ''}">
  
           <label>
-            Material Name
+            Other cladding description
           </label>
  
           <input
@@ -5315,6 +5194,7 @@
     if (c.type === 'colorbond') {
       detail += `
         <div class="summary-row"><span>Supply + install rate</span><strong>${money(c.config.installedRatePerM2)}/m²</strong></div>
+        <div class="summary-row"><span>Screw allowance</span><strong>${lm(c.detail.screwLinealM || 0)} × $${num(c.config.screwAllowancePerLinealMExGST, 3).toFixed(2)} = ${money(c.detail.screwAllowanceExGST || 0)}</strong></div>
         <div class="summary-row summary-total"><span>Colorbond allowance EX GST</span><strong>${money(c.directSellExGST)}</strong></div>`;
     }
  
@@ -5572,11 +5452,11 @@
     const steelItems = [
       ...calculation.posts.steelOrders.map(o => ({
         title: o.label,
-        value: `${o.stockQty} × ${o.stockLengthM}m stock (${round(o.lengthM, 2)}m required)`
+        value: `${o.stockQty} × ${o.stockLengthM}m stock (${round(o.lengthM, 2)}m complete cuts required)${o.stockPlan?.length ? ` | Cut plan: ${o.stockPlan.map((bin, index) => `L${index + 1}: ${bin.cutsMm.map(v => Math.round(v)).join(' + ')}mm`).join(' ; ')}` : ''}`
       })),
       ...calculation.frames.steelOrders.map(o => ({
         title: o.label,
-        value: `${o.stockQty} × ${o.stockLengthM}m stock (${round(o.lengthM, 2)}m required)`
+        value: `${o.stockQty} × ${o.stockLengthM}m stock (${round(o.lengthM, 2)}m complete cuts required)${o.stockPlan?.length ? ` | Cut plan: ${o.stockPlan.map((bin, index) => `L${index + 1}: ${bin.cutsMm.map(v => Math.round(v)).join(' + ')}mm`).join(' ; ')}` : ''}`
       }))
     ];
  
@@ -5589,7 +5469,10 @@
       { title: clad.config?.label || 'Cladding', value: clad.detail?.orderText || `${round(clad.areaM2, 2)} m²` },
       { title: 'Clad Area', value: sqm(clad.areaM2) }
     ];
-    if (clad.type === 'colorbond') cladItems.push({ title: 'Supply + install', value: `${money(clad.config.installedRatePerM2)}/m²` });
+    if (clad.type === 'colorbond') {
+      cladItems.push({ title: 'Supply + install', value: `${money(clad.config.installedRatePerM2)}/m²` });
+      cladItems.push({ title: 'Colorbond screws', value: `${lm(clad.detail.screwLinealM || 0)} × $${num(clad.config.screwAllowancePerLinealMExGST, 3).toFixed(2)} = ${money(clad.detail.screwAllowanceExGST || 0)} ex GST` });
+    }
     $('#cladding-materials-list').innerHTML = cladItems.map(i => `<div class="material-item"><div class="material-item-title">${safe(i.title)}</div><div class="material-item-value">${safe(i.value)}</div></div>`).join('');
  
     const req = [];
@@ -5599,8 +5482,13 @@
     if (calculation.posts.dynabolts) req.push([CFG.fixings.dynabolt.label, `${calculation.posts.dynabolts}`]);
     if (calculation.frames.hingeSets) req.push([CFG.hardware.hinges.lockout.label, `${calculation.frames.hingeSets} set${calculation.frames.hingeSets === 1 ? '' : 's'}`]);
  
+    const materialLatchPairs = new Set();
     job.components.filter(c => c.type === 'gate').forEach(g => {
-      req.push([`${componentDisplayLabels()[g.id]} latch`, latchClientText(g.latchType)]);
+      const isDouble = g.relationship === 'double' && g.doublePairId;
+      if (!isDouble || !materialLatchPairs.has(g.doublePairId)) {
+        req.push([isDouble ? 'Double Gate latch' : `${componentDisplayLabels()[g.id]} latch`, latchClientText(g.latchType)]);
+        if (isDouble) materialLatchPairs.add(g.doublePairId);
+      }
       req.push([`${componentDisplayLabels()[g.id]} hinges to order`, `${hingeOrderSide(g).toUpperCase()} hinge set`]);
     });
  
@@ -5643,7 +5531,8 @@
           `${Math.round(i.widthMm)} × ${Math.round(i.heightMm)}mm | ${i.railCount} ${i.railOrientation} rail${i.railCount === 1 ? '' : 's'} @ ${Math.round(i.railLengthMm)}mm | Order ${hingeOrderSide(job.components.find(c => c.id === i.componentId) || { hingeSide: i.hingeSide })} hinges | ${latchClientText(i.latchType)}`
         ]);
       } else if (i.type === 'fixedPanel') {
-        cuts.push([i.label, `${Math.round(i.widthMm)} × ${Math.round(i.heightMm)}mm | ${i.railCount ? `${i.railCount} rails @ ${Math.round(i.railLengthMm)}mm` : 'No rails'}`]);
+        cuts.push([i.label, `${Math.round(i.widthMm)} × ${Math.round(i.heightMm)}mm | ${i.rails?.length || 0} internal rail${i.rails?.length === 1 ? '' : 's'}`]);
+        (i.rails || []).forEach((r, idx) => cuts.push([`${i.label} rail ${idx + 1}`, `${r.orientation}: ${Math.round(r.lengthMm)}mm ${frameConfig(r.steelType).label}`]));
       } else if (i.type === 'slider') {
         cuts.push([i.label, `Opening ${Math.round(i.openingWidthMm)}mm | Manufactured ${Math.round(i.manufacturedLengthMm)} × ${Math.round(i.frameHeightMm)}mm`]);
         cuts.push([`${i.label} bottom`, `${frameConfig(i.bottomFrameType).label}: ${Math.round(i.bottomLengthMm)}mm`]);
@@ -5995,7 +5884,7 @@
       return (
         job.cladding.custom
           .name ||
-        'custom cladding'
+        'other selected cladding'
       );
     }
  
@@ -6252,41 +6141,26 @@
   }
  
   function gateClientLines() {
-    const labels =
-      componentDisplayLabels();
+    const labels = componentDisplayLabels();
+    const seenDoubleLatchPairs = new Set();
+    const lines = [];
  
-    return job.components
-      .filter(
-        (gate) =>
-          gate.type ===
-          'gate'
-      )
-      .flatMap(
-        (gate) => {
-          const hinge =
-            gate.hingeSide ===
-            'left'
-              ? 'left'
-              : 'right';
- 
-          const latchSide =
-            hinge ===
-            'left'
-              ? 'right'
-              : 'left';
- 
-          const opening =
-            gate.openDirection ===
-            'in'
-              ? 'inward'
-              : 'outward';
- 
-          return [
-            `${labels[gate.id]}: hinged on the ${hinge}, latch on the ${latchSide}, opening ${opening}.`,
-            `Fit ${latchClientText(gate.latchType)}.`
-          ];
-        }
+    job.components.filter(gate => gate.type === 'gate').forEach(gate => {
+      const hinge = gate.hingeSide === 'left' ? 'left' : 'right';
+      const latchSide = hinge === 'left' ? 'right' : 'left';
+      const opening = gate.openDirection === 'in' ? 'inward' : 'outward';
+      const isDouble = gate.relationship === 'double' && gate.doublePairId;
+      lines.push(
+        isDouble
+          ? `${labels[gate.id]}: hinged on the ${hinge}, meeting at centre, opening ${opening}.`
+          : `${labels[gate.id]}: hinged on the ${hinge}, latch on the ${latchSide}, opening ${opening}.`
       );
+      if (!isDouble || !seenDoubleLatchPairs.has(gate.doublePairId)) {
+        lines.push(`Fit ${latchClientText(gate.latchType)}.`);
+        if (isDouble) seenDoubleLatchPairs.add(gate.doublePairId);
+      }
+    });
+    return lines;
   }
  
   function claddingFabricationText() {
@@ -7314,6 +7188,21 @@ Jody`;
     return false;
   }
  
+  function handlePanelRailField(el) {
+    if (!el.dataset.panelRailField) return false;
+    const panel = job.components.find(c => c.id === el.dataset.componentId && c.type === 'fixedPanel');
+    if (!panel) return true;
+    const rail = (panel.internalRails || []).find(r => r.id === el.dataset.railId);
+    if (!rail) return true;
+    const field = el.dataset.panelRailField;
+    const value = field === 'manualLengthMm' ? num(el.value) : el.value;
+    mutate(() => {
+      panel.railMode = 'manual';
+      rail[field] = value;
+    }, { pricing: true });
+    return true;
+  }
+ 
   function handleComponentField(el) {
     const id =
       el.dataset
@@ -7717,6 +7606,10 @@ Jody`;
         return;
       }
  
+      if (handlePanelRailField(el)) {
+        return;
+      }
+ 
       if (
         handleComponentField(
           el
@@ -7761,6 +7654,16 @@ Jody`;
           HTMLElement
         )
       ) {
+        return;
+      }
+ 
+      if (el.dataset.claddingNested === 'custom.name') {
+        job.cladding.custom.name = el.value;
+        job.updatedAt = new Date().toISOString();
+        autosave();
+        calculation = calculateJob();
+        renderCladding();
+        renderQuote();
         return;
       }
  
@@ -8433,6 +8336,37 @@ Jody`;
           }
         );
  
+        return;
+      }
+ 
+      if (action === 'add-panel-rail') {
+        const panel = job.components.find(c => c.id === btn.dataset.componentId && c.type === 'fixedPanel');
+        if (!panel) return;
+        mutate(() => {
+          panel.railMode = 'manual';
+          panel.internalRails = Array.isArray(panel.internalRails) ? panel.internalRails : [];
+          panel.internalRails.push(newPanelRail(btn.dataset.orientation || 'horizontal', CFG.defaults.frameType));
+        }, { pricing: true, undoable: true });
+        return;
+      }
+ 
+      if (action === 'delete-panel-rail') {
+        const panel = job.components.find(c => c.id === btn.dataset.componentId && c.type === 'fixedPanel');
+        if (!panel) return;
+        mutate(() => {
+          panel.railMode = 'manual';
+          panel.internalRails = (panel.internalRails || []).filter(r => r.id !== btn.dataset.railId);
+        }, { pricing: true, undoable: true });
+        return;
+      }
+ 
+      if (action === 'reset-panel-rails-auto') {
+        const panel = job.components.find(c => c.id === btn.dataset.componentId && c.type === 'fixedPanel');
+        if (!panel) return;
+        mutate(() => {
+          panel.railMode = 'auto';
+          panel.internalRails = [newPanelRail('horizontal', CFG.defaults.frameType), newPanelRail('horizontal', CFG.defaults.frameType), newPanelRail('horizontal', CFG.defaults.frameType)];
+        }, { pricing: true, undoable: true });
         return;
       }
  
