@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" role="img" aria-label="Swing one vertical rail">
+<g fill="#8A8D8F" stroke="#333333" stroke-width="8" stroke-linejoin="miter" stroke-linecap="square">
+
+<!-- 50x25 RHS schematic: top rail mitred both ends; side rails mitred at top; bottom rail internal -->
+<polygon points="180,120 820,120 770,170 230,170"/>
+<polygon points="180,120 230,170 230,680 180,680"/>
+<polygon points="820,120 770,170 770,680 820,680"/>
+<rect x="230" y="630" width="540" height="50"/>
+
+<rect x="475" y="170" width="50" height="460"/>
+
+<rect x="145" y="225" width="55" height="90" rx="6"/><circle cx="172" cy="270" r="10" fill="none"/>
+<rect x="145" y="485" width="55" height="90" rx="6"/><circle cx="172" cy="530" r="10" fill="none"/>
+
+<rect x="785" y="365" width="70" height="70" rx="8"/><rect x="740" y="392" width="80" height="16" rx="5"/>
+</g></svg>
