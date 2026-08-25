@@ -45,7 +45,7 @@
  
   CFG.hardware = CFG.hardware || {};
   CFG.hardware.slider = {
-    wheel: { label: 'Sliding gate wheel', priceExGST: 45, priceEachExGST: 45, defaultQty: 2 },
+    wheel: { label: 'Roller wheel', priceExGST: 45, priceEachExGST: 45, defaultQty: 2 },
     guideRollerSet: { label: 'Guide roller set', priceExGST: 25, priceEachExGST: 25, defaultQty: 1 },
     track: { label: 'Galvanised sliding gate track', stockLengthM: 3, pricePerStockLengthExGST: 55, lengthMultiplier: 2 },
     dropBolt: { label: 'Drop bolt', priceExGST: 20, priceEachExGST: 20, defaultQty: 0 },
@@ -103,6 +103,8 @@
     CFG.cladding.colorbond.installedRateIncludesGST = false;
     CFG.cladding.colorbond.labourRatePerM2 = 0;
     CFG.cladding.colorbond.screwAllowancePerLinealMExGST = 3;
+    CFG.cladding.colorbond.sheetWidthMm = 890;
+    CFG.cladding.colorbond.finishedCoverMm = 800;
   }
  
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -476,7 +478,23 @@
     if (c?.type === 'fixedPanel') {
       const d = newFixedPanel();
       const savedRails = Array.isArray(c.internalRails)
-        ? c.internalRails.map(r => ({ ...newPanelRail(r.orientation || 'horizontal', r.steelType || CFG.defaults.frameType), ...r }))
+        ? c.internalRails.map((r, index) => {
+            const fallbackPosition =
+              index === 0 ? 'top' :
+              index === 1 ? 'mid' :
+              index === 2 ? 'bottom' :
+              'extra';
+ 
+            return {
+              ...newPanelRail(
+                r.orientation || 'horizontal',
+                r.steelType || CFG.defaults.frameType,
+                r.position || fallbackPosition
+              ),
+              ...r,
+              position: r.position || fallbackPosition
+            };
+          })
         : null;
       return {
         ...d,
@@ -552,6 +570,7 @@
     return {
       id: uid('post'),
       type: 'post',
+      catchForSliderId: '',
  
       postType: CFG.defaults.postType,
  
@@ -632,7 +651,6 @@
       guideRollerQty: CFG.hardware.slider.guideRollerSet.defaultQty || 1,
       trackMode: 'auto',
       manualTrackLengthM: 0,
-      dropBoltQty: CFG.hardware.slider.dropBolt.defaultQty || 0,
       latchType: 'ddDualKey',
       includeCatchPost: true,
       includeRollerGuide: true,
@@ -666,11 +684,12 @@
     };
   }
  
-  function newPanelRail(orientation = 'horizontal', steelType = CFG.defaults.frameType) {
+  function newPanelRail(orientation = 'horizontal', steelType = CFG.defaults.frameType, position = 'extra') {
     return {
       id: uid('panel_rail'),
       orientation,
       steelType,
+      position,
       lengthMode: 'auto',
       manualLengthMm: 0
     };
@@ -681,13 +700,15 @@
       id: uid('panel'),
       type: 'fixedPanel',
       widthMm: 700,
+      catchForSliderId: '',
+      catchPostSide: 'right',
       leftPost: newPanelPost('left'),
       rightPost: newPanelPost('right'),
       railMode: 'auto',
       internalRails: [
-        newPanelRail('horizontal', CFG.defaults.frameType),
-        newPanelRail('horizontal', CFG.defaults.frameType),
-        newPanelRail('horizontal', CFG.defaults.frameType)
+        newPanelRail('horizontal', CFG.defaults.frameType, 'top'),
+        newPanelRail('horizontal', CFG.defaults.frameType, 'mid'),
+        newPanelRail('horizontal', CFG.defaults.frameType, 'bottom')
       ]
     };
   }
@@ -835,6 +856,27 @@
           job.selectedComponentId
       ) || null
     );
+  }
+ 
+  function sliderComponents() {
+    return job.components.filter(c => c.type === 'slider');
+  }
+ 
+  function defaultCatchSliderId() {
+    const selected = selectedComponent();
+    if (selected?.type === 'slider') return selected.id;
+    const sliders = sliderComponents();
+    return sliders.length === 1 ? sliders[0].id : '';
+  }
+ 
+  function panelRailPositionLabel(position) {
+    const labels = { top: 'Top', mid: 'Mid', bottom: 'Bottom', extra: 'Extra' };
+    return labels[position] || 'Extra';
+  }
+ 
+  function catchTargetLabel(component) {
+    const slider = sliderComponents().find(s => s.id === component.catchForSliderId);
+    return slider ? componentDisplayLabels()[slider.id] : '';
   }
  
   /* =======================================================
@@ -1015,6 +1057,10 @@
       return panelWidthMm(
         component
       );
+    }
+ 
+    if (component.type === 'slider') {
+      return sliderOpeningWidthMm(component);
     }
  
     return 0;
@@ -2031,15 +2077,53 @@
         cfg.installedRateIncludesGST
       );
       labourRatePerM2 = 0;
-      const screwLinealM = surfaces.reduce((sum, surface) => sum + Math.max(0, num(surface.widthMm)) / 1000, 0);
+ 
+      const finishedCoverMm = Math.max(1, num(cfg.finishedCoverMm, 800));
+      const sheetWidthMm = Math.max(finishedCoverMm, num(cfg.sheetWidthMm, 890));
+      const sheetGroups = new Map();
+      let totalSheets = 0;
+ 
+      surfaces.forEach(surface => {
+        const vertical = job.cladding.direction === 'vertical';
+        const coverDimensionMm = vertical
+          ? Math.max(0, num(surface.widthMm))
+          : Math.max(0, num(surface.heightMm));
+        const cutLengthMm = vertical
+          ? Math.max(0, num(surface.heightMm))
+          : Math.max(0, num(surface.widthMm));
+ 
+        if (!coverDimensionMm || !cutLengthMm) return;
+ 
+        const sheetCount = Math.ceil(coverDimensionMm / finishedCoverMm);
+        const roundedCut = Math.ceil(cutLengthMm);
+        totalSheets += sheetCount;
+        sheetGroups.set(roundedCut, (sheetGroups.get(roundedCut) || 0) + sheetCount);
+      });
+ 
+      const sheetOrderLines = [...sheetGroups.entries()]
+        .sort((a, b) => b[0] - a[0])
+        .map(([cutLengthMm, qty]) =>
+          `${qty} sheet${qty === 1 ? '' : 's'} @ ${cutLengthMm}mm long`
+        );
+ 
+      const screwLinealM = surfaces.reduce(
+        (sum, surface) => sum + Math.max(0, num(surface.widthMm)) / 1000,
+        0
+      );
       const screwAllowanceExGST = screwLinealM * num(cfg.screwAllowancePerLinealMExGST, 3);
+ 
       detail = {
-        orderText: `${round(areaM2, 2)} m² ${job.cladding.profile || 'Colorbond'} - ${job.cladding.colour || 'select colour'}`,
+        orderText: `${sheetOrderLines.join(' + ') || 'No sheets calculated'} | ${sheetWidthMm}mm sheet width, ${finishedCoverMm}mm finished cover | ${job.cladding.profile || 'Colorbond'} - ${job.cladding.colour || 'select colour'}`,
         installedRatePerM2: cfg.installedRatePerM2,
         directSellExGST,
         screwLinealM,
-        screwAllowanceExGST
+        screwAllowanceExGST,
+        totalSheets,
+        sheetWidthMm,
+        finishedCoverMm,
+        sheetOrderLines
       };
+ 
       materialCostExGST += screwAllowanceExGST;
       directSellExGST += screwAllowanceExGST;
     } else if (type === 'custom') {
@@ -2070,12 +2154,12 @@
  
     job.components.forEach(c => {
       if (c.type === 'post') {
-        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: '', role: 'post', post: c });
+        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: '', role: c.catchForSliderId ? 'external_slider_catch' : 'post', catchForSliderId: c.catchForSliderId || '', post: c });
       }
  
       if (c.type === 'fixedPanel') {
-        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: 'Left', role: 'panel', post: c.leftPost });
-        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: 'Right', role: 'panel', post: c.rightPost });
+        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: 'Left', role: c.catchForSliderId && c.catchPostSide === 'left' ? 'external_slider_catch' : 'panel', catchForSliderId: c.catchForSliderId || '', post: c.leftPost });
+        posts.push({ ownerId: c.id, ownerLabel: labels[c.id], side: 'Right', role: c.catchForSliderId && c.catchPostSide !== 'left' ? 'external_slider_catch' : 'panel', catchForSliderId: c.catchForSliderId || '', post: c.rightPost });
       }
  
       if (c.type === 'slider') {
@@ -2247,7 +2331,7 @@
       }
  
       cutList.push({
-        label: `${item.ownerLabel}${item.side ? ` - ${item.side}` : ''}`,
+        label: `${item.ownerLabel}${item.side ? ` - ${item.side}` : ''}${item.role === 'external_slider_catch' ? ' - Slider Catch' : ''}`,
         postType: p.postType,
         cutLengthMm: cutMm,
         fixing: p.fixing,
@@ -2278,6 +2362,20 @@
       }
  
       if (slider.includeCatchPost) {
+        sliderSpecialAllowanceExGST += CFG.hardware.slider.catchFabricationAllowanceExGST;
+      }
+    });
+ 
+    const validSliderIds = new Set(
+      job.components.filter(c => c.type === 'slider').map(c => c.id)
+    );
+ 
+    job.components.forEach(c => {
+      if (
+        (c.type === 'post' || c.type === 'fixedPanel') &&
+        c.catchForSliderId &&
+        validSliderIds.has(c.catchForSliderId)
+      ) {
         sliderSpecialAllowanceExGST += CFG.hardware.slider.catchFabricationAllowanceExGST;
       }
     });
@@ -2419,17 +2517,15 @@
         sliderInstallHours += manufacturedM * CFG.slider.installationHoursPerM;
         const wheelQty = Math.max(0, parseInt(c.wheelQty, 10) || 0);
         const guideQty = Math.max(0, parseInt(c.guideRollerQty, 10) || 0);
-        const dropQty = Math.max(0, parseInt(c.dropBoltQty, 10) || 0);
         const trackRequiredM = sliderTrackRequiredM(c);
         const trackStockQty = trackRequiredM > 0 ? Math.ceil(trackRequiredM / CFG.hardware.slider.track.stockLengthM) : 0;
         const wheelCost = wheelQty * CFG.hardware.slider.wheel.priceEachExGST;
         const guideCost = guideQty * CFG.hardware.slider.guideRollerSet.priceEachExGST;
-        const dropCost = dropQty * CFG.hardware.slider.dropBolt.priceEachExGST;
         const trackCost = trackStockQty * CFG.hardware.slider.track.pricePerStockLengthExGST;
         const sliderLatch = latchCostExGST(c.latchType);
-        sliderHardwareCostExGST += wheelCost + guideCost + dropCost + sliderLatch;
+        sliderHardwareCostExGST += wheelCost + guideCost + sliderLatch;
         sliderTrackCostExGST += trackCost;
-        sliderHardware.push({ componentId: c.id, label: labels[c.id], wheelQty, guideQty, dropQty, latchType: c.latchType, trackRequiredM, trackStockQty, trackCostExGST: trackCost, rails, openingWidthMm, manufacturedLengthMm, gateBodyWidthMm, frameHeightMm, cladding: sliderCladdingDimensions(c) });
+        sliderHardware.push({ componentId: c.id, label: labels[c.id], wheelQty, guideQty, latchType: c.latchType, trackRequiredM, trackStockQty, trackCostExGST: trackCost, rails, openingWidthMm, manufacturedLengthMm, gateBodyWidthMm, frameHeightMm, cladding: sliderCladdingDimensions(c) });
         screwItems += 1;
         cutList.push({ componentId: c.id, label: labels[c.id], type: 'slider', openingWidthMm, manufacturedLengthMm, gateBodyWidthMm, frameHeightMm, topLengthMm, bottomLengthMm, endLengthMm, topFrameType: c.topFrameType, bottomFrameType: c.bottomFrameType, endFrameType: c.endFrameType, internalRailType: c.internalRailType, rails, slideDirection: c.slideDirection, latchType: c.latchType });
       }
@@ -3056,6 +3152,29 @@
       gateButton.insertAdjacentElement('afterend', sliderButton);
     }
  
+    const sliderButton = document.querySelector('[data-component-type="slider"]');
+    const hasSlider = sliderComponents().length > 0;
+ 
+    if (sliderButton && !document.querySelector('[data-component-type="catchPost"]')) {
+      const catchPostButton = gateButton.cloneNode(true);
+      catchPostButton.dataset.componentType = 'catchPost';
+      catchPostButton.textContent = 'Catch Post';
+      catchPostButton.title = 'Add post as slider catch';
+      catchPostButton.classList.add('slider-catch-add');
+      sliderButton.insertAdjacentElement('afterend', catchPostButton);
+ 
+      const catchPanelButton = gateButton.cloneNode(true);
+      catchPanelButton.dataset.componentType = 'catchFixedPanel';
+      catchPanelButton.textContent = 'Catch Fixed Panel';
+      catchPanelButton.title = 'Add fixed panel with slider catch';
+      catchPanelButton.classList.add('slider-catch-add');
+      catchPostButton.insertAdjacentElement('afterend', catchPanelButton);
+    }
+ 
+    $$('.slider-catch-add').forEach(btn => {
+      btn.style.display = hasSlider ? '' : 'none';
+    });
+ 
     if (!document.getElementById('jtla-slider-style')) {
       const style = document.createElement('style');
       style.id = 'jtla-slider-style';
@@ -3064,7 +3183,7 @@
         .mud-map-item.slider { background: #fff0df; border-color: #b56b22; min-width: 165px; }
         .slider-open-arrow { display:block; font-weight:800; color:#8a4d15; margin-top:4px; letter-spacing:.03em; }
         .slider-subgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-        .slider-rail-row { display:grid; grid-template-columns:120px 120px 1fr auto; gap:8px; align-items:end; margin:7px 0; }
+        .slider-rail-row { display:grid; grid-template-columns:110px 110px 130px 110px 1fr auto; gap:8px; align-items:end; margin:7px 0; }
         .slider-hardware-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
         @media (max-width:700px) {
           .slider-subgrid,.slider-hardware-grid { grid-template-columns:1fr; }
@@ -3179,6 +3298,11 @@
     }
   }
  
+  function stepIntegerTravel(input) {
+    input.step = '1';
+    input.min = '0';
+  }
+ 
   function renderSite() {
     setInputValue(
       '#site-cavity-width',
@@ -3198,6 +3322,9 @@
         .oneWayTravelKm || ''
     );
  
+    const travelInput = $('#site-travel-km');
+    if (travelInput) stepIntegerTravel(travelInput);
+ 
     setInputValue(
       '#site-reference-direction',
       job.site
@@ -3210,19 +3337,23 @@
         .referenceCustom
     );
  
+    const activeComponent = selectedComponent();
+    const sliderSelected = activeComponent?.type === 'slider';
+ 
     $('#site-ground-gap-display')
       .textContent =
       mm(
-        CFG.fabrication
-          .gateGroundGapMm
+        sliderSelected
+          ? CFG.slider.groundTrackClearanceMm
+          : CFG.fabrication.gateGroundGapMm
       );
  
     $('#site-gate-gap-display')
       .textContent =
       mm(
-        CFG.fabrication
-          .gateSideGapMm *
-          2
+        sliderSelected
+          ? 0
+          : CFG.fabrication.gateSideGapMm * 2
       );
  
     $('#custom-reference-wrap')
@@ -3295,8 +3426,8 @@
         const fixingLabel = String(CFG.postFixings[c.fixing]?.label || c.fixing || '')
           .replace(/\.$/, '');
         dims = c.fixing === 'existing_structure'
-          ? `Existing · ${fixingLabel}`
-          : `${Math.round(postCutLengthMm(c))}mm · ${fixingLabel}`;
+          ? `Existing · ${fixingLabel}${c.catchForSliderId ? ' · CATCH' : ''}`
+          : `${Math.round(postCutLengthMm(c))}mm · ${fixingLabel}${c.catchForSliderId ? ' · CATCH' : ''}`;
       }
  
       if (c.type === 'gate') {
@@ -3316,7 +3447,7 @@
       }
  
       if (c.type === 'fixedPanel') {
-        dims = `${Math.round(panelWidthMm(c))} × ${Math.round(num(job.site.finishedHeightMm))}mm`;
+        dims = `${Math.round(panelWidthMm(c))} × ${Math.round(num(job.site.finishedHeightMm))}mm${c.catchForSliderId ? ` · CATCH ${c.catchPostSide === 'left' ? 'L' : 'R'}` : ''}`;
       }
  
       return `
@@ -3685,6 +3816,8 @@
               )
             : ''
         }
+ 
+        ${renderCatchAssignmentControls(c)}
  
       </div>
     `;
@@ -4259,13 +4392,71 @@
     `;
   }
  
+  function renderCatchAssignmentControls(component) {
+    const sliders = sliderComponents();
+ 
+    if (!sliders.length || !['post', 'fixedPanel'].includes(component.type)) {
+      return '';
+    }
+ 
+    const options = [
+      '<option value="">Not a slider catch</option>',
+      ...sliders.map(
+        slider =>
+          `<option value="${safe(slider.id)}" ${component.catchForSliderId === slider.id ? 'selected' : ''}>Catch for ${safe(componentDisplayLabels()[slider.id])}</option>`
+      )
+    ].join('');
+ 
+    return `
+      <div class="component-subsection">
+        <div class="component-subsection-title">Slider Catch</div>
+ 
+        <div class="form-grid two-column">
+          <div class="field-group">
+            <label>Catch use</label>
+            <select
+              data-catch-field="catchForSliderId"
+              data-component-id="${safe(component.id)}"
+            >
+              ${options}
+            </select>
+          </div>
+ 
+          ${
+            component.type === 'fixedPanel' && component.catchForSliderId
+              ? `
+                <div class="field-group">
+                  <label>Catch post side</label>
+                  <select
+                    data-catch-field="catchPostSide"
+                    data-component-id="${safe(component.id)}"
+                  >
+                    <option value="left" ${component.catchPostSide === 'left' ? 'selected' : ''}>Left post</option>
+                    <option value="right" ${component.catchPostSide !== 'left' ? 'selected' : ''}>Right post</option>
+                  </select>
+                </div>
+              `
+              : ''
+          }
+        </div>
+ 
+        ${
+          component.catchForSliderId
+            ? `<div class="compact-feature-summary">Adds $${CFG.hardware.slider.catchFabricationAllowanceExGST} catch fabrication allowance to ${safe(catchTargetLabel(component))}.</div>`
+            : ''
+        }
+      </div>
+    `;
+  }
+ 
   function renderFixedPanelEditor(c, label) {
     const activeRails = panelRailsUsed(c);
-    const railRows = activeRails.map((rail, index) => {
+    const railRows = activeRails.map((rail) => {
       const shownLength = rail.lengthMode === 'manual' ? num(rail.manualLengthMm) : panelRailAutoLengthMm(c, rail);
       return `
         <div class="slider-rail-row">
-          <div class="field-group"><label>Rail ${index + 1}</label><select data-panel-rail-field="orientation" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="horizontal" ${rail.orientation === 'horizontal' ? 'selected' : ''}>Horizontal</option><option value="vertical" ${rail.orientation === 'vertical' ? 'selected' : ''}>Vertical</option></select></div>
+          <div class="field-group"><label>Rail position</label><select data-panel-rail-field="position" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="top" ${rail.position === 'top' ? 'selected' : ''}>Top</option><option value="mid" ${rail.position === 'mid' ? 'selected' : ''}>Mid</option><option value="bottom" ${rail.position === 'bottom' ? 'selected' : ''}>Bottom</option><option value="extra" ${!['top','mid','bottom'].includes(rail.position) ? 'selected' : ''}>Extra</option></select></div>
+          <div class="field-group"><label>Direction</label><select data-panel-rail-field="orientation" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="horizontal" ${rail.orientation === 'horizontal' ? 'selected' : ''}>Horizontal</option><option value="vertical" ${rail.orientation === 'vertical' ? 'selected' : ''}>Vertical</option></select></div>
           <div class="field-group"><label>Steel</label><select data-panel-rail-field="steelType" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}">${optionsFromObject(CFG.steel.frame, rail.steelType || CFG.defaults.frameType)}</select></div>
           <div class="field-group"><label>Length</label><select data-panel-rail-field="lengthMode" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><option value="auto" ${rail.lengthMode === 'auto' ? 'selected' : ''}>Auto</option><option value="manual" ${rail.lengthMode === 'manual' ? 'selected' : ''}>Manual</option></select></div>
           <div class="field-group"><label>${rail.lengthMode === 'manual' ? 'Manual length' : 'Calculated length'}</label><div class="input-with-unit"><input type="number" min="0" step="1" value="${Math.round(shownLength)}" ${rail.lengthMode === 'manual' ? '' : 'disabled'} data-panel-rail-field="manualLengthMm" data-component-id="${safe(c.id)}" data-rail-id="${safe(rail.id)}"><span class="input-unit">mm</span></div></div>
@@ -4281,6 +4472,7 @@
         <div class="component-card-header"><div class="component-title-wrap"><h2 class="component-title">${safe(label)}</h2><div class="component-subtitle">Complete panel including two built-in posts</div></div>${componentToolbar(c)}</div>
         <div class="field-group required-field ${num(c.widthMm) > 0 ? 'complete' : ''}"><label>Overall Fixed Panel Width</label><div class="input-with-unit"><input type="number" min="0" step="1" inputmode="numeric" value="${num(c.widthMm)}" data-component-field="widthMm" data-component-id="${safe(c.id)}"><span class="input-unit">mm</span></div><small class="field-help">Includes the two built-in posts. No clearance is deducted around a fixed panel.</small></div>
         <div class="component-subsection"><div class="component-subsection-title">Built-in Posts</div><div class="dynamic-options">${renderPanelPostEditor(c, 'left', c.leftPost)}${renderPanelPostEditor(c, 'right', c.rightPost)}</div></div>
+        ${renderCatchAssignmentControls(c)}
         <div class="component-subsection"><div class="component-subsection-title">Internal Rails</div><div class="compact-feature-summary">Each rail can use its own steel size. Auto horizontal length is the clear distance between posts; Auto vertical length is the finished panel height.</div>${autoMessage}${railRows || '<div class="empty-state">No internal rails included.</div>'}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button type="button" class="secondary-btn" data-action="add-panel-rail" data-component-id="${safe(c.id)}" data-orientation="horizontal">+ Horizontal Rail</button><button type="button" class="secondary-btn" data-action="add-panel-rail" data-component-id="${safe(c.id)}" data-orientation="vertical">+ Vertical Rail</button><button type="button" class="secondary-btn" data-action="reset-panel-rails-auto" data-component-id="${safe(c.id)}">Reset Rails to Auto</button></div></div>
       </div>`;
   }
@@ -4360,7 +4552,6 @@
           <div class="slider-hardware-grid">
             <div class="field-group"><label>Wheels @ $45</label><input type="number" min="0" step="1" value="${num(c.wheelQty)}" data-slider-field="wheelQty" data-component-id="${safe(c.id)}"></div>
             <div class="field-group"><label>Guide roller sets @ $25</label><input type="number" min="0" step="1" value="${num(c.guideRollerQty)}" data-slider-field="guideRollerQty" data-component-id="${safe(c.id)}"></div>
-            <div class="field-group"><label>Drop bolts @ $20</label><input type="number" min="0" step="1" value="${num(c.dropBoltQty)}" data-slider-field="dropBoltQty" data-component-id="${safe(c.id)}"></div>
           </div>
           <div class="slider-subgrid" style="margin-top:10px;">
             <div class="field-group"><label>Latch</label><select data-slider-field="latchType" data-component-id="${safe(c.id)}">${optionsFromObject(CFG.hardware.latches, c.latchType)}</select></div>
@@ -4372,8 +4563,23 @@
  
         <div class="component-subsection">
           <div class="component-subsection-title">Catch Post</div>
-          <div class="switch-row"><span class="switch-label">Include catch post + $40 catch fabrication</span><button type="button" class="toggle-btn ${c.includeCatchPost ? 'on' : ''}" data-action="toggle-slider-item" data-component-id="${safe(c.id)}" data-field="includeCatchPost">${c.includeCatchPost ? 'ON' : 'OFF'}</button></div>
-          ${c.includeCatchPost ? renderSliderPostMini(c, 'catchPost', 'Catch Post', c.catchPost) : ''}
+          <div class="switch-row">
+            <span class="switch-label">Slider catch post</span>
+            <button
+              type="button"
+              class="${c.includeCatchPost ? 'delete' : 'secondary-btn'}"
+              data-action="toggle-slider-item"
+              data-component-id="${safe(c.id)}"
+              data-field="includeCatchPost"
+            >
+              ${c.includeCatchPost ? 'Delete Catch Post' : 'Add Catch Post'}
+            </button>
+          </div>
+          ${
+            c.includeCatchPost
+              ? renderSliderPostMini(c, 'catchPost', 'Catch Post', c.catchPost)
+              : '<div class="compact-feature-summary">Use a standalone Post or Fixed Panel as the slider catch if required.</div>'
+          }
         </div>
  
         <div class="component-subsection">
@@ -4790,7 +4996,7 @@
             ${CFG.colours.map(v => `<option value="${safe(v)}" ${v === job.cladding.colour ? 'selected' : ''}>${safe(v)}</option>`).join('')}
           </select>
         </div>
-        <div class="compact-feature-summary">Colorbond supply + installation allowance: ${money(cfg.installedRatePerM2)}/m² ex GST.</div>`;
+        <div class="compact-feature-summary">Colorbond supply + fitting: ${money(cfg.installedRatePerM2)}/m² ex GST. This rate already includes cladding fitting labour.</div>`;
     }
  
     if (
@@ -5193,7 +5399,8 @@
  
     if (c.type === 'colorbond') {
       detail += `
-        <div class="summary-row"><span>Supply + install rate</span><strong>${money(c.config.installedRatePerM2)}/m²</strong></div>
+        <div class="summary-row"><span>Supply + fitting rate</span><strong>${money(c.config.installedRatePerM2)}/m²</strong></div>
+        <div class="compact-feature-summary">The Colorbond rate already includes fitting labour. No separate cladding labour is added.</div>
         <div class="summary-row"><span>Screw allowance</span><strong>${lm(c.detail.screwLinealM || 0)} × $${num(c.config.screwAllowancePerLinealMExGST, 3).toFixed(2)} = ${money(c.detail.screwAllowanceExGST || 0)}</strong></div>
         <div class="summary-row summary-total"><span>Colorbond allowance EX GST</span><strong>${money(c.directSellExGST)}</strong></div>`;
     }
@@ -5470,7 +5677,8 @@
       { title: 'Clad Area', value: sqm(clad.areaM2) }
     ];
     if (clad.type === 'colorbond') {
-      cladItems.push({ title: 'Supply + install', value: `${money(clad.config.installedRatePerM2)}/m²` });
+      cladItems.push({ title: 'Supply + fitting', value: `${money(clad.config.installedRatePerM2)}/m² - fitting labour included` });
+      cladItems.push({ title: 'Sheets to order', value: `${clad.detail.totalSheets || 0} sheet${clad.detail.totalSheets === 1 ? '' : 's'} | ${(clad.detail.sheetOrderLines || []).join(' + ') || 'No sheet lengths calculated'} | ${clad.detail.sheetWidthMm || 890}mm sheet width / ${clad.detail.finishedCoverMm || 800}mm finished cover` });
       cladItems.push({ title: 'Colorbond screws', value: `${lm(clad.detail.screwLinealM || 0)} × $${num(clad.config.screwAllowancePerLinealMExGST, 3).toFixed(2)} = ${money(clad.detail.screwAllowanceExGST || 0)} ex GST` });
     }
     $('#cladding-materials-list').innerHTML = cladItems.map(i => `<div class="material-item"><div class="material-item-title">${safe(i.title)}</div><div class="material-item-value">${safe(i.value)}</div></div>`).join('');
@@ -5479,6 +5687,11 @@
     calculation.posts.steelOrders.forEach(o => req.push([o.label, `${o.stockQty} × ${o.stockLengthM}m`]));
     calculation.frames.steelOrders.forEach(o => req.push([o.label, `${o.stockQty} × ${o.stockLengthM}m`]));
     if (clad.detail?.orderText) req.push([clad.config?.label || 'Cladding', clad.detail.orderText]);
+    if (clad.type === 'colorbond' && clad.detail?.sheetOrderLines?.length) {
+      clad.detail.sheetOrderLines.forEach(
+        line => req.push(['Colorbond sheet', `${line} × ${clad.detail.sheetWidthMm || 890}mm wide (${clad.detail.finishedCoverMm || 800}mm cover)`])
+      );
+    }
     if (calculation.posts.dynabolts) req.push([CFG.fixings.dynabolt.label, `${calculation.posts.dynabolts}`]);
     if (calculation.frames.hingeSets) req.push([CFG.hardware.hinges.lockout.label, `${calculation.frames.hingeSets} set${calculation.frames.hingeSets === 1 ? '' : 's'}`]);
  
@@ -5494,14 +5707,23 @@
  
     calculation.frames.sliderHardware.forEach(s => {
       const slider = job.components.find(c => c.id === s.componentId);
-      req.push([`${s.label} wheels`, `${s.wheelQty} × ${CFG.hardware.slider.wheel.label} @ $45`]);
-      req.push([`${s.label} guide rollers`, `${s.guideQty} × ${CFG.hardware.slider.guideRollerSet.label} @ $25`]);
-      req.push([`${s.label} latch`, latchClientText(s.latchType)]);
-      if (s.dropQty) req.push([`${s.label} drop bolts`, `${s.dropQty} × ${CFG.hardware.slider.dropBolt.label} @ $20`]);
-      req.push([`${s.label} track`, `${s.trackStockQty} × ${CFG.hardware.slider.track.stockLengthM}m lengths (${round(s.trackRequiredM, 2)}m required)`]);
-      if (slider?.includeCatchPost) req.push([`${s.label} catch`, `Catch post + $${CFG.hardware.slider.catchFabricationAllowanceExGST} fabrication allowance`]);
-      if (slider?.includeRollerGuide) req.push([`${s.label} roller guide`, `65×65 SHS guide frame + $${CFG.hardware.slider.rollerGuideTopFabricationAllowanceExGST} top welding allowance`]);
+      req.push(['Roller wheels', `${s.wheelQty} × ${CFG.hardware.slider.wheel.label} @ $45`]);
+      req.push(['Guide rollers', `${s.guideQty} × ${CFG.hardware.slider.guideRollerSet.label} @ $25`]);
+      req.push(['Latch', latchClientText(s.latchType)]);
+      req.push(['Track', `${s.trackStockQty} × ${CFG.hardware.slider.track.stockLengthM}m lengths (${round(s.trackRequiredM, 2)}m required)`]);
+      if (slider?.includeCatchPost) req.push(['Catch post', `Post + $${CFG.hardware.slider.catchFabricationAllowanceExGST} catch fabrication allowance`]);
+      if (slider?.includeRollerGuide) req.push(['Roller guide', `65×65 SHS guide frame + $${CFG.hardware.slider.rollerGuideTopFabricationAllowanceExGST} top welding allowance`]);
     });
+ 
+    job.components
+      .filter(c => (c.type === 'post' || c.type === 'fixedPanel') && c.catchForSliderId)
+      .forEach(c => {
+        const label = componentDisplayLabels()[c.id];
+        const side = c.type === 'fixedPanel'
+          ? ` - ${c.catchPostSide === 'left' ? 'Left' : 'Right'} post`
+          : '';
+        req.push([`${label}${side} catch`, `$${CFG.hardware.slider.catchFabricationAllowanceExGST} catch fabrication allowance`]);
+      });
  
     if (calculation.posts.concreteBags) req.push(['Concrete', `${calculation.posts.concreteBags} bags`]);
     if (calculation.posts.concretePosts && CFG.concrete.addSpoilRemovalRequirement) req.push(['Spoil removal', `${calculation.posts.concretePosts} concreted post${calculation.posts.concretePosts === 1 ? '' : 's'}`]);
@@ -5532,7 +5754,7 @@
         ]);
       } else if (i.type === 'fixedPanel') {
         cuts.push([i.label, `${Math.round(i.widthMm)} × ${Math.round(i.heightMm)}mm | ${i.rails?.length || 0} internal rail${i.rails?.length === 1 ? '' : 's'}`]);
-        (i.rails || []).forEach((r, idx) => cuts.push([`${i.label} rail ${idx + 1}`, `${r.orientation}: ${Math.round(r.lengthMm)}mm ${frameConfig(r.steelType).label}`]));
+        (i.rails || []).forEach(r => cuts.push([`${i.label} ${panelRailPositionLabel(r.position)} rail`, `${r.orientation}: ${Math.round(r.lengthMm)}mm ${frameConfig(r.steelType).label}`]));
       } else if (i.type === 'slider') {
         cuts.push([i.label, `Opening ${Math.round(i.openingWidthMm)}mm | Manufactured ${Math.round(i.manufacturedLengthMm)} × ${Math.round(i.frameHeightMm)}mm`]);
         cuts.push([`${i.label} bottom`, `${frameConfig(i.bottomFrameType).label}: ${Math.round(i.bottomLengthMm)}mm`]);
@@ -5574,7 +5796,7 @@
       <div class="labour-breakdown-row"><span>Post installation</span><strong>${formatHours(calculation.posts.installationHours)}</strong></div>`;
  
     $('#cladding-labour-summary').innerHTML = calculation.cladding.type === 'colorbond'
-      ? `<div class="summary-row"><span>Area</span><strong>${sqm(calculation.cladding.areaM2)}</strong></div><div class="summary-row summary-total"><span>Colorbond supplied + installed</span><strong>${money(calculation.cladding.directSellExGST)}</strong></div>`
+      ? `<div class="summary-row"><span>Area</span><strong>${sqm(calculation.cladding.areaM2)}</strong></div><div class="compact-feature-summary">No separate Colorbond cladding labour is added here. The ${money(calculation.cladding.config.installedRatePerM2)}/m² Colorbond rate already includes fitting labour.</div>`
       : `<div class="summary-row"><span>Area</span><strong>${sqm(calculation.cladding.areaM2)}</strong></div><div class="summary-row"><span>Rate</span><strong>${money(calculation.cladding.labourRatePerM2)}/m²</strong></div><div class="summary-row summary-total"><span>Cladding Labour</span><strong>${money(calculation.cladding.labourCostExGST)}</strong></div>`;
  
     const totalHoursEquivalent = l.fabricationTotalHours + l.installationTotalHours + (calculation.cladding.labourCostExGST / CFG.business.labourRate);
@@ -6227,7 +6449,7 @@
     installationLines.push(...gateClientLines());
     sliders.forEach(s => {
       installationLines.push(
-        `Sliding gate opens to the ${s.slideDirection}, complete with galvanised track, wheels, guide rollers, roller support frame, catch post and selected latch hardware.`
+        `Sliding gate opens to the ${s.slideDirection}, complete with galvanised track, roller wheels, guide rollers, roller support frame, nominated catch arrangement and selected latch hardware.`
       );
     });
     if (gates.length) {
@@ -6999,6 +7221,11 @@ Jody`;
     let value =
       inferValue(el);
  
+    if (path === 'site.oneWayTravelKm') {
+      value = Math.max(0, Math.round(num(value)));
+      el.value = value || '';
+    }
+ 
     if (
       path ===
         'client.name' ||
@@ -7156,7 +7383,7 @@ Jody`;
  
     if (el.dataset.sliderField) {
       const field = el.dataset.sliderField;
-      const numeric = ['manualOpeningWidthMm', 'overhangMm', 'wheelQty', 'guideRollerQty', 'manualTrackLengthM', 'dropBoltQty'];
+      const numeric = ['manualOpeningWidthMm', 'overhangMm', 'wheelQty', 'guideRollerQty', 'manualTrackLengthM'];
       const value = numeric.includes(field) ? num(el.value) : el.value;
       mutate(() => { slider[field] = value; }, { pricing: true });
       return true;
@@ -7200,6 +7427,42 @@ Jody`;
       panel.railMode = 'manual';
       rail[field] = value;
     }, { pricing: true });
+    return true;
+  }
+ 
+  function handleCatchField(el) {
+    if (!el.dataset.catchField) return false;
+ 
+    const component = job.components.find(c => c.id === el.dataset.componentId);
+ 
+    if (!component || !['post', 'fixedPanel'].includes(component.type)) {
+      return true;
+    }
+ 
+    const field = el.dataset.catchField;
+ 
+    mutate(() => {
+      component[field] = el.value;
+ 
+      if (field === 'catchForSliderId' && el.value) {
+        const targetSlider = job.components.find(
+          c => c.type === 'slider' && c.id === el.value
+        );
+ 
+        if (targetSlider) {
+          targetSlider.includeCatchPost = false;
+        }
+      }
+ 
+      if (
+        field === 'catchForSliderId' &&
+        !el.value &&
+        component.type === 'fixedPanel'
+      ) {
+        component.catchPostSide = 'right';
+      }
+    }, { pricing: true });
+ 
     return true;
   }
  
@@ -7610,6 +7873,10 @@ Jody`;
         return;
       }
  
+      if (handleCatchField(el)) {
+        return;
+      }
+ 
       if (
         handleComponentField(
           el
@@ -7806,6 +8073,33 @@ Jody`;
               c = newSlider();
             }
  
+            if (type === 'catchPost') {
+              c = newPost();
+              c.catchForSliderId = defaultCatchSliderId();
+ 
+              const targetSlider = job.components.find(
+                item => item.type === 'slider' && item.id === c.catchForSliderId
+              );
+ 
+              if (targetSlider) {
+                targetSlider.includeCatchPost = false;
+              }
+            }
+ 
+            if (type === 'catchFixedPanel') {
+              c = newFixedPanel();
+              c.catchForSliderId = defaultCatchSliderId();
+              c.catchPostSide = 'right';
+ 
+              const targetSlider = job.components.find(
+                item => item.type === 'slider' && item.id === c.catchForSliderId
+              );
+ 
+              if (targetSlider) {
+                targetSlider.includeCatchPost = false;
+              }
+            }
+ 
             if (!c) {
               return;
             }
@@ -7843,6 +8137,7 @@ Jody`;
         autosave();
  
         renderMudMap();
+        renderSite();
         renderComponentEditor();
  
         setTimeout(
@@ -8345,7 +8640,7 @@ Jody`;
         mutate(() => {
           panel.railMode = 'manual';
           panel.internalRails = Array.isArray(panel.internalRails) ? panel.internalRails : [];
-          panel.internalRails.push(newPanelRail(btn.dataset.orientation || 'horizontal', CFG.defaults.frameType));
+          panel.internalRails.push(newPanelRail(btn.dataset.orientation || 'horizontal', CFG.defaults.frameType, 'extra'));
         }, { pricing: true, undoable: true });
         return;
       }
@@ -8365,7 +8660,7 @@ Jody`;
         if (!panel) return;
         mutate(() => {
           panel.railMode = 'auto';
-          panel.internalRails = [newPanelRail('horizontal', CFG.defaults.frameType), newPanelRail('horizontal', CFG.defaults.frameType), newPanelRail('horizontal', CFG.defaults.frameType)];
+          panel.internalRails = [newPanelRail('horizontal', CFG.defaults.frameType, 'top'), newPanelRail('horizontal', CFG.defaults.frameType, 'mid'), newPanelRail('horizontal', CFG.defaults.frameType, 'bottom')];
         }, { pricing: true, undoable: true });
         return;
       }
