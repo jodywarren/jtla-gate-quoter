@@ -3403,6 +3403,30 @@
      MUD MAP
      ======================================================= */
  
+  function gateMudMapImage(c) {
+    if (c.type !== 'gate') return '';
+
+    const railCount = Math.max(
+      0,
+      Math.round(num(c.internalRailCount))
+    );
+
+    const railOrientation =
+      job.cladding.direction === 'horizontal'
+        ? 'vertical'
+        : 'horizontal';
+
+    if (
+      railCount === 1 &&
+      railOrientation === 'vertical' &&
+      c.hingeSide === 'left'
+    ) {
+      return 'gate-images/examples/swing-mid-vertical.svg';
+    }
+
+    return '';
+  }
+
   function renderMudMap() {
     const root = $('#mud-map');
     const labels = componentDisplayLabels();
@@ -3421,6 +3445,7 @@
       let extraClass = '';
       let relationship = '';
       let sliderArrow = '';
+      let componentImage = '';
  
       if (c.type === 'post') {
         const fixingLabel = String(CFG.postFixings[c.fixing]?.label || c.fixing || '')
@@ -3437,6 +3462,26 @@
         hinge = `<span class="mud-map-hinge ${c.hingeSide}">H</span>`;
         extraClass = c.hingeSide === 'right' ? ' hinge-right' : '';
         if (c.relationship === 'double' && c.doublePairId) relationship = '<span class="mud-map-double">DOUBLE</span>';
+
+        const imagePath = gateMudMapImage(c);
+
+        if (imagePath) {
+          componentImage = `
+            <img
+              src="${imagePath}"
+              alt=""
+              style="
+                display:block;
+                width:100%;
+                height:95px;
+                object-fit:contain;
+                margin:6px 0 4px;
+              "
+            >
+          `;
+
+          hinge = '';
+        }
       }
  
       if (c.type === 'slider') {
@@ -3457,6 +3502,7 @@
           <span class="mud-map-status${complete ? ' complete' : ''}"></span>
           <span class="mud-map-name">${safe(labels[c.id])}</span>
           ${relationship}
+          ${componentImage}
           <span class="mud-map-dimensions">${safe(dims)}</span>
           ${sliderArrow}
         </div>`;
